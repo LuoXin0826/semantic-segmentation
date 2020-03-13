@@ -6,7 +6,7 @@ RUN pip install sklearn
 RUN pip install h5py
 RUN pip install jupyter
 RUN pip install scikit-image
-RUN pip install pillow
+RUN pip install pillow==6.1
 RUN pip install piexif
 RUN pip install cffi
 RUN pip install tqdm
