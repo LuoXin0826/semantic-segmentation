@@ -2,7 +2,7 @@
 
     # Example on KITTI, fine tune
      python -m torch.distributed.launch --nproc_per_node=1 train.py \
-        --dataset kitti \
+        --dataset kitti_multi \
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus \
         --snapshot ./pretrained_models/kitti_best.pth \
@@ -10,7 +10,7 @@
         --class_uniform_tile 300 \
         --lr 0.001 \
         --lr_schedule poly \
-        --poly_exp 1.0 \ #        --syncbn \
+        --poly_exp 1.0 \
         --sgd \
         --crop_size 360 \
         --scale_min 1.0 \

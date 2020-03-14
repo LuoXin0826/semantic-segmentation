@@ -285,7 +285,10 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
         assert output.size()[1] == args.dataset_cls.num_classes
 
         val_loss.update(criterion(output, gt_cuda).item(), batch_pixel_size)
-        predictions = output.data.max(1)[1].cpu()
+        predictions = output.data[:,:19,:,:].max(1)[1].cpu()
+        predictions2 = output.data[:,19:,:,:].max(1)[1].cpu()
+#        print(output.data[:,:20,:,:].shape)
+#        print(output.data.shape)
 
         # Logging
         if val_idx % 20 == 0:
@@ -295,8 +298,8 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
             break
 
         # Image Dumps
-        if val_idx < 10:
-            dump_images.append([gt_image, predictions, img_names])
+        if val_idx < 20:
+            dump_images.append([gt_image, predictions, predictions2, img_names])
 
         iou_acc += fast_hist(predictions.numpy().flatten(), gt_image.numpy().flatten(),
                              args.dataset_cls.num_classes)
