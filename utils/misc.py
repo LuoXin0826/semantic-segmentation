@@ -229,6 +229,23 @@ def evaluate_eval(args, net, optimizer, val_loss, hist, dump_images, writer, epo
 #        val_visual = vutils.make_grid(val_visual, nrow=10, padding=5)
 #        writer.add_image('imgs', val_visual, epoch )
 
+
+    to_save_dir = os.path.join(args.exp_path, 'current_images')
+    os.makedirs(to_save_dir, exist_ok=True)
+    for bs_idx, bs_data in enumerate(dump_images):
+        for local_idx, data in enumerate(zip(bs_data[0], bs_data[1] ,bs_data[2] ,bs_data[3])):
+            gt_pil = args.dataset_cls.colorize_mask(data[0].cpu().numpy())
+            predictions_pil = args.dataset_cls.colorize_mask(data[1].cpu().numpy())
+            predictions_pil2 = args.dataset_cls.colorize_mask(data[2].cpu().numpy())
+            img_name = data[3]
+            
+            prediction_fn = '{}_prediction.png'.format(img_name)
+            prediction_fn2 = '{}_prediction2.png'.format(img_name)
+            predictions_pil.save(os.path.join(to_save_dir, prediction_fn))
+            predictions_pil2.save(os.path.join(to_save_dir, prediction_fn2))
+            gt_fn = '{}_gt.png'.format(img_name)
+            gt_pil.save(os.path.join(to_save_dir, gt_fn))
+
     logging.info('-' * 107)
     fmt_str = '[epoch %d], [val loss %.5f], [acc %.5f], [acc_cls %.5f], ' +\
               '[mean_iu %.5f], [fwavacc %.5f]'
