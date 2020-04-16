@@ -60,7 +60,7 @@ def get_train_val(cv_split, all_items):
             else:
                 train_set.append(all_items[i])
     elif cv_split == 2:
-        for i in range(2337):
+        for i in range(415):
             if i in val_2:
                 val_set.append(all_items[i])
             else:

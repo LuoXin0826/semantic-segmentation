@@ -254,9 +254,44 @@ class DeepWV3Plus(nn.Module):
             nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
             Norm2d(256),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, num_classes, kernel_size=1, bias=False))
+            nn.Conv2d(256, num_classes-2, kernel_size=1, bias=False))
+
+        self.final2 = nn.Sequential(
+            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
         initialize_weights(self.final)
+
+#    def forward(self, inp, gts=None):
+
+#        x_size = inp.size()
+#        x = self.mod1(inp)
+#        m2 = self.mod2(self.pool2(x))
+#        x = self.mod3(self.pool3(m2))
+#        x = self.mod4(x)
+#        x = self.mod5(x)
+#        x = self.mod6(x)
+#        x = self.mod7(x)
+#        x = self.aspp(x)
+#        dec0_up = self.bot_aspp(x)
+
+#        dec0_fine = self.bot_fine(m2)
+#        dec0_up = Upsample(dec0_up, m2.size()[2:])
+#        dec0 = [dec0_fine, dec0_up]
+#        dec0 = torch.cat(dec0, 1)
+
+#        dec1 = self.final(dec0)
+#        out = Upsample(dec1, x_size[2:])
+
+#        if self.training:
+#            return self.criterion(out, gts)
+
+#        return out
 
     def forward(self, inp, gts=None):
 
@@ -278,12 +313,15 @@ class DeepWV3Plus(nn.Module):
 
         dec1 = self.final(dec0)
         out = Upsample(dec1, x_size[2:])
+        dec_trav = self.final2(dec0)
+        out_trav = Upsample(dec_trav, x_size[2:])
+        
+        out_fin = torch.cat((out, out_trav), 1)
 
         if self.training:
-            return self.criterion(out, gts)
+            return self.criterion(out_fin, gts)
 
-        return out
-
+        return out_fin
 
 def DeepSRNX50V3PlusD_m1(num_classes, criterion):
     """

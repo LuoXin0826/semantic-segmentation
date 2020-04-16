@@ -12,7 +12,7 @@ import torchvision.transforms as transforms
 
 import network
 from optimizer import restore_snapshot
-from datasets import cityscapes
+from datasets import kitti
 from config import assert_and_infer_cfg
 
 parser = argparse.ArgumentParser(description='demo')
@@ -26,7 +26,7 @@ cudnn.benchmark = False
 torch.cuda.empty_cache()
 
 # get net
-args.dataset_cls = cityscapes
+args.dataset_cls = kitti
 net = network.get_net(args, criterion=None)
 net = torch.nn.DataParallel(net).cuda()
 print('Net built.')
@@ -74,11 +74,13 @@ for img_id, img_name in enumerate(images):
     overlap = cv2.addWeighted(np.array(img), 0.5, np.array(colorized.convert('RGB')), 0.5, 0)
     cv2.imwrite(os.path.join(args.save_dir, overlap_name), overlap[:, :, ::-1])
 
-    # save label-based predictions, e.g. for submission purpose
-    label_out = np.zeros_like(pred)
-    for label_id, train_id in args.dataset_cls.id_to_trainid.items():
-        label_out[np.where(pred == train_id)] = label_id
-        cv2.imwrite(os.path.join(args.save_dir, pred_name), label_out)
+#    # save label-based predictions, e.g. for submission purpose
+#    label_out = np.zeros_like(pred)
+#    for label_id, train_id in args.dataset_cls.id_to_trainid.items():
+#        label_out[np.where(pred == train_id)] = label_id
+#        cv2.imwrite(os.path.join(args.save_dir, 'semantic/' + img_name), label_out)
+
+    cv2.imwrite(os.path.join(args.save_dir, 'semantic/' + img_name), pred)
 end_time = time.time()
 
 print('Results saved.')

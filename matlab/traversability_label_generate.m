@@ -13,7 +13,7 @@ image_train_folder = save_root + "image_2/";
 % label_val_folder = root + "labels/val/";
 % image_val_folder = root + "images/val/";
 
-train_seq_names = ["kitti07"];%["kitti06","kitti07","kitti09","kitti10"];
+train_seq_names = ["kitti06","kitti07"];%["kitti06","kitti07","kitti09","kitti10"];
 % val_seq_names = ["kitti06"];
 % val_seq_names = ["kitti15"];
 
@@ -30,6 +30,9 @@ for iter = 1:numel(train_seq_names)
             projection_img = imread(projection_folder + train_seq_names(iter)+ "/" + image_name);
             final_img = uint8(and(segmentation_img, projection_img));
             final_img = final_img + 34;
+            %resize 
+            final_img = imresize(final_img,[375,1242],'nearest');
+            rgb_img = imresize(rgb_img,[375,1242],'nearest');
             %save images
             imwrite(final_img, label_train_folder + train_seq_names(iter) + "_" + image_name);
             imwrite(rgb_img, image_train_folder + train_seq_names(iter) + "_" + image_name);
