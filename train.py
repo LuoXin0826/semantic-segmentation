@@ -158,7 +158,7 @@ def main():
     train_loader, val_loader, train_obj = datasets.setup_loaders(args)
     criterion, criterion_val = loss.get_loss(args)
     net = network.get_net(args, criterion)
-    optim, scheduler = optimizer.get_optimizer(args, net)
+    optim, scheduler = optimizer.get_optimizer(args, net, criterion)
 
     if args.fp16:
         net, optim = amp.initialize(net, optim, opt_level="O1")
