@@ -80,7 +80,7 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
             if not self.batch_weights:
                 weights = self.calculate_weights(target_cpu[i])
 #                self.nll_loss.weight = torch.Tensor(weights).cuda()
-                if targets[i].min()<19:
+                if target_cpu[i].min()<19:
                     self.nll_loss.weights = torch.Tensor(weights[:19]).cuda()
                     loss1 = self.nll_loss(F.log_softmax(inputs[i][:19,:,:].unsqueeze(0)),targets[i].unsqueeze(0))
                     loss1 = 0.5*loss1/self.task_weights[0]**2 + torch.log(self.task_weights[0])
