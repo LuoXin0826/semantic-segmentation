@@ -15,6 +15,7 @@ import datasets
 import loss
 import network
 import optimizer
+#from torchviz import make_dot
 
 
 # Argument Parser
@@ -216,6 +217,7 @@ def train(train_loader, net, optim, curr_epoch, writer):
         optim.zero_grad()
 
         main_loss = net(inputs, gts=gts)
+#        make_dot(main_loss).render("attached", format="png")
 
         if args.apex:
             log_main_loss = main_loss.clone().detach_()

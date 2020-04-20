@@ -66,7 +66,7 @@ parser.add_argument('-im', '--inference_mode', type=str, default='sliding',
 parser.add_argument('--test_mode', action='store_true', default=False,
                     help='minimum testing (4 items evaluated) to verify nothing failed')
 parser.add_argument('--cv_split', type=int, default=None)
-parser.add_argument('--mode', type=str, default='fine')
+parser.add_argument('--mode', type=str, default='semantic')
 parser.add_argument('--split_index', type=int, default=0)
 parser.add_argument('--split_count', type=int, default=1)
 parser.add_argument('--num_workers', type=int, default=4)
