@@ -83,21 +83,27 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
                 #self.wght = torch.Tensor(weights).cuda()
                 #w1 = torch.Tensor(weights[:19]).cuda()
                 #w2 = torch.Tensor(weights[19:]).cuda()
-#                self.nll_loss.weight = torch.Tensor(weights).cuda()
+                self.nll_loss.weight = torch.Tensor(weights).cuda()
                 if target_cpu[i].min()<19:
-                    wght = torch.Tensor(weights[:19]).cuda()
-                    src_part = inputs[i][:19,:,:].unsqueeze(0)
-                    tgt_part = targets[i].unsqueeze(0)
+#                    wght = torch.Tensor(weights[:19]).cuda()
+#                    src_part = inputs[i][:19,:,:].unsqueeze(0)
+#                    tgt_part = targets[i].unsqueeze(0)
                     task_w = self.task_weights[0]
                 else:
-                    wght = torch.Tensor(weights[19:]).cuda()
-                    src_part = inputs[i][19:,:,:].unsqueeze(0)
-                    tgt_part = (targets[i]-19).unsqueeze(0)
+#                    wght = torch.Tensor(weights[19:]).cuda()
+#                    src_part = inputs[i][19:,:,:].unsqueeze(0)
+#                    tgt_part = (targets[i]-19).unsqueeze(0)
                     task_w = self.task_weights[1]
-            self.nll_loss.weights = wght
-            loss1 = self.nll_loss(F.log_softmax(src_part), tgt_part)
+#            self.nll_loss.weights = wght
+#            loss1 = self.nll_loss(F.log_softmax(src_part), tgt_part)
+#            loss1 = 0.5*loss1/task_w**2 + torch.log(task_w)
+#            loss += loss1
+            softmax1 = F.log_softmax(inputs[i][:19,:,:].unsqueeze(0))
+            softmax2 = F.log_softmax(inputs[i][19:,:,:].unsqueeze(0))
+            softmax = torch.cat((softmax1, softmax2), 1)
+            loss1 = self.nll_loss(softmax,targets[i].unsqueeze(0))
             loss1 = 0.5*loss1/task_w**2 + torch.log(task_w)
-            loss += loss1
+            loss += loss1            
         return loss
 
 
