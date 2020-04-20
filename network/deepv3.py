@@ -442,6 +442,9 @@ class DeepWV3Plus(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(256, num_classes-2, kernel_size=1, bias=False))
 
+        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+
         self.final2 = nn.Sequential(
             nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
             Norm2d(256),
@@ -464,17 +467,18 @@ class DeepWV3Plus(nn.Module):
         x = self.mod6(x)
         x = self.mod7(x)
         x = self.aspp(x)
-        dec0_up0 = self.bot_aspp(x)
 
+        dec0_up = self.bot_aspp(x)
         dec0_fine = self.bot_fine(m2)
-        dec0_up = Upsample(dec0_up0, m2.size()[2:])
+        dec0_up = Upsample(dec0_up, m2.size()[2:])
         dec0 = [dec0_fine, dec0_up]
         dec0 = torch.cat(dec0, 1)
         dec1 = self.final(dec0)
         out = Upsample(dec1, x_size[2:])
 
-        dec0_fine_trav = self.bot_fine(m2)
-        dec0_up_trav = Upsample(dec0_up0, m2.size()[2:])
+        dec0_up_trav = self.bot_aspp2(x)
+        dec0_fine_trav = self.bot_fine2(m2)
+        dec0_up_trav = Upsample(dec0_up_trav, m2.size()[2:])
         dec0_trav = [dec0_fine_trav, dec0_up_trav]
         dec0_trav = torch.cat(dec0_trav, 1)
         dec1_trav = self.final2(dec0_trav)
