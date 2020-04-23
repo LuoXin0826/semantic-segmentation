@@ -283,7 +283,7 @@ class DeepWV3Plus1(nn.Module):
 
         return out
 
-class DeepWV3Plus(nn.Module):
+class DeepWV3Plus3(nn.Module):
     """
     WideResNet38 version of DeepLabV3
     mod1
@@ -351,7 +351,7 @@ class DeepWV3Plus(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
-        initialize_weights(self.final)
+        initialize_weights(self.final2)
 
     def forward(self, inp, gts=None):
 
@@ -383,7 +383,7 @@ class DeepWV3Plus(nn.Module):
 
         return out_fin
 
-class DeepWV3Plus3(nn.Module):
+class DeepWV3Plus(nn.Module):
     """
     WideResNet38 version of DeepLabV3
     mod1
@@ -454,7 +454,8 @@ class DeepWV3Plus3(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
-        initialize_weights(self.final)
+        initialize_weights(self.bot_fine2)
+        initialize_weights(self.bot_aspp2)
         initialize_weights(self.final2)
 
     def forward(self, inp, gts=None):
