@@ -37,8 +37,7 @@ def get_loss(args):
                                        ignore_index=args.dataset_cls.ignore_label).cuda()
     return criterion, criterion_val
 
-
-class ImageBasedCrossEntropyLoss2d(nn.Module):
+class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
     """
     Image Weighted Cross Entropy Loss
     """
@@ -70,6 +69,52 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
     def forward(self, inputs, targets):
 
         target_cpu = targets.data.cpu().numpy()
+        if self.batch_weights:
+            weights = self.calculate_weights(target_cpu)
+            self.nll_loss.weight = torch.Tensor(weights).cuda()
+
+        loss = 0.0
+        for i in range(0, inputs.shape[0]):
+            if not self.batch_weights:
+                weights = self.calculate_weights(target_cpu[i])
+                self.nll_loss.weight = torch.Tensor(weights).cuda()
+
+            loss1 = self.nll_loss(F.log_softmax(inputs[i].unsqueeze(0)),targets[i].unsqueeze(0))
+            loss += loss1            
+        return loss
+
+class ImageBasedCrossEntropyLoss2d(nn.Module):
+    """
+    Image Weighted Cross Entropy Loss
+    """
+
+    def __init__(self, classes, weight=None, size_average=True, ignore_index=255,
+                 norm=False, upper_bound=1.0):
+        super(ImageBasedCrossEntropyLoss2d, self).__init__()
+        logging.info("Using Per Image based weighted loss")
+        self.num_classes = classes
+        self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
+        self.norm = norm
+        self.upper_bound = upper_bound
+        self.batch_weights = cfg.BATCH_WEIGHTING
+        self.task_weights = nn.Parameter(torch.zeros(2, requires_grad=True))
+        #self.wght = torch.ones(21)
+
+    def calculate_weights(self, target):
+        """
+        Calculate weights of classes based on the training crop
+        """
+        hist = np.histogram(target.flatten(), range(
+            self.num_classes + 1), normed=True)[0]
+        if self.norm:
+            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
+        else:
+            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
+        return hist
+
+    def forward(self, inputs, targets):
+
+        target_cpu = targets.data.cpu().numpy()
         #task_cpu = self.task_weights.data.cpu().numpy()
         #print(task_cpu)
         if self.batch_weights:
@@ -80,29 +125,17 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
         for i in range(0, inputs.shape[0]):
             if not self.batch_weights:
                 weights = self.calculate_weights(target_cpu[i])
-                #self.wght = torch.Tensor(weights).cuda()
-                #w1 = torch.Tensor(weights[:19]).cuda()
-                #w2 = torch.Tensor(weights[19:]).cuda()
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
                 if target_cpu[i].min()<19:
-#                    wght = torch.Tensor(weights[:19]).cuda()
-#                    src_part = inputs[i][:19,:,:].unsqueeze(0)
-#                    tgt_part = targets[i].unsqueeze(0)
                     task_w = self.task_weights[0]
                 else:
-#                    wght = torch.Tensor(weights[19:]).cuda()
-#                    src_part = inputs[i][19:,:,:].unsqueeze(0)
-#                    tgt_part = (targets[i]-19).unsqueeze(0)
                     task_w = self.task_weights[1]
-#            self.nll_loss.weights = wght
-#            loss1 = self.nll_loss(F.log_softmax(src_part), tgt_part)
-#            loss1 = 0.5*loss1/task_w**2 + torch.log(task_w)
-#            loss += loss1
             softmax1 = F.log_softmax(inputs[i][:19,:,:].unsqueeze(0))
             softmax2 = F.log_softmax(inputs[i][19:,:,:].unsqueeze(0))
             softmax = torch.cat((softmax1, softmax2), 1)
             loss1 = self.nll_loss(softmax,targets[i].unsqueeze(0))
-            loss1 = 0.5*loss1/task_w**2 + torch.log(task_w)
+            print(self.task_weights)
+            loss1 = loss1/torch.exp(task_w) + 0.5*task_w
             loss += loss1            
         return loss
 

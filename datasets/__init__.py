@@ -5,6 +5,7 @@ from datasets import cityscapes
 from datasets import mapillary
 from datasets import kitti
 from datasets import kitti_multi
+from datasets import kitti_trav
 from datasets import camvid
 import torchvision.transforms as standard_transforms
 
@@ -44,6 +45,13 @@ def setup_loaders(args):
             args.val_batch_size = args.bs_mult * args.ngpu
     elif args.dataset == 'kitti_multi':
         args.dataset_cls = kitti_multi
+        args.train_batch_size = args.bs_mult * args.ngpu
+        if args.bs_mult_val > 0:
+            args.val_batch_size = args.bs_mult_val * args.ngpu
+        else:
+            args.val_batch_size = args.bs_mult * args.ngpu
+    elif args.dataset == 'kitti_trav':
+        args.dataset_cls = kitti_trav
         args.train_batch_size = args.bs_mult * args.ngpu
         if args.bs_mult_val > 0:
             args.val_batch_size = args.bs_mult_val * args.ngpu
@@ -244,6 +252,32 @@ def setup_loaders(args):
             scf=args.scf,
             hardnm=args.hardnm)
         val_set = args.dataset_cls.KITTI_Multi(
+            'semantic', 'trainval', 0, 
+            joint_transform_list=None,
+            transform=val_input_transform,
+            target_transform=target_transform,
+            test=False,
+            cv_split=args.cv,
+            scf=None)
+    elif args.dataset == 'kitti_trav':
+        # eval_size_h = 384
+        # eval_size_w = 1280
+        # val_joint_transform_list = [
+        #         joint_transforms.ResizeHW(eval_size_h, eval_size_w)]
+            
+        train_set = args.dataset_cls.KITTI_trav(
+            'semantic', 'train', args.maxSkip,
+            joint_transform_list=train_joint_transform_list,
+            transform=train_input_transform,
+            target_transform=target_train_transform,
+            dump_images=args.dump_augmentation_images,
+            class_uniform_pct=args.class_uniform_pct,
+            class_uniform_tile=args.class_uniform_tile,
+            test=args.test_mode,
+            cv_split=args.cv,
+            scf=args.scf,
+            hardnm=args.hardnm)
+        val_set = args.dataset_cls.KITTI_trav(
             'semantic', 'trainval', 0, 
             joint_transform_list=None,
             transform=val_input_transform,
