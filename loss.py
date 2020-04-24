@@ -153,7 +153,10 @@ class CrossEntropyLoss2d(nn.Module):
         # self.weight = weight
 
     def forward(self, inputs, targets):
-        return self.nll_loss(F.log_softmax(inputs), targets)
+        softmax1 = F.log_softmax(inputs[:19,:,:])
+        softmax2 = F.log_softmax(inputs[19:,:,:])
+        softmax = torch.cat((softmax1, softmax2), 0)
+        return self.nll_loss(softmax, targets)
 
 def customsoftmax(inp, multihotmask):
     """

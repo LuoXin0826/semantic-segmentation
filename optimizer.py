@@ -91,7 +91,38 @@ def forgiving_state_restore(net, loaded_dict):
         if k in loaded_dict and net_state_dict[k].size() == loaded_dict[k].size():
             new_loaded_dict[k] = loaded_dict[k]
         else:
-            logging.info("Skipped loading parameter %s", k)
+            if k == 'module.bot_fine2.weight':
+                new_loaded_dict[k] = loaded_dict['module.bot_fine.weight']
+            elif k == 'module.bot_aspp2.weight':
+                new_loaded_dict[k] = loaded_dict['module.bot_aspp.weight']
+            elif k == 'module.final2.0.weight':
+                new_loaded_dict[k] = loaded_dict['module.final.0.weight']
+            elif k == 'module.final2.1.weight':
+                new_loaded_dict[k] = loaded_dict['module.final.1.weight']
+            elif k == 'module.final2.1.bias':
+                new_loaded_dict[k] = loaded_dict['module.final.1.bias']
+            elif k == 'module.final2.1.running_mean':
+                new_loaded_dict[k] = loaded_dict['module.final.1.running_mean']
+            elif k == 'module.final2.1.running_var':
+                new_loaded_dict[k] = loaded_dict['module.final.1.running_var']
+            elif k == 'module.final2.1.num_batches_tracked':
+                new_loaded_dict[k] = loaded_dict['module.final.1.num_batches_tracked']
+            elif k == 'module.final2.3.weight':
+                new_loaded_dict[k] = loaded_dict['module.final.3.weight']
+            elif k == 'module.final2.4.weight':
+                new_loaded_dict[k] = loaded_dict['module.final.4.weight']
+            elif k == 'module.final2.4.bias':
+                new_loaded_dict[k] = loaded_dict['module.final.4.bias']
+            elif k == 'module.final2.4.running_mean':
+                new_loaded_dict[k] = loaded_dict['module.final.4.running_mean']
+            elif k == 'module.final2.4.running_var':
+                new_loaded_dict[k] = loaded_dict['module.final.4.running_var']
+            elif k == 'module.final2.4.num_batches_tracked':
+                new_loaded_dict[k] = loaded_dict['module.final.4.num_batches_tracked']
+#            elif k == 'module.final2.6.weight':
+#                new_loaded_dict[k] = loaded_dict['module.final.6.weight']
+            else:
+                logging.info("Skipped loading parameter %s", k)
     net_state_dict.update(new_loaded_dict)
     net.load_state_dict(net_state_dict)
     return net

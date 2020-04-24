@@ -16,7 +16,7 @@ sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=1,2 --ipc=host -it --
 
 sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav_test:/home/dataset  nvidia-segmentation:latest bash
 
-./scripts/eval_kitti_WideResNet38.sh ./ckpts/decoder_part.pth ./eval/
+./scripts/eval_kitti_WideResNet38.sh ./ckpts/last_epoch_89_mean-iu_0.40813.pth ./eval/
 
 pip install torchviz
 
