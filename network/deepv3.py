@@ -196,7 +196,7 @@ class DeepV3Plus(nn.Module):
 
         return main_out
 
-class DeepWV3Plus1(nn.Module):
+class DeepWV3Plus_semantic(nn.Module):
     """
     WideResNet38 version of DeepLabV3
     mod1
@@ -213,7 +213,7 @@ class DeepWV3Plus1(nn.Module):
 
     def __init__(self, num_classes, trunk='WideResnet38', criterion=None):
 
-        super(DeepWV3Plus, self).__init__()
+        super(DeepWV3Plus_semantic, self).__init__()
         self.criterion = criterion
         logging.info("Trunk: %s", trunk)
 
@@ -253,9 +253,9 @@ class DeepWV3Plus1(nn.Module):
             nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
             Norm2d(256),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, num_classes, kernel_size=1, bias=False))
+            nn.Conv2d(256, 19, kernel_size=1, bias=False))
 
-        initialize_weights(self.final)
+#        initialize_weights(self.final)
 
     def forward(self, inp, gts=None):
 
@@ -281,7 +281,7 @@ class DeepWV3Plus1(nn.Module):
         if self.training:
             return self.criterion(out, gts)
 
-        return out
+        return out#[:,:19,:,:]
 
 class DeepWV3Plus3(nn.Module):
     """
@@ -561,8 +561,8 @@ class DeepWV3Plus_trav(nn.Module):
         for param in self.aspp.parameters():
             param.requires_grad = False
 
-        self.bot_fine = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-        self.bot_aspp = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+#        self.bot_fine = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+#        self.bot_aspp = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
 
 #        self.final = nn.Sequential(
 #            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
@@ -571,10 +571,10 @@ class DeepWV3Plus_trav(nn.Module):
 #            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
 #            Norm2d(256),
 #            nn.ReLU(inplace=True),
-#            nn.Conv2d(256, num_classes-2, kernel_size=1, bias=False))
+#            nn.Conv2d(256, 21, kernel_size=1, bias=False))
 
-#        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-#        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
 
         self.final2 = nn.Sequential(
             nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
@@ -607,20 +607,20 @@ class DeepWV3Plus_trav(nn.Module):
 #        dec1 = self.final(dec0)
 #        out = Upsample(dec1, x_size[2:])
 
-        dec0_up_trav = self.bot_aspp(x)
-        dec0_fine_trav = self.bot_fine(m2)
+        dec0_up_trav = self.bot_aspp2(x)
+        dec0_fine_trav = self.bot_fine2(m2)
         dec0_up_trav = Upsample(dec0_up_trav, m2.size()[2:])
         dec0_trav = [dec0_fine_trav, dec0_up_trav]
         dec0_trav = torch.cat(dec0_trav, 1)
         dec1_trav = self.final2(dec0_trav)
-        out_fin = Upsample(dec1_trav, x_size[2:])
+        out_trav = Upsample(dec1_trav, x_size[2:])
         
 #        out_fin = torch.cat((out, out_trav), 1)
 
         if self.training:
-            return self.criterion(out_fin, gts)
+            return self.criterion(out_trav, gts)
 
-        return out_fin
+        return out_trav#[:,19:,:,:]
 def DeepSRNX50V3PlusD_m1(num_classes, criterion):
     """
     SEResNeXt-50 Based Network

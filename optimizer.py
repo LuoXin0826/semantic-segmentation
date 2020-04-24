@@ -53,20 +53,21 @@ def get_optimizer(args, net, criterion):
     return optimizer, scheduler
 
 
-def load_weights(net, optimizer, snapshot_file, restore_optimizer_bool=False):
+def load_weights(net, optimizer, snapshot_file, snapshot_file2, restore_optimizer_bool=False):
     """
     Load weights from snapshot file
     """
     logging.info("Loading weights from model %s", snapshot_file)
-    net, optimizer = restore_snapshot(net, optimizer, snapshot_file, restore_optimizer_bool)
+    net, optimizer = restore_snapshot(net, optimizer, snapshot_file, snapshot_file2, restore_optimizer_bool)
     return net, optimizer
 
 
-def restore_snapshot(net, optimizer, snapshot, restore_optimizer_bool):
+def restore_snapshot(net, optimizer, snapshot, snapshot2, restore_optimizer_bool):
     """
     Restore weights and optimizer (if needed ) for resuming job.
     """
     checkpoint = torch.load(snapshot, map_location=torch.device('cpu'))
+    checkpoint2 = torch.load(snapshot2, map_location=torch.device('cpu'))
     logging.info("Checkpoint Load Compelete")
     if optimizer is not None and 'optimizer' in checkpoint and restore_optimizer_bool:
         optimizer.load_state_dict(checkpoint['optimizer'])
@@ -75,6 +76,11 @@ def restore_snapshot(net, optimizer, snapshot, restore_optimizer_bool):
         net = forgiving_state_restore(net, checkpoint['state_dict'])
     else:
         net = forgiving_state_restore(net, checkpoint)
+
+    if 'state_dict' in checkpoint2:
+        net = forgiving_state_restore(net, checkpoint2['state_dict'])
+    else:
+        net = forgiving_state_restore(net, checkpoint2)
 
     return net, optimizer
 
@@ -91,38 +97,37 @@ def forgiving_state_restore(net, loaded_dict):
         if k in loaded_dict and net_state_dict[k].size() == loaded_dict[k].size():
             new_loaded_dict[k] = loaded_dict[k]
         else:
-            if k == 'module.bot_fine2.weight':
-                new_loaded_dict[k] = loaded_dict['module.bot_fine.weight']
-            elif k == 'module.bot_aspp2.weight':
-                new_loaded_dict[k] = loaded_dict['module.bot_aspp.weight']
-            elif k == 'module.final2.0.weight':
-                new_loaded_dict[k] = loaded_dict['module.final.0.weight']
-            elif k == 'module.final2.1.weight':
-                new_loaded_dict[k] = loaded_dict['module.final.1.weight']
-            elif k == 'module.final2.1.bias':
-                new_loaded_dict[k] = loaded_dict['module.final.1.bias']
-            elif k == 'module.final2.1.running_mean':
-                new_loaded_dict[k] = loaded_dict['module.final.1.running_mean']
-            elif k == 'module.final2.1.running_var':
-                new_loaded_dict[k] = loaded_dict['module.final.1.running_var']
-            elif k == 'module.final2.1.num_batches_tracked':
-                new_loaded_dict[k] = loaded_dict['module.final.1.num_batches_tracked']
-            elif k == 'module.final2.3.weight':
-                new_loaded_dict[k] = loaded_dict['module.final.3.weight']
-            elif k == 'module.final2.4.weight':
-                new_loaded_dict[k] = loaded_dict['module.final.4.weight']
-            elif k == 'module.final2.4.bias':
-                new_loaded_dict[k] = loaded_dict['module.final.4.bias']
-            elif k == 'module.final2.4.running_mean':
-                new_loaded_dict[k] = loaded_dict['module.final.4.running_mean']
-            elif k == 'module.final2.4.running_var':
-                new_loaded_dict[k] = loaded_dict['module.final.4.running_var']
-            elif k == 'module.final2.4.num_batches_tracked':
-                new_loaded_dict[k] = loaded_dict['module.final.4.num_batches_tracked']
-#            elif k == 'module.final2.6.weight':
-#                new_loaded_dict[k] = loaded_dict['module.final.6.weight']
-            else:
-                logging.info("Skipped loading parameter %s", k)
+            logging.info("Skipped loading parameter %s", k)
+#            if k == 'module.bot_fine2.weight':
+#                new_loaded_dict[k] = loaded_dict['module.bot_fine.weight']
+#            elif k == 'module.bot_aspp2.weight':
+#                new_loaded_dict[k] = loaded_dict['module.bot_aspp.weight']
+#            elif k == 'module.final2.0.weight':
+#                new_loaded_dict[k] = loaded_dict['module.final.0.weight']
+#            elif k == 'module.final2.1.weight':
+#                new_loaded_dict[k] = loaded_dict['module.final.1.weight']
+#            elif k == 'module.final2.1.bias':
+#                new_loaded_dict[k] = loaded_dict['module.final.1.bias']
+#            elif k == 'module.final2.1.running_mean':
+#                new_loaded_dict[k] = loaded_dict['module.final.1.running_mean']
+#            elif k == 'module.final2.1.running_var':
+#                new_loaded_dict[k] = loaded_dict['module.final.1.running_var']
+#            elif k == 'module.final2.1.num_batches_tracked':
+#                new_loaded_dict[k] = loaded_dict['module.final.1.num_batches_tracked']
+#            elif k == 'module.final2.3.weight':
+#                new_loaded_dict[k] = loaded_dict['module.final.3.weight']
+#            elif k == 'module.final2.4.weight':
+#                new_loaded_dict[k] = loaded_dict['module.final.4.weight']
+#            elif k == 'module.final2.4.bias':
+#                new_loaded_dict[k] = loaded_dict['module.final.4.bias']
+#            elif k == 'module.final2.4.running_mean':
+#                new_loaded_dict[k] = loaded_dict['module.final.4.running_mean']
+#            elif k == 'module.final2.4.running_var':
+#                new_loaded_dict[k] = loaded_dict['module.final.4.running_var']
+#            elif k == 'module.final2.4.num_batches_tracked':
+#                new_loaded_dict[k] = loaded_dict['module.final.4.num_batches_tracked']
+#            else:
+#                logging.info("Skipped loading parameter %s", k)
     net_state_dict.update(new_loaded_dict)
     net.load_state_dict(net_state_dict)
     return net

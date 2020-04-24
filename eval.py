@@ -26,7 +26,7 @@ import numpy as np
 import transforms.transforms as extended_transforms
 
 from config import assert_and_infer_cfg
-from datasets import cityscapes, kitti_trav
+from datasets import cityscapes, kitti_trav, kitti
 from optimizer import restore_snapshot
 
 from utils.my_data_parallel import MyDataParallel

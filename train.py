@@ -101,6 +101,7 @@ parser.add_argument('--scale_max', type=float, default=2.0,
 parser.add_argument('--weight_decay', type=float, default=1e-4)
 parser.add_argument('--momentum', type=float, default=0.9)
 parser.add_argument('--snapshot', type=str, default=None)
+parser.add_argument('--snapshot2', type=str, default=None)
 parser.add_argument('--restore_optimizer', action='store_true', default=False)
 parser.add_argument('--exp', type=str, default='default',
                     help='experiment directory name')
@@ -167,7 +168,7 @@ def main():
     net = network.wrap_network_in_dataparallel(net, args.apex)
     if args.snapshot:
         optimizer.load_weights(net, optim,
-                               args.snapshot, args.restore_optimizer)
+                               args.snapshot, args.snapshot2, args.restore_optimizer)
 
     torch.cuda.empty_cache()
     # Main Loop
