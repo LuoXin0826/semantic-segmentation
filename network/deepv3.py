@@ -621,6 +621,114 @@ class DeepWV3Plus_trav(nn.Module):
             return self.criterion(out_trav, gts)
 
         return out_trav#[:,19:,:,:]
+
+class DeepWV3Plus_trav2(nn.Module):
+    """
+    WideResNet38 version of DeepLabV3
+    mod1
+    pool2
+    mod2 bot_fine
+    pool3
+    mod3-7
+    bot_aspp
+
+    structure: [3, 3, 6, 3, 1, 1]
+    channels = [(128, 128), (256, 256), (512, 512), (512, 1024), (512, 1024, 2048),
+              (1024, 2048, 4096)]
+    """
+
+    def __init__(self, num_classes, trunk='WideResnet38', criterion=None):
+
+        super(DeepWV3Plus_trav2, self).__init__()
+        self.criterion = criterion
+        logging.info("Trunk: %s", trunk)
+
+        wide_resnet = wider_resnet38_a2(classes=1000, dilation=True)
+        wide_resnet = torch.nn.DataParallel(wide_resnet)
+        if criterion is not None:
+            try:
+                checkpoint = torch.load('./pretrained_models/wider_resnet38.pth.tar', map_location='cpu')
+                wide_resnet.load_state_dict(checkpoint['state_dict'])
+                del checkpoint
+            except:
+                print("Please download the ImageNet weights of WideResNet38 in our repo to ./pretrained_models/wider_resnet38.pth.tar.")
+                raise RuntimeError("=====================Could not load ImageNet weights of WideResNet38 network.=======================")
+        wide_resnet = wide_resnet.module
+
+        self.mod1 = wide_resnet.mod1
+        self.mod2 = wide_resnet.mod2
+        self.mod3 = wide_resnet.mod3
+        self.mod4 = wide_resnet.mod4
+        self.mod5 = wide_resnet.mod5
+        self.mod6 = wide_resnet.mod6
+        self.mod7 = wide_resnet.mod7
+        self.pool2 = wide_resnet.pool2
+        self.pool3 = wide_resnet.pool3
+        del wide_resnet
+
+        self.aspp_two = _AtrousSpatialPyramidPoolingModule(4096, 256,
+                                                       output_stride=8)
+
+#        for param in self.mod1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod2.parameters():
+#            param.requires_grad = False
+#        for param in self.mod3.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.parameters():
+#            param.requires_grad = False
+#        for param in self.mod5.parameters():
+#            param.requires_grad = False
+#        for param in self.mod6.parameters():
+#            param.requires_grad = False
+#        for param in self.mod7.parameters():
+#            param.requires_grad = False
+#        for param in self.pool2.parameters():
+#            param.requires_grad = False
+#        for param in self.pool3.parameters():
+#            param.requires_grad = False
+#        for param in self.aspp_two.parameters():
+#            param.requires_grad = False
+
+        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+
+        self.final2 = nn.Sequential(
+            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 2, kernel_size=1, bias=False))
+
+    def forward(self, inp, gts=None):
+
+        x_size = inp.size()
+        x = self.mod1(inp)
+        m2 = self.mod2(self.pool2(x))
+        x = self.mod3(self.pool3(m2))
+        x = self.mod4(x)
+        x = self.mod5(x)
+        x = self.mod6(x)
+        x = self.mod7(x)
+        x = self.aspp_two(x)
+
+        dec0_up_trav = self.bot_aspp2(x)
+        dec0_fine_trav = self.bot_fine2(m2)
+        dec0_up_trav = Upsample(dec0_up_trav, m2.size()[2:])
+        dec0_trav = [dec0_fine_trav, dec0_up_trav]
+        dec0_trav = torch.cat(dec0_trav, 1)
+        dec1_trav = self.final2(dec0_trav)
+        out_trav = Upsample(dec1_trav, x_size[2:])
+        
+#        out_fin = torch.cat((out, out_trav), 1)
+
+        if self.training:
+            return self.criterion(out_trav, gts)
+
+        return out_trav
+
 def DeepSRNX50V3PlusD_m1(num_classes, criterion):
     """
     SEResNeXt-50 Based Network

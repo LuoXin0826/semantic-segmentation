@@ -35,27 +35,27 @@ def colorize_mask(mask):
 
 def get_train_val(cv_split, all_items):
     # 90/10 train/val split, three random splits for cross validation
-    val_0 = [1,5,11,29,35,49,57]
-    val_1 = [0,12,24,31,42,50,63]
-    val_2 = [3,6,13,21,41,54,61]
+    val_0 = []
+    val_1 = []
+    val_2 = []
 
     train_set = []
     val_set = []
 
     if cv_split == 0:
-        for i in range(156):
+        for i in range(273):
             if i in val_0:
                 val_set.append(all_items[i])
             else:
                 train_set.append(all_items[i])
     elif cv_split == 1:
-        for i in range(156):
+        for i in range(273):
             if i in val_1:
                 val_set.append(all_items[i])
             else:
                 train_set.append(all_items[i])
     elif cv_split == 2:
-        for i in range(156):
+        for i in range(273):
             if i in val_2:
                 val_set.append(all_items[i])
             else:
