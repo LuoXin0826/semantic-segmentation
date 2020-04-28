@@ -100,12 +100,12 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
         self.task_weights = nn.Parameter(torch.zeros(2, requires_grad=True))
         #self.wght = torch.ones(21)
 
-    def calculate_weights(self, target):
+    def calculate_weights(self, target, n_class):
         """
         Calculate weights of classes based on the training crop
         """
         hist = np.histogram(target.flatten(), range(
-            self.num_classes + 1), normed=True)[0]
+            n_class + 1), normed=True)[0]
         if self.norm:
             hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
         else:
@@ -122,21 +122,43 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
             self.nll_loss.weight = torch.Tensor(weights).cuda()
 
         loss = 0.0
+        loss1 = []
+        loss2 = []
+        task_n = 0
         for i in range(0, inputs.shape[0]):
-            if not self.batch_weights:
-                weights = self.calculate_weights(target_cpu[i])
+            #if not self.batch_weights:
+                #weights = self.calculate_weights(target_cpu[i])
+                #self.nll_loss.weight = torch.Tensor(weights).cuda()
+            if target_cpu[i].min()<19:
+                task_n = 0
+                weights = self.calculate_weights(target_cpu[i], 19)
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
-                if target_cpu[i].min()<19:
-                    task_w = self.task_weights[0]
-                else:
-                    task_w = self.task_weights[1]
-            softmax1 = F.log_softmax(inputs[i][:19,:,:].unsqueeze(0))
-            softmax2 = F.log_softmax(inputs[i][19:,:,:].unsqueeze(0))
-            softmax = torch.cat((softmax1, softmax2), 1)
-            loss1 = self.nll_loss(softmax,targets[i].unsqueeze(0))
-            print(self.task_weights)
-            loss1 = loss1/torch.exp(task_w) + 0.5*task_w
-            loss += loss1            
+                softmax = F.log_softmax(inputs[i][:19,:,:].unsqueeze(0))
+                tgt = targets[i].unsqueeze(0)
+            else:
+                task_n = 1
+                tgt_cpu = target_cpu[i] - 19
+                tgt_cpu[tgt_cpu>10] = 255
+                weights = self.calculate_weights(tgt_cpu, 2)
+                self.nll_loss.weight = torch.Tensor(weights).cuda()
+                softmax = F.log_softmax(inputs[i][19:,:,:].unsqueeze(0))
+                tgt = targets[i].unsqueeze(0)-19
+                tgt[tgt>10] = 255
+
+            nll = self.nll_loss(softmax,tgt)
+            #print(self.task_weights)
+            if task_n ==0:
+                loss1.append(nll/torch.exp(self.task_weights[task_n]) + 0.5*self.task_weights[task_n])
+                #loss1.append(nll)
+            else:
+                loss2.append(nll/torch.exp(self.task_weights[task_n]) + 0.5*self.task_weights[task_n])
+                #loss2.append(nll)
+               
+        #print(loss1)
+        if len(loss1)>0: 
+            loss = loss + torch.mean(torch.stack(loss1))
+        if len(loss2)>0:
+            loss = loss + torch.mean(torch.stack(loss2))          
         return loss
 
 

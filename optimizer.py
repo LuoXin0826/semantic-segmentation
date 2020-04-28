@@ -98,6 +98,9 @@ def forgiving_state_restore(net, loaded_dict):
             new_loaded_dict[k] = loaded_dict[k]
         else:
             logging.info("Skipped loading parameter %s", k)
+            if 'aspp_two' in k:
+                splits = k.split('aspp_two')
+                new_loaded_dict[k] = loaded_dict.pop(splits[0]+'aspp'+splits[1])
 #            if k == 'module.bot_fine2.weight':
 #                new_loaded_dict[k] = loaded_dict['module.bot_fine.weight']
 #            elif k == 'module.bot_aspp2.weight':

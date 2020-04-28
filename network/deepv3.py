@@ -442,6 +442,9 @@ class DeepWV3Plus(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(256, num_classes-2, kernel_size=1, bias=False))
 
+
+        self.aspp_two = _AtrousSpatialPyramidPoolingModule(4096, 256, output_stride=8)
+
         self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
         self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
 
@@ -454,9 +457,9 @@ class DeepWV3Plus(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
-        initialize_weights(self.bot_fine2)
-        initialize_weights(self.bot_aspp2)
-        initialize_weights(self.final2)
+        #initialize_weights(self.bot_fine2)
+        #initialize_weights(self.bot_aspp2)
+        #initialize_weights(self.final2)
 
     def forward(self, inp, gts=None):
 
@@ -468,9 +471,9 @@ class DeepWV3Plus(nn.Module):
         x = self.mod5(x)
         x = self.mod6(x)
         x = self.mod7(x)
-        x = self.aspp(x)
 
-        dec0_up = self.bot_aspp(x)
+        xaspp = self.aspp(x)
+        dec0_up = self.bot_aspp(xaspp)
         dec0_fine = self.bot_fine(m2)
         dec0_up = Upsample(dec0_up, m2.size()[2:])
         dec0 = [dec0_fine, dec0_up]
@@ -478,7 +481,9 @@ class DeepWV3Plus(nn.Module):
         dec1 = self.final(dec0)
         out = Upsample(dec1, x_size[2:])
 
-        dec0_up_trav = self.bot_aspp2(x)
+
+        xaspp2 = self.aspp_two(x)
+        dec0_up_trav = self.bot_aspp2(xaspp2)
         dec0_fine_trav = self.bot_fine2(m2)
         dec0_up_trav = Upsample(dec0_up_trav, m2.size()[2:])
         dec0_trav = [dec0_fine_trav, dec0_up_trav]
