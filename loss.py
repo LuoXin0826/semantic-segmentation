@@ -190,7 +190,7 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
         if len(loss2)>0:
             loss += torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1] #+ torch.mean(torch.stack(loss4))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0]
 #            print('loss2:',torch.mean(torch.stack(loss4)))
-#        loss += torch.mean(torch.stack(loss3+loss4))/task_weight3
+        loss += torch.mean(torch.stack(loss3+loss4))/task_weight3
         return loss
 
 
