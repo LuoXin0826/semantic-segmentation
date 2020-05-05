@@ -440,26 +440,27 @@ class DeepWV3Plus(nn.Module):
             nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
             Norm2d(256),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, num_classes-2, kernel_size=1, bias=False))
+            nn.Conv2d(256, num_classes, kernel_size=1, bias=False))
 
+#        self.final2 = nn.Sequential(
+#            nn.Conv2d(256 + 48, 128, kernel_size=3, padding=1, bias=False),
+#            Norm2d(128),
+#            nn.Conv2d(128, 2, kernel_size=1, bias=False))
 
-        self.aspp_two = _AtrousSpatialPyramidPoolingModule(4096, 256, output_stride=8)
+#        self.final2 = nn.Sequential(
+#            nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
-        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+#        self.final2 = nn.Sequential(
+#            Norm2d(512),
+#            nn.ReLU(inplace=True),
+#            nn.Conv2d(512, 2, kernel_size=1, bias=False))
 
-        self.final2 = nn.Sequential(
-            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
-            Norm2d(256),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
-            Norm2d(256),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(256, 2, kernel_size=1, bias=False))
+#        self.final2_relu = nn.Sequential(
+#            Norm2d(19),
+#            nn.ReLU(inplace=True))
 
-        #initialize_weights(self.bot_fine2)
-        #initialize_weights(self.bot_aspp2)
-        #initialize_weights(self.final2)
+#        self.final2 = nn.Sequential(
+#            nn.Conv2d(275, 2, kernel_size=1, bias=False))
 
     def forward(self, inp, gts=None):
 
@@ -471,27 +472,33 @@ class DeepWV3Plus(nn.Module):
         x = self.mod5(x)
         x = self.mod6(x)
         x = self.mod7(x)
+        x = self.aspp(x)
 
-        xaspp = self.aspp(x)
-        dec0_up = self.bot_aspp(xaspp)
+        dec0_up = self.bot_aspp(x)
         dec0_fine = self.bot_fine(m2)
         dec0_up = Upsample(dec0_up, m2.size()[2:])
         dec0 = [dec0_fine, dec0_up]
         dec0 = torch.cat(dec0, 1)
-        dec1 = self.final(dec0)
-        out = Upsample(dec1, x_size[2:])
+
+#        dec0 = self.final[0](dec0)
+#        dec0 = self.final[1](dec0)
+#        dec0 = self.final[2](dec0)
+#        dec0 = self.final[3](dec0)
+#        dec0 = self.final[4](dec0)
+#        dec0_layer1 = self.final[5](dec0)
+#        dec1 = self.final[6](dec0_layer1)
+#        out = Upsample(dec1, x_size[2:])
 
 
-        xaspp2 = self.aspp_two(x)
-        dec0_up_trav = self.bot_aspp2(xaspp2)
-        dec0_fine_trav = self.bot_fine2(m2)
-        dec0_up_trav = Upsample(dec0_up_trav, m2.size()[2:])
-        dec0_trav = [dec0_fine_trav, dec0_up_trav]
-        dec0_trav = torch.cat(dec0_trav, 1)
-        dec1_trav = self.final2(dec0_trav)
-        out_trav = Upsample(dec1_trav, x_size[2:])
+#        dec1_relu = self.final2_relu(dec1)
+#        dec0_trav = torch.cat([dec0_layer1,dec1_relu],1)
+#        dec1_trav = self.final2(dec0_trav)
+#        out_trav = Upsample(dec1_trav, x_size[2:])
         
-        out_fin = torch.cat((out, out_trav), 1)
+#        out_fin = torch.cat((out, out_trav), 1)
+
+        dec1 = self.final(dec0)
+        out_fin = Upsample(dec1, x_size[2:])
 
         if self.training:
             return self.criterion(out_fin, gts)

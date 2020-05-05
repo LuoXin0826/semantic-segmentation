@@ -94,6 +94,7 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
         logging.info("Using Per Image based weighted loss")
         self.num_classes = classes
         self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
+        self.kldiv_loss = nn.KLDivLoss(size_average)
         self.norm = norm
         self.upper_bound = upper_bound
         self.batch_weights = cfg.BATCH_WEIGHTING
@@ -124,41 +125,72 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
         loss = 0.0
         loss1 = []
         loss2 = []
+        loss3 = []
+        loss4 = []
         task_n = 0
         for i in range(0, inputs.shape[0]):
-            #if not self.batch_weights:
-                #weights = self.calculate_weights(target_cpu[i])
-                #self.nll_loss.weight = torch.Tensor(weights).cuda()
             if target_cpu[i].min()<19:
                 task_n = 0
                 weights = self.calculate_weights(target_cpu[i], 19)
+#                print(weights)
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
-                softmax = F.log_softmax(inputs[i][:19,:,:].unsqueeze(0))
+                softmax = F.log_softmax(inputs[i].narrow(0,0,19).unsqueeze(0), dim=1)
                 tgt = targets[i].unsqueeze(0)
+                nll = self.nll_loss(softmax,tgt)
+                loss1.append(nll)
             else:
                 task_n = 1
                 tgt_cpu = target_cpu[i] - 19
-                tgt_cpu[tgt_cpu>10] = 255
+                tgt_cpu[tgt_cpu>1] = 255
+                tgt_cpu[tgt_cpu<0] = 255
                 weights = self.calculate_weights(tgt_cpu, 2)
+#                print(weights)
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
-                softmax = F.log_softmax(inputs[i][19:,:,:].unsqueeze(0))
-                tgt = targets[i].unsqueeze(0)-19
+                softmax = F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+                tgt = targets[i]-19
                 tgt[tgt>10] = 255
+                tgt = tgt.unsqueeze(0)
+                nll = self.nll_loss(softmax,tgt)
+                loss2.append(nll)
 
-            nll = self.nll_loss(softmax,tgt)
-            #print(self.task_weights)
-            if task_n ==0:
-                loss1.append(nll/torch.exp(self.task_weights[task_n]) + 0.5*self.task_weights[task_n])
-                #loss1.append(nll)
-            else:
-                loss2.append(nll/torch.exp(self.task_weights[task_n]) + 0.5*self.task_weights[task_n])
-                #loss2.append(nll)
+#            nll = self.nll_loss(softmax,tgt)
+#            if task_n ==0:
+#                loss += nll/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] 
+#            else:
+#                loss += nll/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1] 
+
+            trav = torch.sum(torch.cat([inputs[i].narrow(0,0,2),inputs[i][9,:,:].unsqueeze(0)], 0),0)
+            untrav = torch.sum(torch.cat([inputs[i].narrow(0,2,7),inputs[i].narrow(0,10,9)], 0),0)
+            softmax1 = F.softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+            softmax2 = F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+            kld = self.kldiv_loss(softmax2,softmax1)
+            loss3.append(kld)
+            softmax1 = F.log_softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+            softmax2 = F.softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+            kld1 = self.kldiv_loss(softmax1,softmax2)
+            loss4.append(kld1)
+
+#            if task_n ==0:
+##                loss1.append(nll)
+#                softmax1 = F.softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+#                softmax2 = F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+#                kld2 = self.kldiv_loss(softmax2,softmax1)
+#                loss3.append(kld2)
+#            else:
+###                loss2.append(nll)
+#                softmax1 = F.log_softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+#                softmax2 = F.softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+#                kld1 = self.kldiv_loss(softmax1,softmax2)
+#                loss4.append(kld1)
                
-        #print(loss1)
+        task_weight3 = torch.exp(self.task_weights[0])+torch.exp(self.task_weights[1])
         if len(loss1)>0: 
-            loss = loss + torch.mean(torch.stack(loss1))
+            loss += torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss3))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
+#            print('loss1:', torch.mean(torch.stack(loss3)))
         if len(loss2)>0:
-            loss = loss + torch.mean(torch.stack(loss2))          
+            loss += torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1] #+ torch.mean(torch.stack(loss4))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0]
+#            print('loss2:',torch.mean(torch.stack(loss4)))
+#        loss += torch.mean(torch.stack(loss3+loss4))/task_weight3
         return loss
 
 
@@ -172,13 +204,23 @@ class CrossEntropyLoss2d(nn.Module):
         super(CrossEntropyLoss2d, self).__init__()
         logging.info("Using Cross Entropy Loss")
         self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
+        #self.nll_loss1 = nn.NLLLoss2d(weight, size_average, ignore_index)
+        #self.nll_loss2 = nn.NLLLoss2d(weight, size_average, ignore_index)
         # self.weight = weight
 
     def forward(self, inputs, targets):
-        softmax1 = F.log_softmax(inputs[:19,:,:])
-        softmax2 = F.log_softmax(inputs[19:,:,:])
-        softmax = torch.cat((softmax1, softmax2), 0)
+        softmax1 = F.log_softmax(inputs.narrow(1,0,19),dim=1)
+        softmax2 = F.log_softmax(inputs.narrow(1,19,2),dim=1)
+        softmax = torch.cat((softmax1, softmax2), 1)
+
+#        target_cpu = targets.data.cpu().numpy()
+#        if target_cpu[i].min()<19:
+#            l1 = self.nll_loss1(softmax1, targets)
+#        else:
+#            l2 = self.nll_loss2(softmax2, targets)
+#            print("l2:", l2)
         return self.nll_loss(softmax, targets)
+
 
 def customsoftmax(inp, multihotmask):
     """
