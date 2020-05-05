@@ -6,7 +6,7 @@
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus \
         --snapshot ./pretrained_models/kitti_best.pth \
-        --snapshot2 ./pretrained_models/trav_single8.pth \
+        --snapshot2 ./pretrained_models/trav_single7.pth \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 300 \
         --lr 0.001 \
