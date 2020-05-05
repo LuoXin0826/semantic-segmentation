@@ -460,6 +460,9 @@ class DeepWV3Plus(nn.Module):
             nn.ReLU(inplace=True))
 
         self.final2 = nn.Sequential(
+            nn.Conv2d(275, 275, kernel_size=3, padding=1, bias=False),
+            Norm2d(275),
+            nn.ReLU(inplace=True),
             nn.Conv2d(275, 2, kernel_size=1, bias=False))
 
     def forward(self, inp, gts=None):
