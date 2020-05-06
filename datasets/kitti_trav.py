@@ -37,7 +37,7 @@ def get_train_val(cv_split, all_items):
     # 90/10 train/val split, three random splits for cross validation
     val_0 = []
     val_1 = []
-    val_2 = []
+    val_2 = []#0,1,2,3,4,5,6,7,8,9,10,11,12,13,14
 
     train_set = []
     val_set = []

@@ -12,7 +12,7 @@ def get_optimizer(args, net, criterion):
     """
     Decide Optimizer (Adam or SGD)
     """
-    param_groups = list(net.parameters()) + list(criterion.parameters())
+    param_groups = list(net.parameters()) #+ list(criterion.parameters())
 
     if args.sgd:
         optimizer = optim.SGD(param_groups,
@@ -53,21 +53,21 @@ def get_optimizer(args, net, criterion):
     return optimizer, scheduler
 
 
-def load_weights(net, optimizer, snapshot_file, snapshot_file2, restore_optimizer_bool=False):
+def load_weights(net, optimizer, snapshot_file, restore_optimizer_bool=False):
     """
     Load weights from snapshot file
     """
     logging.info("Loading weights from model %s", snapshot_file)
-    net, optimizer = restore_snapshot(net, optimizer, snapshot_file, snapshot_file2, restore_optimizer_bool)
+    net, optimizer = restore_snapshot(net, optimizer, snapshot_file, restore_optimizer_bool)
     return net, optimizer
 
 
-def restore_snapshot(net, optimizer, snapshot, snapshot2, restore_optimizer_bool):
+def restore_snapshot(net, optimizer, snapshot, restore_optimizer_bool):
     """
     Restore weights and optimizer (if needed ) for resuming job.
     """
     checkpoint = torch.load(snapshot, map_location=torch.device('cpu'))
-    checkpoint2 = torch.load(snapshot2, map_location=torch.device('cpu'))
+#    checkpoint2 = torch.load(snapshot2, map_location=torch.device('cpu'))
     logging.info("Checkpoint Load Compelete")
     if optimizer is not None and 'optimizer' in checkpoint and restore_optimizer_bool:
         optimizer.load_state_dict(checkpoint['optimizer'])
@@ -77,10 +77,10 @@ def restore_snapshot(net, optimizer, snapshot, snapshot2, restore_optimizer_bool
     else:
         net = forgiving_state_restore(net, checkpoint)
 
-    if 'state_dict' in checkpoint2:
-        net = forgiving_state_restore(net, checkpoint2['state_dict'])
-    else:
-        net = forgiving_state_restore(net, checkpoint2)
+#    if 'state_dict' in checkpoint2:
+#        net = forgiving_state_restore(net, checkpoint2['state_dict'])
+#    else:
+#        net = forgiving_state_restore(net, checkpoint2)
 
     return net, optimizer
 

@@ -37,7 +37,7 @@ def get_loss(args):
                                        ignore_index=args.dataset_cls.ignore_label).cuda()
     return criterion, criterion_val
 
-class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
+class ImageBasedCrossEntropyLoss2d(nn.Module):
     """
     Image Weighted Cross Entropy Loss
     """
@@ -51,7 +51,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
         self.norm = norm
         self.upper_bound = upper_bound
         self.batch_weights = cfg.BATCH_WEIGHTING
-        self.task_weights = nn.Parameter(torch.ones(2, requires_grad=True))
+#        self.task_weights = nn.Parameter(torch.ones(2, requires_grad=True))
         #self.wght = torch.ones(21)
 
     def calculate_weights(self, target):
@@ -80,10 +80,11 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
 
             loss1 = self.nll_loss(F.log_softmax(inputs[i].unsqueeze(0)),targets[i].unsqueeze(0))
-            loss += loss1            
+            loss += loss1
+#        print(loss.shape)            
         return loss
 
-class ImageBasedCrossEntropyLoss2d(nn.Module):
+class ImageBasedCrossEntropyLoss2d_tmp(nn.Module):
     """
     Image Weighted Cross Entropy Loss
     """
@@ -153,9 +154,10 @@ class CrossEntropyLoss2d(nn.Module):
         # self.weight = weight
 
     def forward(self, inputs, targets):
-        softmax1 = F.log_softmax(inputs[:19,:,:])
-        softmax2 = F.log_softmax(inputs[19:,:,:])
-        softmax = torch.cat((softmax1, softmax2), 0)
+#        softmax1 = F.log_softmax(inputs[:19,:,:])
+#        softmax2 = F.log_softmax(inputs[19:,:,:])
+#        softmax = torch.cat((softmax1, softmax2), 0)
+        softmax = F.log_softmax(inputs)
         return self.nll_loss(softmax, targets)
 
 def customsoftmax(inp, multihotmask):

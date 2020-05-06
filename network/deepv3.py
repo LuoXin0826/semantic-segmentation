@@ -540,29 +540,8 @@ class DeepWV3Plus_trav(nn.Module):
         self.aspp = _AtrousSpatialPyramidPoolingModule(4096, 256,
                                                        output_stride=8)
 
-        for param in self.mod1.parameters():
-            param.requires_grad = False
-        for param in self.mod2.parameters():
-            param.requires_grad = False
-        for param in self.mod3.parameters():
-            param.requires_grad = False
-        for param in self.mod4.parameters():
-            param.requires_grad = False
-        for param in self.mod5.parameters():
-            param.requires_grad = False
-        for param in self.mod6.parameters():
-            param.requires_grad = False
-        for param in self.mod7.parameters():
-            param.requires_grad = False
-        for param in self.pool2.parameters():
-            param.requires_grad = False
-        for param in self.pool3.parameters():
-            param.requires_grad = False
-        for param in self.aspp.parameters():
-            param.requires_grad = False
-
-#        self.bot_fine = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-#        self.bot_aspp = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+        self.bot_fine = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+        self.bot_aspp = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
 
 #        self.final = nn.Sequential(
 #            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
@@ -573,19 +552,44 @@ class DeepWV3Plus_trav(nn.Module):
 #            nn.ReLU(inplace=True),
 #            nn.Conv2d(256, 21, kernel_size=1, bias=False))
 
-        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+#        self.bot_fine2 = nn.Conv2d(128, 24, kernel_size=1, bias=False)
+#        self.bot_aspp2 = nn.Conv2d(1280, 128, kernel_size=1, bias=False)
 
-        self.final2 = nn.Sequential(
+        self.final = nn.Sequential(
             nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
             Norm2d(256),
             nn.ReLU(inplace=True),
             nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
             Norm2d(256),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, 2, kernel_size=1, bias=False))
+            nn.Conv2d(256, 19, kernel_size=1, bias=False))
 
-#        initialize_weights(self.final)
+#        for param in self.final[4].parameters():
+#            param.requires_grad = False
+#        for param in self.final[5].parameters():
+#            param.requires_grad = False
+#        for param in self.final[6].parameters():
+#            param.requires_grad = False
+
+        self.final2_relu = nn.Sequential(
+            Norm2d(19),
+            nn.ReLU(inplace=True))
+
+        self.final2 = nn.Sequential(
+            nn.Conv2d(275, 275, kernel_size=3, padding=1, bias=False),
+            Norm2d(275),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(275, 2, kernel_size=1, bias=False))
+
+#        modulelist = list(self.final.modules())
+#        print(modulelist)
+#        print(modulelist[5])
+#        print(modulelist[6])
+
+#        initialize_weights(self.aspp2)
+#        initialize_weights(self.bot_fine2)
+#        initialize_weights(self.bot_aspp2)
+#        initialize_weights(self.final2)
 
     def forward(self, inp, gts=None):
 
@@ -599,28 +603,47 @@ class DeepWV3Plus_trav(nn.Module):
         x = self.mod7(x)
         x = self.aspp(x)
 
-#        dec0_up = self.bot_aspp(x)
-#        dec0_fine = self.bot_fine(m2)
-#        dec0_up = Upsample(dec0_up, m2.size()[2:])
-#        dec0 = [dec0_fine, dec0_up]
-#        dec0 = torch.cat(dec0, 1)
+        dec0_up = self.bot_aspp(x)
+        dec0_fine = self.bot_fine(m2)
+        dec0_up = Upsample(dec0_up, m2.size()[2:])
+        dec0 = [dec0_fine, dec0_up]
+        dec0 = torch.cat(dec0, 1)
 #        dec1 = self.final(dec0)
+
+        dec0 = self.final[0](dec0)
+        dec0 = self.final[1](dec0)
+        dec0 = self.final[2](dec0)
+        dec0 = self.final[3](dec0)
+        dec0 = self.final[4](dec0)
+        dec0_layer1 = self.final[5](dec0)
+        dec1 = self.final[6](dec0_layer1)
 #        out = Upsample(dec1, x_size[2:])
 
-        dec0_up_trav = self.bot_aspp2(x)
-        dec0_fine_trav = self.bot_fine2(m2)
-        dec0_up_trav = Upsample(dec0_up_trav, m2.size()[2:])
-        dec0_trav = [dec0_fine_trav, dec0_up_trav]
-        dec0_trav = torch.cat(dec0_trav, 1)
+#        dec0_up_trav = self.bot_aspp(x)
+#        dec0_fine_trav = self.bot_fine(m2)
+#        dec0_up_trav = Upsample(dec0_up_trav, m2.size()[2:])
+#        dec0_trav = [dec0_fine_trav, dec0_up_trav]
+#        dec0_trav = torch.cat(dec0_trav, 1)
+#        for layer in self.final[:6]:
+#            dec0_trav = layer(dec0_trav)
+#        dec1_trav = self.final2(dec0_trav)
+
+        dec1_relu = self.final2_relu(dec1)
+        dec0_trav = torch.cat([dec0_layer1,dec1_relu],1)
         dec1_trav = self.final2(dec0_trav)
+
+#        dec1 = self.final(dec0)
+#        dec1_trav = dec1[:,19:,:,:]
+#        out_trav = Upsample(dec1_trav, x_size[2:])
+
+#        dec1_trav = self.final2(dec0_layer1)
+#        dec1 = torch.cat([dec1,dec1_trav],1)
         out_trav = Upsample(dec1_trav, x_size[2:])
-        
-#        out_fin = torch.cat((out, out_trav), 1)
 
         if self.training:
             return self.criterion(out_trav, gts)
 
-        return out_trav#[:,19:,:,:]
+        return out_trav
 
 class DeepWV3Plus_trav2(nn.Module):
     """

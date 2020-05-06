@@ -12,13 +12,13 @@ python demo_folder_trav.py --demo-folder /home/dataset/ --snapshot ./ckpts/last_
 
 python demo_folder.py --demo-folder /home/dataset/ --snapshot ./pretrained_models/kitti_best.pth --save-dir ./out3/
 
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=1,2 --ipc=host -it --rm -p 8888:8888 -v ~/youngji/semantic-segmentation:/home/workspace -v ~/youngji/data_semantics_small:/home/dataset  nvidia-segmentation:latest bash
+sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0,1,2,3 --ipc=host -it --rm -p 8888:8888 -v ~/youngji/semantic-segmentation:/home/workspace -v ~/youngji/data_semantics_small:/home/dataset  nvidia-segmentation:latest bash
 
 sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav_test:/home/dataset  nvidia-segmentation:latest bash
 
 sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav_test:/home/dataset  nvidia-segmentation:latest bash
 
-./scripts/eval_kitti_WideResNet38.sh ./ckpts/last_epoch_89_mean-iu_0.40649.pth ./eval/
+./scripts/eval_kitti_WideResNet38.sh ./ckpts/selected/backup/decoder_full_weight_learn.pth ./eval/
 
 pip install torchviz
 
