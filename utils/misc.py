@@ -284,8 +284,8 @@ def evaluate_eval(args, net, optimizer, val_loss1, val_loss2, hist1, hist2, dump
     iu1 = np.diag(hist1) / (hist1.sum(axis=1) + hist1.sum(axis=0) - np.diag(hist1))
     iu2 = np.diag(hist2) / (hist2.sum(axis=1) + hist2.sum(axis=0) - np.diag(hist2))
 
-    print_evaluate_results(hist1, iu1,  dataset)
-    print_evaluate_results(hist2, iu2,  dataset)
+    print_evaluate_results(hist1, iu1, dataset.num_classes1, dataset)
+    print_evaluate_results(hist2, iu2, dataset.num_classes2, dataset)
     mean_iu1 = np.nanmean(iu1)
     mean_iu2 = np.nanmean(iu2)
     logging.info('mean1 {}'.format(mean_iu1))
@@ -374,12 +374,12 @@ def fast_hist(label_pred, label_true, num_classes):
         label_pred[mask], minlength=num_classes ** 2).reshape(num_classes, num_classes)
     return hist
 
-def print_evaluate_results(hist, iu, dataset=None):
+def print_evaluate_results(hist, iu, num_classes dataset=None):
     # fixme: Need to refactor this dict
     try:
         id2cat = dataset.id2cat
     except:
-        id2cat = {i: i for i in range(dataset.num_classes)}
+        id2cat = {i: i for i in range(num_classes)}
     iu_false_positive = hist.sum(axis=1) - np.diag(hist)
     iu_false_negative = hist.sum(axis=0) - np.diag(hist)
     iu_true_positive = np.diag(hist)
