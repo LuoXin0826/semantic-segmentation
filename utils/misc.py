@@ -348,10 +348,10 @@ def evaluate_eval(args, net, optimizer, val_loss1, val_loss2, hist1, hist2, dump
     logging.info('-' * 107)
     fmt_str = '[epoch %d], [val loss %.5f], [acc1 %.5f], [acc2 %.5f], ' +\
               '[mean_iu1 %.5f], [mean_iu2 %.5f]'
-    logging.info(fmt_str % (epoch, val_loss.avg, acc1, acc2, mean_iu1, mean_iu2))
-    fmt_str = 'best record: [val loss %.5f], [acc1 %.5f], [acc2 %.5f], ' +\
+    logging.info(fmt_str % (epoch, val_loss1.avg, val_loss2.avg, acc1, acc2, mean_iu1, mean_iu2))
+    fmt_str = 'best record: [val loss1 %.5f], [val loss2 %.5f], [acc1 %.5f], [acc2 %.5f], ' +\
               '[mean_iu1 %.5f], [mean_iu2 %.5f], [epoch %d] '
-    logging.info(fmt_str % (args.best_record['val_loss'], args.best_record['acc1'], args.best_record['acc2'],
+    logging.info(fmt_str % (args.best_record['val_loss1'], args.best_record['val_loss12'], args.best_record['acc1'], args.best_record['acc2'],
                             args.best_record['acc2'], args.best_record['mean_iu1'], args.best_record['mean_iu2'],
                             args.best_record['epoch']))
     logging.info('-' * 107)
