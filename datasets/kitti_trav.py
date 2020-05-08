@@ -19,7 +19,7 @@ trainid_to_name = multitask_labels.trainId2name
 id_to_trainid = {0:0,1:1} #{34:0,35:1} #
 num_classes = 2 #19
 ignore_label = 255
-root = cfg.DATASET.KITTI_DIR
+root = cfg.DATASET.KITTI_DIR_TRAV
 aug_root = cfg.DATASET.KITTI_AUG_DIR
 
 palette = [128, 64, 128, 244, 35, 232]
@@ -35,27 +35,27 @@ def colorize_mask(mask):
 
 def get_train_val(cv_split, all_items):
     # 90/10 train/val split, three random splits for cross validation
-    val_0 = []
-    val_1 = []
-    val_2 = []
+    val_0 = [1,5,11,29,35,49,57,68,72,82,93,115,119,130,145,154,156,167,169,189,198]
+    val_1 = [0,12,24,31,42,50,63,71,84,96,101,112,121,133,141,155,164,171,187,191,197]
+    val_2 = [3,6,13,21,41,54,61,73,88,91,110,121,126,131,142,149,150,163,173,183,199]
 
     train_set = []
     val_set = []
 
     if cv_split == 0:
-        for i in range(273):
+        for i in range(200):
             if i in val_0:
                 val_set.append(all_items[i])
             else:
                 train_set.append(all_items[i])
     elif cv_split == 1:
-        for i in range(273):
+        for i in range(200):
             if i in val_1:
                 val_set.append(all_items[i])
             else:
                 train_set.append(all_items[i])
     elif cv_split == 2:
-        for i in range(273):
+        for i in range(200):
             if i in val_2:
                 val_set.append(all_items[i])
             else:

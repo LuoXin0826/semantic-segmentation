@@ -22,3 +22,5 @@ sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm
 
 pip install torchviz
 
+sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic_segmentation_train:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav:/home/dataset/trav -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_semantics:/home/dataset/semantic nvidia-segmentation:latest bash
+

@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from config import cfg
 
 
-def get_loss(args):
+def get_loss(args, data_type):
     """
     Get the criterion based on the loss function
     args: commandline arguments
@@ -20,10 +20,16 @@ def get_loss(args):
 #    task_weights = torch.ones(2, requires_grad=True)
 
     if args.img_wt_loss:
-        criterion = ImageBasedCrossEntropyLoss2d(
-            classes=args.dataset_cls.num_classes, size_average=True,
-            ignore_index=args.dataset_cls.ignore_label,
-            upper_bound=args.wt_bound).cuda()
+        if data_type=='semantic':
+            criterion = ImageBasedCrossEntropyLoss2d(
+                classes=args.dataset_cls.num_classes1, size_average=True,
+                ignore_index=args.dataset_cls.ignore_label,
+                upper_bound=args.wt_bound).cuda()
+        elif data_type=='trav':
+            criterion = ImageBasedCrossEntropyLoss2d(
+                classes=args.dataset_cls.num_classes2, size_average=True,
+                ignore_index=args.dataset_cls.ignore_label,
+                upper_bound=args.wt_bound).cuda()
     elif args.jointwtborder:
         criterion = ImgWtLossSoftNLL(classes=args.dataset_cls.num_classes,
                                      ignore_index=args.dataset_cls.ignore_label,
@@ -37,7 +43,7 @@ def get_loss(args):
                                        ignore_index=args.dataset_cls.ignore_label).cuda()
     return criterion, criterion_val
 
-class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
+class ImageBasedCrossEntropyLoss2d(nn.Module):
     """
     Image Weighted Cross Entropy Loss
     """
@@ -51,7 +57,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
         self.norm = norm
         self.upper_bound = upper_bound
         self.batch_weights = cfg.BATCH_WEIGHTING
-        self.task_weights = nn.Parameter(torch.ones(2, requires_grad=True))
+        self.task_weights = nn.Parameter(torch.ones(1, requires_grad=True))
         #self.wght = torch.ones(21)
 
     def calculate_weights(self, target):
@@ -79,11 +85,14 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
                 weights = self.calculate_weights(target_cpu[i])
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
 
+            print(weights)
+#            print(target_cpu[i].min())
+#            print(target_cpu[i])
             loss1 = self.nll_loss(F.log_softmax(inputs[i].unsqueeze(0)),targets[i].unsqueeze(0))
             loss += loss1            
-        return loss
+        return loss * self.task_weights
 
-class ImageBasedCrossEntropyLoss2d(nn.Module):
+class ImageBasedCrossEntropyLoss2d_old(nn.Module):
     """
     Image Weighted Cross Entropy Loss
     """

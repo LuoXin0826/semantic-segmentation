@@ -71,6 +71,10 @@ __C.DATASET.CITYSCAPES_AUG_DIR = ''
 __C.DATASET.MAPILLARY_DIR = ''
 #Kitti Dataset Dir Location
 __C.DATASET.KITTI_DIR = '/home/dataset/'
+#Kitti Dataset Dir Location
+__C.DATASET.KITTI_DIR_TRAV = '/home/dataset/trav/'
+#Kitti Dataset Dir Location
+__C.DATASET.KITTI_DIR_SEMANTIC = '/home/dataset/semantic/'
 #SDC Augmented Kitti Dataset Dir Location
 __C.DATASET.KITTI_AUG_DIR = ''
 #Camvid Dataset Dir Location
