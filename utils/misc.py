@@ -352,7 +352,7 @@ def evaluate_eval(args, net, optimizer, val_loss1, val_loss2, hist1, hist2, dump
     fmt_str = 'best record: [val loss1 %.5f], [val loss2 %.5f], [acc1 %.5f], [acc2 %.5f], ' +\
               '[mean_iu1 %.5f], [mean_iu2 %.5f], [epoch %d] '
     logging.info(fmt_str % (args.best_record['val_loss1'], args.best_record['val_loss2'], args.best_record['acc1'], args.best_record['acc2'],
-                            args.best_record['acc2'], args.best_record['mean_iu1'], args.best_record['mean_iu2'],
+                            args.best_record['mean_iu1'], args.best_record['mean_iu2'],
                             args.best_record['epoch']))
     logging.info('-' * 107)
 
