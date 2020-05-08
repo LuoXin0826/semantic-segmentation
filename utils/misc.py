@@ -374,7 +374,7 @@ def fast_hist(label_pred, label_true, num_classes):
         label_pred[mask], minlength=num_classes ** 2).reshape(num_classes, num_classes)
     return hist
 
-def print_evaluate_results(hist, iu, num_classes dataset=None):
+def print_evaluate_results(hist, iu, num_classes, dataset=None):
     # fixme: Need to refactor this dict
     try:
         id2cat = dataset.id2cat
