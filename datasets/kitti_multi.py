@@ -227,6 +227,8 @@ class KITTI_Multi(data.Dataset):
         elem2 = self.imgs_uniform2[index]
         centroid1 = None
         centroid2 = None
+        print(len(elem1))
+        print(len(elem2))
         if len(elem1) == 4:
             img_path1, mask_path1, centroid1, class_id1 = elem1
             img_path2, mask_path2, centroid2, class_id2 = elem2
