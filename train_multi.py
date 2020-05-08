@@ -205,13 +205,13 @@ def main():
         if args.class_uniform_pct:
             if epoch >= args.max_cu_epoch:
                 train_obj.build_epoch(cut=True)
-                train_obj2.build_epoch(cut=True)
+#                train_obj2.build_epoch(cut=True)
                 if args.apex:
                     train_loader.sampler.set_num_samples()
 #                    train_loader2.sampler.set_num_samples()
             else:
                 train_obj.build_epoch()
-                train_obj2.build_epoch()
+#                train_obj2.build_epoch()
 
 
 def train(train_loader, net, optim, curr_epoch, writer):
