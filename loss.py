@@ -89,8 +89,8 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
 #            print(target_cpu[i].min())
 #            print(target_cpu[i])
             loss1 = self.nll_loss(F.log_softmax(inputs[i].unsqueeze(0)),targets[i].unsqueeze(0))
-            loss += loss1            
-        return loss * self.task_weights
+            loss += loss1/torch.exp(self.task_weights) + 0.5*self.task_weights            
+        return loss 
 
 class ImageBasedCrossEntropyLoss2d_old(nn.Module):
     """
