@@ -97,8 +97,8 @@ def prep_experiment(args, parser):
     args.tb_exp_path = os.path.join(tb_path, args.exp, exp_name)
     args.ngpu = torch.cuda.device_count()
     args.date_str = str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
-    args.best_record = {'epoch': -1, 'iter': 0, 'val_loss': 1e10, 'acc': 0,
-                        'acc_cls': 0, 'mean_iu': 0, 'fwavacc': 0}
+    args.best_record = {'epoch': -1, 'iter': 0, 'val_loss1': 1e10, 'val_loss2': 1e10, 'acc1': 0, 'acc2': 0,
+                        'acc_cls': 0, 'mean_iu1': 0, 'mean_iu2': 0, 'fwavacc': 0}
     args.last_record = {}
     if args.local_rank == 0:
         os.makedirs(args.exp_path, exist_ok=True)
