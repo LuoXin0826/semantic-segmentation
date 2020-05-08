@@ -493,7 +493,10 @@ class DeepWV3Plus(nn.Module):
             elif data_type=='trav':
                 return self.criterion2(out2, gts)
 
-        return out
+        if data_type=='semantic':
+            return out1
+        elif data_type=='trav':
+            return out2
 
 class DeepWV3Plus_trav(nn.Module):
     """
