@@ -156,11 +156,12 @@ class KITTI_Multi(data.Dataset):
 
         if self.mode == 'test':
             self.imgs1 = make_test_dataset(root1, quality, mode, self.maxSkip, cv_split=self.cv_split)
-            self.imgs1 = make_test_dataset(root2, quality, mode, self.maxSkip, cv_split=self.cv_split)
+            self.imgs2 = make_test_dataset(root2, quality, mode, self.maxSkip, cv_split=self.cv_split)
         else:
             self.imgs1 = make_dataset(root1, quality, mode, self.maxSkip, cv_split=self.cv_split, hardnm=self.hardnm)
             self.imgs2 = make_dataset(root2, quality, mode, self.maxSkip, cv_split=self.cv_split, hardnm=self.hardnm)
         assert len(self.imgs1), 'Found 0 images, please check the data set'
+        assert len(self.imgs2), 'Found 0 images, please check the data set'
 
         # Centroids for GT data
         if self.class_uniform_pct > 0:
