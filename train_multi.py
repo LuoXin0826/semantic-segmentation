@@ -282,7 +282,7 @@ def train(train_loader, net, optim, curr_epoch, writer):
             return
 
 
-def validate(val_loader, net, criterion, optim, curr_epoch, writer):
+def validate(val_loader, net, criterion1, criterion2, optim, curr_epoch, writer):
     """
     Runs the validation loop after each training epoch
     val_loader: Data loader for validation
@@ -322,8 +322,8 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
         assert output2.size()[2:] == gt_image2.size()[1:]
         assert output2.size()[1] == args.dataset_cls.num_classes2
 
-        val_loss1.update(criterion(output1, gt_cuda1).item(), batch_pixel_size1)
-        val_loss2.update(criterion(output2, gt_cuda2).item(), batch_pixel_size2)
+        val_loss1.update(criterion1(output1, gt_cuda1).item(), batch_pixel_size1)
+        val_loss2.update(criterion2(output2, gt_cuda2).item(), batch_pixel_size2)
         predictions1  = output1.data.max(1)[1].cpu()
         predictions2  = output2.data.max(1)[1].cpu()
 
