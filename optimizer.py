@@ -72,15 +72,17 @@ def restore_snapshot(net, optimizer, snapshot, snapshot2, restore_optimizer_bool
     if optimizer is not None and 'optimizer' in checkpoint and restore_optimizer_bool:
         optimizer.load_state_dict(checkpoint['optimizer'])
 
-    if 'state_dict' in checkpoint:
-        net = forgiving_state_restore(net, checkpoint['state_dict'])
-    else:
-        net = forgiving_state_restore(net, checkpoint)
 
     if 'state_dict' in checkpoint2:
         net = forgiving_state_restore(net, checkpoint2['state_dict'])
     else:
         net = forgiving_state_restore(net, checkpoint2)
+
+    if 'state_dict' in checkpoint:
+        net = forgiving_state_restore(net, checkpoint['state_dict'])
+    else:
+        net = forgiving_state_restore(net, checkpoint)
+
 
     return net, optimizer
 
