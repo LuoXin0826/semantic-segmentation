@@ -273,7 +273,7 @@ def evaluate_eval_for_inference(hist, dataset=None):
 #        label_pred[mask], minlength=num_classes ** 2).reshape(num_classes, num_classes)
 #    return hist
 
-def evaluate_eval(args, net, optimizer, val_loss1, val_loss2, hist1, hist2, dump_images, writer, epoch=0, dataset=None, ):
+def evaluate_eval(args, net, optimizer, val_loss1, val_loss2, hist1, hist2, dump_images, writer, epoch=0, dataset=None):
     """
     Modified IOU mechanism for on-the-fly IOU calculations ( prevents memory overflow for
     large dataset) Only applies to eval/eval.py
