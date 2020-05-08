@@ -227,13 +227,15 @@ class KITTI_Multi(data.Dataset):
         elem2 = self.imgs_uniform2[index]
         centroid1 = None
         centroid2 = None
-        print(len(elem1))
-        print(len(elem2))
+
         if len(elem1) == 4:
             img_path1, mask_path1, centroid1, class_id1 = elem1
-            img_path2, mask_path2, centroid2, class_id2 = elem2
         else:
             img_path1, mask_path1 = elem1
+
+        if len(elem2) == 4:
+            img_path2, mask_path2, centroid2, class_id2 = elem2
+        else:
             img_path2, mask_path2 = elem2
 
         if self.mode == 'test':
@@ -288,13 +290,12 @@ class KITTI_Multi(data.Dataset):
         if self.joint_transform_list is not None:
             for idx, xform in enumerate(self.joint_transform_list):
                 if idx == 0 and centroid1 is not None:
-                    # HACK
-                    # We assume that the first transform is capable of taking
-                    # in a centroid
                     img1, mask1 = xform(img1, mask1, centroid1)
-                    img2, mask2 = xform(img2, mask2, centroid2)
                 else:
                     img1, mask1 = xform(img1, mask1)
+                if idx == 0 and centroid2 is not None:
+                    img2, mask2 = xform(img2, mask2, centroid2)
+                else:
                     img2, mask2 = xform(img2, mask2)
 
 #        # Debug
