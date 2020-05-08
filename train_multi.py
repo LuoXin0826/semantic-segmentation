@@ -200,7 +200,7 @@ def main():
         if args.apex:
             train_loader.sampler.set_epoch(epoch + 1)
 #            train_loader2.sampler.set_epoch(epoch + 1)
-        validate(val_loader, net, criterion_val,
+        validate(val_loader, net, criterion_val, criterion_val2,
                  optim, epoch, writer)
         if args.class_uniform_pct:
             if epoch >= args.max_cu_epoch:
@@ -295,28 +295,37 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
     """
 
     net.eval()
-    val_loss = AverageMeter()
-    iou_acc = 0
+    val_loss1 = AverageMeter()
+    val_loss2 = AverageMeter()
+    iou_acc1 = 0
+    iou_acc2 = 0
     dump_images = []
 
     for val_idx, data in enumerate(val_loader):
-        inputs, gt_image, img_names, _, _, _ = data
-        assert len(inputs.size()) == 4 and len(gt_image.size()) == 3
-        assert inputs.size()[2:] == gt_image.size()[1:]
+        inputs1, gt_image1, img_names1, inputs2, gt_image2, img_names2 = data
+        assert len(inputs1.size()) == 4 and len(gt_image1.size()) == 3
+        assert inputs1.size()[2:] == gt_image1.size()[1:]
+        assert len(inputs2.size()) == 4 and len(gt_image2.size()) == 3
+        assert inputs2.size()[2:] == gt_image2.size()[1:]
 
-        batch_pixel_size = inputs.size(0) * inputs.size(2) * inputs.size(3)
-        inputs, gt_cuda = inputs.cuda(), gt_image.cuda()
+        batch_pixel_size1 = inputs1.size(0) * inputs1.size(2) * inputs1.size(3)
+        batch_pixel_size2 = inputs2.size(0) * inputs2.size(2) * inputs2.size(3)
+        inputs1, gt_cuda1 = inputs1.cuda(), gt_image1.cuda()
+        inputs2, gt_cuda2 = inputs2.cuda(), gt_image2.cuda()
 
         with torch.no_grad():
-            output = net(inputs)  # output = (1, 19, 713, 713)
+            output1 = net(inputs1, data_type='semantic')  # output = (1, 19, 713, 713)
+            output2 = net(inputs2, data_type='trav')  # output = (1, 19, 713, 713)
 
-        assert output.size()[2:] == gt_image.size()[1:]
-        assert output.size()[1] == args.dataset_cls.num_classes
+        assert output1.size()[2:] == gt_image1.size()[1:]
+        assert output1.size()[1] == args.dataset_cls.num_classes1
+        assert output2.size()[2:] == gt_image2.size()[1:]
+        assert output2.size()[1] == args.dataset_cls.num_classes2
 
-        val_loss.update(criterion(output, gt_cuda).item(), batch_pixel_size)
-#        predictions1 = output.data[:,:19,:,:].max(1)[1].cpu()
-#        predictions2 = output.data[:,19:,:,:].max(1)[1].cpu()
-        predictions  = output.data.max(1)[1].cpu()
+        val_loss1.update(criterion(output1, gt_cuda1).item(), batch_pixel_size1)
+        val_loss2.update(criterion(output2, gt_cuda2).item(), batch_pixel_size2)
+        predictions1  = output1.data.max(1)[1].cpu()
+        predictions2  = output2.data.max(1)[1].cpu()
 
         # Logging
         if val_idx % 20 == 0:
@@ -329,20 +338,25 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
 #        if val_idx < 30:
 #            dump_images.append([gt_image, predictions1, predictions2, img_names])
 
-        iou_acc += fast_hist(predictions.numpy().flatten(), gt_image.numpy().flatten(),
+        iou_acc1 += fast_hist(predictions1.numpy().flatten(), gt_image1.numpy().flatten(),
                              args.dataset_cls.num_classes1)
-        del output, val_idx, data
+        iou_acc2 += fast_hist(predictions2.numpy().flatten(), gt_image2.numpy().flatten(),
+                             args.dataset_cls.num_classes2)
+        del output1, output2, val_idx, data
 
     if args.apex:
-        iou_acc_tensor = torch.cuda.FloatTensor(iou_acc)
-        torch.distributed.all_reduce(iou_acc_tensor, op=torch.distributed.ReduceOp.SUM)
-        iou_acc = iou_acc_tensor.cpu().numpy()
+        iou_acc_tensor1 = torch.cuda.FloatTensor(iou_acc1)
+        torch.distributed.all_reduce(iou_acc_tensor1, op=torch.distributed.ReduceOp.SUM)
+        iou_acc1 = iou_acc_tensor1.cpu().numpy()
+        iou_acc_tensor2 = torch.cuda.FloatTensor(iou_acc2)
+        torch.distributed.all_reduce(iou_acc_tensor2, op=torch.distributed.ReduceOp.SUM)
+        iou_acc2 = iou_acc_tensor2.cpu().numpy()
 
     if args.local_rank == 0:
-        evaluate_eval(args, net, optim, val_loss, iou_acc, dump_images,
+        evaluate_eval(args, net, optim, val_loss1, val_loss2, iou_acc1, iou_acc2, dump_images,
                       writer, curr_epoch, args.dataset_cls)
 
-    return val_loss.avg
+    return val_loss1.avg
 
 
 if __name__ == '__main__':

@@ -130,35 +130,180 @@ def evaluate_eval_for_inference(hist, dataset=None):
 
 
 
-def evaluate_eval(args, net, optimizer, val_loss, hist, dump_images, writer, epoch=0, dataset=None, ):
+#def evaluate_eval(args, net, optimizer, val_loss, hist, dump_images, writer, epoch=0, dataset=None, ):
+#    """
+#    Modified IOU mechanism for on-the-fly IOU calculations ( prevents memory overflow for
+#    large dataset) Only applies to eval/eval.py
+#    """
+#    # axis 0: gt, axis 1: prediction
+#    acc = np.diag(hist).sum() / hist.sum()
+#    acc_cls = np.diag(hist) / hist.sum(axis=1)
+#    acc_cls = np.nanmean(acc_cls)
+#    iu = np.diag(hist) / (hist.sum(axis=1) + hist.sum(axis=0) - np.diag(hist))
+
+#    print_evaluate_results(hist, iu,  dataset)
+#    freq = hist.sum(axis=1) / hist.sum()
+#    mean_iu = np.nanmean(iu)
+#    logging.info('mean {}'.format(mean_iu))
+#    fwavacc = (freq[freq > 0] * iu[freq > 0]).sum()
+
+#    # update latest snapshot
+#    if 'mean_iu' in args.last_record:
+#        last_snapshot = 'last_epoch_{}_mean-iu_{:.5f}.pth'.format(
+#            args.last_record['epoch'], args.last_record['mean_iu'])
+#        last_snapshot = os.path.join(args.exp_path, last_snapshot)
+#        try:
+#            os.remove(last_snapshot)
+#        except OSError:
+#            pass
+#    last_snapshot = 'last_epoch_{}_mean-iu_{:.5f}.pth'.format(epoch, mean_iu)
+#    last_snapshot = os.path.join(args.exp_path, last_snapshot)
+#    args.last_record['mean_iu'] = mean_iu
+#    args.last_record['epoch'] = epoch
+#    
+#    torch.cuda.synchronize()
+#    
+#    torch.save({
+#        'state_dict': net.state_dict(),
+#        'optimizer': optimizer.state_dict(),
+#        'epoch': epoch,
+#        'mean_iu': mean_iu,
+#        'command': ' '.join(sys.argv[1:])
+#    }, last_snapshot)
+
+#    # update best snapshot
+#    if mean_iu > args.best_record['mean_iu'] :
+#        # remove old best snapshot
+#        if args.best_record['epoch'] != -1:
+#            best_snapshot = 'best_epoch_{}_mean-iu_{:.5f}.pth'.format(
+#                args.best_record['epoch'], args.best_record['mean_iu'])
+#            best_snapshot = os.path.join(args.exp_path, best_snapshot)
+#            assert os.path.exists(best_snapshot), \
+#                'cant find old snapshot {}'.format(best_snapshot)
+#            os.remove(best_snapshot)
+
+#        
+#        # save new best
+#        args.best_record['val_loss'] = val_loss.avg
+#        args.best_record['epoch'] = epoch
+#        args.best_record['acc'] = acc
+#        args.best_record['acc_cls'] = acc_cls
+#        args.best_record['mean_iu'] = mean_iu
+#        args.best_record['fwavacc'] = fwavacc
+
+#        best_snapshot = 'best_epoch_{}_mean-iu_{:.5f}.pth'.format(
+#            args.best_record['epoch'], args.best_record['mean_iu'])
+#        best_snapshot = os.path.join(args.exp_path, best_snapshot)
+#        shutil.copyfile(last_snapshot, best_snapshot)
+#        
+#    
+#        to_save_dir = os.path.join(args.exp_path, 'best_images')
+#        os.makedirs(to_save_dir, exist_ok=True)
+#        val_visual = []
+#        
+#        idx = 0
+#        
+#        visualize = standard_transforms.Compose([
+#            standard_transforms.Scale(384),
+#            standard_transforms.ToTensor()
+#        ])
+#        for bs_idx, bs_data in enumerate(dump_images):
+#            for local_idx, data in enumerate(zip(bs_data[0], bs_data[1] ,bs_data[2] ,bs_data[3])):
+#                gt_pil = args.dataset_cls.colorize_mask(data[0].cpu().numpy())
+#                predictions_pil = args.dataset_cls.colorize_mask(data[1].cpu().numpy())
+#                predictions_pil2 = args.dataset_cls.colorize_mask(data[2].cpu().numpy())
+#                img_name = data[3]
+#                
+#                prediction_fn = '{}_prediction.png'.format(img_name)
+#                prediction_fn2 = '{}_prediction2.png'.format(img_name)
+#                predictions_pil.save(os.path.join(to_save_dir, prediction_fn))
+#                predictions_pil2.save(os.path.join(to_save_dir, prediction_fn2))
+#                gt_fn = '{}_gt.png'.format(img_name)
+#                gt_pil.save(os.path.join(to_save_dir, gt_fn))
+##                val_visual.extend([visualize(gt_pil.convert('RGB')),
+##                                   visualize(predictions_pil.convert('RGB')),
+##                                   visualize(predictions_pil2.convert('RGB'))])
+#                if local_idx >= 9:
+#                    break
+##        val_visual = torch.stack(val_visual, 0)
+##        val_visual = vutils.make_grid(val_visual, nrow=10, padding=5)
+##        writer.add_image('imgs', val_visual, epoch )
+
+
+#    to_save_dir = os.path.join(args.exp_path, 'current_images')
+#    os.makedirs(to_save_dir, exist_ok=True)
+#    for bs_idx, bs_data in enumerate(dump_images):
+#        for local_idx, data in enumerate(zip(bs_data[0], bs_data[1] ,bs_data[2] ,bs_data[3])):
+#            gt_pil = args.dataset_cls.colorize_mask(data[0].cpu().numpy())
+#            predictions_pil = args.dataset_cls.colorize_mask(data[1].cpu().numpy())
+#            predictions_pil2 = args.dataset_cls.colorize_mask(data[2].cpu().numpy())
+#            img_name = data[3]
+#            
+#            prediction_fn = '{}_prediction.png'.format(img_name)
+#            prediction_fn2 = '{}_prediction2.png'.format(img_name)
+#            predictions_pil.save(os.path.join(to_save_dir, prediction_fn))
+#            predictions_pil2.save(os.path.join(to_save_dir, prediction_fn2))
+#            gt_fn = '{}_gt.png'.format(img_name)
+#            gt_pil.save(os.path.join(to_save_dir, gt_fn))
+
+#    logging.info('-' * 107)
+#    fmt_str = '[epoch %d], [val loss %.5f], [acc %.5f], [acc_cls %.5f], ' +\
+#              '[mean_iu %.5f], [fwavacc %.5f]'
+#    logging.info(fmt_str % (epoch, val_loss.avg, acc, acc_cls, mean_iu, fwavacc))
+#    fmt_str = 'best record: [val loss %.5f], [acc %.5f], [acc_cls %.5f], ' +\
+#              '[mean_iu %.5f], [fwavacc %.5f], [epoch %d], '
+#    logging.info(fmt_str % (args.best_record['val_loss'], args.best_record['acc'],
+#                            args.best_record['acc_cls'], args.best_record['mean_iu'],
+#                            args.best_record['fwavacc'], args.best_record['epoch']))
+#    logging.info('-' * 107)
+
+#    # tensorboard logging of validation phase metrics
+
+#    writer.add_scalar('training/acc', acc, epoch)
+#    writer.add_scalar('training/acc_cls', acc_cls, epoch)
+#    writer.add_scalar('training/mean_iu', mean_iu, epoch)
+#    writer.add_scalar('training/val_loss', val_loss.avg, epoch)
+
+
+
+#def fast_hist(label_pred, label_true, num_classes):
+#    mask = (label_true >= 0) & (label_true < num_classes)
+#    hist = np.bincount(
+#        num_classes * label_true[mask].astype(int) +
+#        label_pred[mask], minlength=num_classes ** 2).reshape(num_classes, num_classes)
+#    return hist
+
+def evaluate_eval(args, net, optimizer, val_loss1, val_loss2, hist1, hist2, dump_images, writer, epoch=0, dataset=None, ):
     """
     Modified IOU mechanism for on-the-fly IOU calculations ( prevents memory overflow for
     large dataset) Only applies to eval/eval.py
     """
     # axis 0: gt, axis 1: prediction
-    acc = np.diag(hist).sum() / hist.sum()
-    acc_cls = np.diag(hist) / hist.sum(axis=1)
-    acc_cls = np.nanmean(acc_cls)
-    iu = np.diag(hist) / (hist.sum(axis=1) + hist.sum(axis=0) - np.diag(hist))
+    acc1 = np.diag(hist1).sum() / hist1.sum()
+    acc2 = np.diag(hist2).sum() / hist2.sum()
+    iu1 = np.diag(hist1) / (hist1.sum(axis=1) + hist1.sum(axis=0) - np.diag(hist1))
+    iu2 = np.diag(hist2) / (hist2.sum(axis=1) + hist2.sum(axis=0) - np.diag(hist2))
 
-    print_evaluate_results(hist, iu,  dataset)
-    freq = hist.sum(axis=1) / hist.sum()
-    mean_iu = np.nanmean(iu)
-    logging.info('mean {}'.format(mean_iu))
-    fwavacc = (freq[freq > 0] * iu[freq > 0]).sum()
+    print_evaluate_results(hist1, iu1,  dataset)
+    print_evaluate_results(hist2, iu2,  dataset)
+    mean_iu1 = np.nanmean(iu1)
+    mean_iu2 = np.nanmean(iu2)
+    logging.info('mean1 {}'.format(mean_iu1))
+    logging.info('mean2 {}'.format(mean_iu2))
 
     # update latest snapshot
-    if 'mean_iu' in args.last_record:
+    if 'mean_iu1' in args.last_record:
         last_snapshot = 'last_epoch_{}_mean-iu_{:.5f}.pth'.format(
-            args.last_record['epoch'], args.last_record['mean_iu'])
+            args.last_record['epoch'], args.last_record['mean_iu1'])
         last_snapshot = os.path.join(args.exp_path, last_snapshot)
         try:
             os.remove(last_snapshot)
         except OSError:
             pass
-    last_snapshot = 'last_epoch_{}_mean-iu_{:.5f}.pth'.format(epoch, mean_iu)
+    last_snapshot = 'last_epoch_{}_mean-iu_{:.5f}.pth'.format(epoch, mean_iu1)
     last_snapshot = os.path.join(args.exp_path, last_snapshot)
-    args.last_record['mean_iu'] = mean_iu
+    args.last_record['mean_iu1'] = mean_iu1
+    args.last_record['mean_iu2'] = mean_iu2
     args.last_record['epoch'] = epoch
     
     torch.cuda.synchronize()
@@ -167,16 +312,17 @@ def evaluate_eval(args, net, optimizer, val_loss, hist, dump_images, writer, epo
         'state_dict': net.state_dict(),
         'optimizer': optimizer.state_dict(),
         'epoch': epoch,
-        'mean_iu': mean_iu,
+        'mean_iu1': mean_iu1,
+        'mean_iu2': mean_iu2,
         'command': ' '.join(sys.argv[1:])
     }, last_snapshot)
 
     # update best snapshot
-    if mean_iu > args.best_record['mean_iu'] :
+    if mean_iu1 > args.best_record['mean_iu1'] :
         # remove old best snapshot
         if args.best_record['epoch'] != -1:
             best_snapshot = 'best_epoch_{}_mean-iu_{:.5f}.pth'.format(
-                args.best_record['epoch'], args.best_record['mean_iu'])
+                args.best_record['epoch'], args.best_record['mean_iu1'])
             best_snapshot = os.path.join(args.exp_path, best_snapshot)
             assert os.path.exists(best_snapshot), \
                 'cant find old snapshot {}'.format(best_snapshot)
@@ -184,85 +330,40 @@ def evaluate_eval(args, net, optimizer, val_loss, hist, dump_images, writer, epo
 
         
         # save new best
-        args.best_record['val_loss'] = val_loss.avg
+        args.best_record['val_loss1'] = val_loss1.avg
+        args.best_record['val_loss2'] = val_loss2.avg
         args.best_record['epoch'] = epoch
-        args.best_record['acc'] = acc
-        args.best_record['acc_cls'] = acc_cls
-        args.best_record['mean_iu'] = mean_iu
-        args.best_record['fwavacc'] = fwavacc
+        args.best_record['acc1'] = acc1
+        args.best_record['acc2'] = acc2
+        args.best_record['mean_iu1'] = mean_iu1
+        args.best_record['mean_iu2'] = mean_iu2
 
         best_snapshot = 'best_epoch_{}_mean-iu_{:.5f}.pth'.format(
-            args.best_record['epoch'], args.best_record['mean_iu'])
+            args.best_record['epoch'], args.best_record['mean_iu1'])
         best_snapshot = os.path.join(args.exp_path, best_snapshot)
         shutil.copyfile(last_snapshot, best_snapshot)
-        
-    
-        to_save_dir = os.path.join(args.exp_path, 'best_images')
-        os.makedirs(to_save_dir, exist_ok=True)
-        val_visual = []
-        
-        idx = 0
-        
-        visualize = standard_transforms.Compose([
-            standard_transforms.Scale(384),
-            standard_transforms.ToTensor()
-        ])
-        for bs_idx, bs_data in enumerate(dump_images):
-            for local_idx, data in enumerate(zip(bs_data[0], bs_data[1] ,bs_data[2] ,bs_data[3])):
-                gt_pil = args.dataset_cls.colorize_mask(data[0].cpu().numpy())
-                predictions_pil = args.dataset_cls.colorize_mask(data[1].cpu().numpy())
-                predictions_pil2 = args.dataset_cls.colorize_mask(data[2].cpu().numpy())
-                img_name = data[3]
-                
-                prediction_fn = '{}_prediction.png'.format(img_name)
-                prediction_fn2 = '{}_prediction2.png'.format(img_name)
-                predictions_pil.save(os.path.join(to_save_dir, prediction_fn))
-                predictions_pil2.save(os.path.join(to_save_dir, prediction_fn2))
-                gt_fn = '{}_gt.png'.format(img_name)
-                gt_pil.save(os.path.join(to_save_dir, gt_fn))
-#                val_visual.extend([visualize(gt_pil.convert('RGB')),
-#                                   visualize(predictions_pil.convert('RGB')),
-#                                   visualize(predictions_pil2.convert('RGB'))])
-                if local_idx >= 9:
-                    break
-#        val_visual = torch.stack(val_visual, 0)
-#        val_visual = vutils.make_grid(val_visual, nrow=10, padding=5)
-#        writer.add_image('imgs', val_visual, epoch )
 
 
-    to_save_dir = os.path.join(args.exp_path, 'current_images')
-    os.makedirs(to_save_dir, exist_ok=True)
-    for bs_idx, bs_data in enumerate(dump_images):
-        for local_idx, data in enumerate(zip(bs_data[0], bs_data[1] ,bs_data[2] ,bs_data[3])):
-            gt_pil = args.dataset_cls.colorize_mask(data[0].cpu().numpy())
-            predictions_pil = args.dataset_cls.colorize_mask(data[1].cpu().numpy())
-            predictions_pil2 = args.dataset_cls.colorize_mask(data[2].cpu().numpy())
-            img_name = data[3]
-            
-            prediction_fn = '{}_prediction.png'.format(img_name)
-            prediction_fn2 = '{}_prediction2.png'.format(img_name)
-            predictions_pil.save(os.path.join(to_save_dir, prediction_fn))
-            predictions_pil2.save(os.path.join(to_save_dir, prediction_fn2))
-            gt_fn = '{}_gt.png'.format(img_name)
-            gt_pil.save(os.path.join(to_save_dir, gt_fn))
 
     logging.info('-' * 107)
-    fmt_str = '[epoch %d], [val loss %.5f], [acc %.5f], [acc_cls %.5f], ' +\
-              '[mean_iu %.5f], [fwavacc %.5f]'
-    logging.info(fmt_str % (epoch, val_loss.avg, acc, acc_cls, mean_iu, fwavacc))
-    fmt_str = 'best record: [val loss %.5f], [acc %.5f], [acc_cls %.5f], ' +\
-              '[mean_iu %.5f], [fwavacc %.5f], [epoch %d], '
-    logging.info(fmt_str % (args.best_record['val_loss'], args.best_record['acc'],
-                            args.best_record['acc_cls'], args.best_record['mean_iu'],
-                            args.best_record['fwavacc'], args.best_record['epoch']))
+    fmt_str = '[epoch %d], [val loss %.5f], [acc1 %.5f], [acc2 %.5f], ' +\
+              '[mean_iu1 %.5f], [mean_iu2 %.5f]'
+    logging.info(fmt_str % (epoch, val_loss.avg, acc1, acc2, mean_iu1, mean_iu2))
+    fmt_str = 'best record: [val loss %.5f], [acc1 %.5f], [acc2 %.5f], ' +\
+              '[mean_iu1 %.5f], [mean_iu2 %.5f], [epoch %d] '
+    logging.info(fmt_str % (args.best_record['val_loss'], args.best_record['acc1'], args.best_record['acc2'],
+                            args.best_record['acc2'], args.best_record['mean_iu1'], args.best_record['mean_iu2'],
+                            args.best_record['epoch']))
     logging.info('-' * 107)
 
     # tensorboard logging of validation phase metrics
 
-    writer.add_scalar('training/acc', acc, epoch)
-    writer.add_scalar('training/acc_cls', acc_cls, epoch)
-    writer.add_scalar('training/mean_iu', mean_iu, epoch)
-    writer.add_scalar('training/val_loss', val_loss.avg, epoch)
+    writer.add_scalar('training/acc1', acc1, epoch)
+    writer.add_scalar('training/acc2', acc1, epoch)
+    writer.add_scalar('training/mean_iu1', mean_iu1, epoch)
+    writer.add_scalar('training/mean_iu2', mean_iu2, epoch)
+    writer.add_scalar('training/val_loss1', val_loss1.avg, epoch)
+    writer.add_scalar('training/val_loss2', val_loss2.avg, epoch)
 
 
 
@@ -272,8 +373,6 @@ def fast_hist(label_pred, label_true, num_classes):
         num_classes * label_true[mask].astype(int) +
         label_pred[mask], minlength=num_classes ** 2).reshape(num_classes, num_classes)
     return hist
-
-
 
 def print_evaluate_results(hist, iu, dataset=None):
     # fixme: Need to refactor this dict
