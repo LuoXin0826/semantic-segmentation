@@ -218,9 +218,9 @@ class CrossEntropyLoss2d(nn.Module):
         # self.weight = weight
 
     def forward(self, inputs, targets):
-        softmax1 = F.log_softmax(inputs.narrow(1,0,19),dim=1)
-        softmax2 = F.log_softmax(inputs.narrow(1,19,2),dim=1)
-        softmax = torch.cat((softmax1, softmax2), 1)
+#        softmax1 = F.log_softmax(inputs.narrow(1,0,19),dim=1)
+#        softmax2 = F.log_softmax(inputs.narrow(1,19,2),dim=1)
+#        softmax = torch.cat((softmax1, softmax2), 1)
 
 #        target_cpu = targets.data.cpu().numpy()
 #        if target_cpu[i].min()<19:
@@ -228,7 +228,8 @@ class CrossEntropyLoss2d(nn.Module):
 #        else:
 #            l2 = self.nll_loss2(softmax2, targets)
 #            print("l2:", l2)
-        return self.nll_loss(softmax, targets)
+
+        return self.nll_loss(F.log_softmax(inputs), targets)
 
 
 def customsoftmax(inp, multihotmask):
