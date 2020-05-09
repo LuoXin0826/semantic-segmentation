@@ -591,10 +591,11 @@ class DeepWV3Plus(nn.Module):
         out2 = Upsample(dec1_trav, x_size[2:])
         
         if self.training:
+            out = torch.cat([out1,out2], 1)
             if data_type=='semantic':
-                return self.criterion(out1, gts)
+                return self.criterion(out, gts)
             elif data_type=='trav':
-                return self.criterion2(out2, gts)
+                return self.criterion2(out, gts)
 
         if data_type=='semantic':
             return out1

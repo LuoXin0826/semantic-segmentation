@@ -21,12 +21,12 @@ def get_loss(args, data_type):
 
     if args.img_wt_loss:
         if data_type=='semantic':
-            criterion = ImageBasedCrossEntropyLoss2d(
+            criterion = ImageBasedCrossEntropyLoss2d_semantic(
                 classes=args.dataset_cls.num_classes1, size_average=True,
                 ignore_index=args.dataset_cls.ignore_label,
                 upper_bound=args.wt_bound).cuda()
         elif data_type=='trav':
-            criterion = ImageBasedCrossEntropyLoss2d(
+            criterion = ImageBasedCrossEntropyLoss2d_trav(
                 classes=args.dataset_cls.num_classes2, size_average=True,
                 ignore_index=args.dataset_cls.ignore_label,
                 upper_bound=args.wt_bound).cuda()
@@ -90,6 +90,122 @@ class ImageBasedCrossEntropyLoss2d(nn.Module):
 #            loss += loss1/torch.exp(self.task_weights) + 0.5*self.task_weights
             loss1.append(nll)            
         return torch.mean(torch.stack(loss1))/torch.exp(self.task_weights) + 0.5*self.task_weights
+
+class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
+    """
+    Image Weighted Cross Entropy Loss
+    """
+
+    def __init__(self, classes, weight=None, size_average=True, ignore_index=255,
+                 norm=False, upper_bound=1.0):
+        super(ImageBasedCrossEntropyLoss2d, self).__init__()
+        logging.info("Using Per Image based weighted loss")
+        self.num_classes = classes
+        self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
+        self.norm = norm
+        self.upper_bound = upper_bound
+        self.batch_weights = cfg.BATCH_WEIGHTING
+        self.task_weights = nn.Parameter(torch.ones(2, requires_grad=True))
+        #self.wght = torch.ones(21)
+
+    def calculate_weights(self, target):
+        """
+        Calculate weights of classes based on the training crop
+        """
+        hist = np.histogram(target.flatten(), range(
+            self.num_classes + 1), normed=True)[0]
+        if self.norm:
+            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
+        else:
+            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
+        return hist
+
+    def forward(self, inputs, targets):
+
+        target_cpu = targets.data.cpu().numpy()
+        if self.batch_weights:
+            weights = self.calculate_weights(target_cpu)
+            self.nll_loss.weight = torch.Tensor(weights).cuda()
+
+        loss = 0.0
+        loss1 = []
+        loss2 = []
+        for i in range(0, inputs.shape[0]):
+            if not self.batch_weights:
+                weights = self.calculate_weights(target_cpu[i])
+                self.nll_loss.weight = torch.Tensor(weights).cuda()
+
+
+            nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,0,19).unsqueeze(0)),targets[i].unsqueeze(0))
+            loss1.append(nll)            
+
+            trav = torch.sum(torch.cat([inputs[i].narrow(0,0,2),inputs[i][9,:,:].unsqueeze(0)], 0),0)
+            untrav = torch.sum(torch.cat([inputs[i].narrow(0,2,7),inputs[i].narrow(0,10,9)], 0),0)
+            softmax1 = F.log_softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+            softmax2 = F.softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+            kld = self.kldiv_loss(softmax1,softmax2)
+            loss2.append(kld)
+
+        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] + torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
+        return loss
+
+class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
+    """
+    Image Weighted Cross Entropy Loss
+    """
+
+    def __init__(self, classes, weight=None, size_average=True, ignore_index=255,
+                 norm=False, upper_bound=1.0):
+        super(ImageBasedCrossEntropyLoss2d, self).__init__()
+        logging.info("Using Per Image based weighted loss")
+        self.num_classes = classes
+        self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
+        self.norm = norm
+        self.upper_bound = upper_bound
+        self.batch_weights = cfg.BATCH_WEIGHTING
+        self.task_weights = nn.Parameter(torch.ones(2, requires_grad=True))
+        #self.wght = torch.ones(21)
+
+    def calculate_weights(self, target):
+        """
+        Calculate weights of classes based on the training crop
+        """
+        hist = np.histogram(target.flatten(), range(
+            self.num_classes + 1), normed=True)[0]
+        if self.norm:
+            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
+        else:
+            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
+        return hist
+
+    def forward(self, inputs, targets):
+
+        target_cpu = targets.data.cpu().numpy()
+        if self.batch_weights:
+            weights = self.calculate_weights(target_cpu)
+            self.nll_loss.weight = torch.Tensor(weights).cuda()
+
+        loss = 0.0
+        loss1 = []
+        loss2 = []
+        for i in range(0, inputs.shape[0]):
+            if not self.batch_weights:
+                weights = self.calculate_weights(target_cpu[i])
+                self.nll_loss.weight = torch.Tensor(weights).cuda()
+
+
+            nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0)),targets[i].unsqueeze(0))
+            loss1.append(nll)            
+
+            trav = torch.sum(torch.cat([inputs[i].narrow(0,0,2),inputs[i][9,:,:].unsqueeze(0)], 0),0)
+            untrav = torch.sum(torch.cat([inputs[i].narrow(0,2,7),inputs[i].narrow(0,10,9)], 0),0)
+            softmax1 = F.softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+            softmax2 = F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+            kld = self.kldiv_loss(softmax2,softmax1)
+            loss2.append(kld)
+
+        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] + torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
+        return loss
 
 class ImageBasedCrossEntropyLoss2d_old(nn.Module):
     """
