@@ -383,6 +383,121 @@ class DeepWV3Plus3(nn.Module):
 
         return out_fin
 
+#class DeepWV3Plus(nn.Module):
+#    """
+#    WideResNet38 version of DeepLabV3
+#    mod1
+#    pool2
+#    mod2 bot_fine
+#    pool3
+#    mod3-7
+#    bot_aspp
+
+#    structure: [3, 3, 6, 3, 1, 1]
+#    channels = [(128, 128), (256, 256), (512, 512), (512, 1024), (512, 1024, 2048),
+#              (1024, 2048, 4096)]
+#    """
+
+#    def __init__(self, trunk='WideResnet38', criterion=None, criterion2=None):
+
+#        super(DeepWV3Plus, self).__init__()
+#        self.criterion = criterion
+#        self.criterion2 = criterion2
+#        logging.info("Trunk: %s", trunk)
+
+#        wide_resnet = wider_resnet38_a2(classes=1000, dilation=True)
+#        wide_resnet = torch.nn.DataParallel(wide_resnet)
+#        if criterion is not None:
+#            try:
+#                checkpoint = torch.load('./pretrained_models/wider_resnet38.pth.tar', map_location='cpu')
+#                wide_resnet.load_state_dict(checkpoint['state_dict'])
+#                del checkpoint
+#            except:
+#                print("Please download the ImageNet weights of WideResNet38 in our repo to ./pretrained_models/wider_resnet38.pth.tar.")
+#                raise RuntimeError("=====================Could not load ImageNet weights of WideResNet38 network.=======================")
+#        wide_resnet = wide_resnet.module
+
+#        self.mod1 = wide_resnet.mod1
+#        self.mod2 = wide_resnet.mod2
+#        self.mod3 = wide_resnet.mod3
+#        self.mod4 = wide_resnet.mod4
+#        self.mod5 = wide_resnet.mod5
+#        self.mod6 = wide_resnet.mod6
+#        self.mod7 = wide_resnet.mod7
+#        self.pool2 = wide_resnet.pool2
+#        self.pool3 = wide_resnet.pool3
+#        del wide_resnet
+
+#        self.aspp = _AtrousSpatialPyramidPoolingModule(4096, 256,
+#                                                       output_stride=8)
+
+#        self.bot_fine = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+#        self.bot_aspp = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+
+#        self.final = nn.Sequential(
+#            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
+#            Norm2d(256),
+#            nn.ReLU(inplace=True),
+#            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
+#            Norm2d(256),
+#            nn.ReLU(inplace=True),
+#            nn.Conv2d(256, 19, kernel_size=1, bias=False))
+
+#        self.final2_relu = nn.Sequential(
+#            Norm2d(19),
+#            nn.ReLU(inplace=True))
+
+#        self.final2 = nn.Sequential(
+#            nn.Conv2d(275, 275, kernel_size=3, padding=1, bias=False),
+#            Norm2d(275),
+#            nn.ReLU(inplace=True),
+#            nn.Conv2d(275, 2, kernel_size=1, bias=False))
+
+#    def forward(self, inp, gts=None, data_type='semantic'):
+
+#        x_size = inp.size()
+#        x = self.mod1(inp)
+#        m2 = self.mod2(self.pool2(x))
+#        x = self.mod3(self.pool3(m2))
+#        x = self.mod4(x)
+#        x = self.mod5(x)
+#        x = self.mod6(x)
+#        x = self.mod7(x)
+#        x = self.aspp(x)
+
+#        dec0_up = self.bot_aspp(x)
+#        dec0_fine = self.bot_fine(m2)
+#        dec0_up = Upsample(dec0_up, m2.size()[2:])
+#        dec0 = [dec0_fine, dec0_up]
+#        dec0 = torch.cat(dec0, 1)
+
+#        dec0 = self.final[0](dec0)
+#        dec0 = self.final[1](dec0)
+#        dec0 = self.final[2](dec0)
+#        dec0 = self.final[3](dec0)
+#        dec0 = self.final[4](dec0)
+#        dec0_layer1 = self.final[5](dec0)
+#        dec1 = self.final[6](dec0_layer1)
+#        out1 = Upsample(dec1, x_size[2:])
+
+
+#        dec1_relu = self.final2_relu(dec1)
+#        dec0_trav = torch.cat([dec0_layer1,dec1_relu],1)
+#        dec1_trav = self.final2(dec0_trav)
+#        out2 = Upsample(dec1_trav, x_size[2:])
+#            
+
+#        if self.training:
+#            if data_type=='semantic':
+#                return self.criterion(out1, gts)
+#            elif data_type=='trav':
+#                return self.criterion2(out2, gts)
+
+#        if data_type=='semantic':
+#            return out1
+#        elif data_type=='trav':
+#            return out2
+
 class DeepWV3Plus(nn.Module):
     """
     WideResNet38 version of DeepLabV3
@@ -443,15 +558,14 @@ class DeepWV3Plus(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(256, 19, kernel_size=1, bias=False))
 
-        self.final2_relu = nn.Sequential(
-            Norm2d(19),
-            nn.ReLU(inplace=True))
-
         self.final2 = nn.Sequential(
-            nn.Conv2d(275, 275, kernel_size=3, padding=1, bias=False),
-            Norm2d(275),
+            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
             nn.ReLU(inplace=True),
-            nn.Conv2d(275, 2, kernel_size=1, bias=False))
+            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
     def forward(self, inp, gts=None, data_type='semantic'):
 
@@ -470,23 +584,12 @@ class DeepWV3Plus(nn.Module):
         dec0_up = Upsample(dec0_up, m2.size()[2:])
         dec0 = [dec0_fine, dec0_up]
         dec0 = torch.cat(dec0, 1)
-
-        dec0 = self.final[0](dec0)
-        dec0 = self.final[1](dec0)
-        dec0 = self.final[2](dec0)
-        dec0 = self.final[3](dec0)
-        dec0 = self.final[4](dec0)
-        dec0_layer1 = self.final[5](dec0)
-        dec1 = self.final[6](dec0_layer1)
+        dec1 = self.final(dec0)
         out1 = Upsample(dec1, x_size[2:])
 
-
-        dec1_relu = self.final2_relu(dec1)
-        dec0_trav = torch.cat([dec0_layer1,dec1_relu],1)
-        dec1_trav = self.final2(dec0_trav)
+        dec1_trav = self.final2(dec0)
         out2 = Upsample(dec1_trav, x_size[2:])
-            
-
+        
         if self.training:
             if data_type=='semantic':
                 return self.criterion(out1, gts)

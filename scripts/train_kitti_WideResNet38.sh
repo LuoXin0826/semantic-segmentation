@@ -5,8 +5,8 @@
         --dataset kitti_multi \
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus \
-        --snapshot ./pretrained_models/trav_single_part.pth \
-        --snapshot2 ./pretrained_models/trav_single_part.pth \
+        --snapshot ./pretrained_models/trav_single2.pth \
+        --snapshot2 ./pretrained_models/trav_single2.pth \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 300 \
         --lr 0.001 \
