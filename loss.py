@@ -106,7 +106,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
         self.norm = norm
         self.upper_bound = upper_bound
         self.batch_weights = cfg.BATCH_WEIGHTING
-        self.task_weights = nn.Parameter(torch.ones(2, requires_grad=True))
+        self.task_weights = nn.Parameter(torch.ones(1, requires_grad=True))
         #self.wght = torch.ones(21)
 
     def calculate_weights(self, target):
@@ -165,7 +165,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
         self.norm = norm
         self.upper_bound = upper_bound
         self.batch_weights = cfg.BATCH_WEIGHTING
-        self.task_weights = nn.Parameter(torch.ones(2, requires_grad=True))
+        self.task_weights = nn.Parameter(torch.ones(1, requires_grad=True))
         #self.wght = torch.ones(21)
 
     def calculate_weights(self, target):
