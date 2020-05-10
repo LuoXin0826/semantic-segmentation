@@ -21,7 +21,7 @@
         --max_epoch 180 \
         --img_wt_loss \
         --wt_bound 1.0 \
-        --bs_mult 4 \
+        --bs_mult 3 \
         --apex \
         --exp kitti_ft \
         --ckpt ./logs/ \
