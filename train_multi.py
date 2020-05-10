@@ -267,8 +267,8 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         sigma_B = torch.Tensor.exp(log_sigma_B)
         main_loss = (1/(2*sigma_A))*main_loss1 + (1/(2*sigma_B))*main_loss2 + log_sigma_A + log_sigma_B
  
-        print(sigma_A)
-        print(sigma_B)
+#        print(sigma_A)
+#        print(sigma_B)
 
         if args.fp16:
             with amp.scale_loss(main_loss, optim) as scaled_loss:
