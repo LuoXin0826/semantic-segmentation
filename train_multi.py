@@ -261,6 +261,10 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
             log_main_loss = main_loss1.clone().detach_() + main_loss2.clone().detach_()
 
         train_main_loss.update(log_main_loss.item(), batch_pixel_size)
+        log_sigma_A = log_sigma_A.cuda()
+        log_sigma_B = log_sigma_B.cuda()
+        sigma_A = torch.Tensor.exp(log_sigma_A)
+        sigma_B = torch.Tensor.exp(log_sigma_B)
         main_loss = (1/(2*sigma_A))*main_loss1+ (1/(2*sigma_B)) * main_loss2 + log_sigma_A + log_sigma_B
  
         if args.fp16:
