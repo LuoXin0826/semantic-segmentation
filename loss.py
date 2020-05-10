@@ -200,13 +200,13 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
             nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0)),targets[i].unsqueeze(0))
 #            loss1.append(nll)            
 
-#            trav = torch.sum(torch.cat([inputs[i].narrow(0,0,2),inputs[i][9,:,:].unsqueeze(0)], 0),0)
-#            untrav = torch.sum(torch.cat([inputs[i].narrow(0,2,7),inputs[i].narrow(0,10,9)], 0),0)
-#            softmax1 = F.softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
-#            softmax2 = F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
-#            kld = self.kldiv_loss(softmax2,softmax1)
+            trav = torch.sum(torch.cat([inputs[i].narrow(0,0,2),inputs[i][9,:,:].unsqueeze(0)], 0),0)
+            untrav = torch.sum(torch.cat([inputs[i].narrow(0,2,7),inputs[i].narrow(0,10,9)], 0),0)
+            softmax1 = F.softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+            softmax2 = F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+            kld = self.kldiv_loss(softmax2,softmax1)
 #            loss2.append(kld)
-            loss += nll
+            loss += nll + kld
 
 #        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
         return loss

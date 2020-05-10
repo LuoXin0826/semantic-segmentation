@@ -5,7 +5,7 @@
         --dataset kitti_multi \
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus \
-        --snapshot ./pretrained_models/cityscapes_best.pth \
+        --snapshot ./pretrained_models/kitti_best.pth \
         --snapshot2 ./pretrained_models/trav_single2.pth \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 300 \
