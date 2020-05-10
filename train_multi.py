@@ -243,18 +243,23 @@ def train(train_loader, net, optim, curr_epoch, writer):
 
 #        print(gts)
 #        print(gts2)
-        main_loss = net(inputs, gts=gts, data_type='semantic') 
-        main_loss += net(inputs2, gts=gts2, data_type='trav')
+        main_loss1 = net(inputs, gts=gts, data_type='semantic') 
+        main_loss2 = net(inputs2, gts=gts2, data_type='trav')
 
         if args.apex:
-            log_main_loss = main_loss.clone().detach_()
-            torch.distributed.all_reduce(log_main_loss, torch.distributed.ReduceOp.SUM)
-            log_main_loss = log_main_loss / args.world_size
+            log_main_loss1 = main_loss1.clone().detach_()
+            log_main_loss2 = main_loss2.clone().detach_()
+            torch.distributed.all_reduce(log_main_loss1, torch.distributed.ReduceOp.SUM)
+            torch.distributed.all_reduce(log_main_loss2, torch.distributed.ReduceOp.SUM)
+            log_main_loss = log_main_loss1 / args.world_size + log_main_loss2 / args.world_size
         else:
-            main_loss = main_loss.mean()
-            log_main_loss = main_loss.clone().detach_()
+            main_loss1 = main_loss1.mean()
+            main_loss2 = main_loss2.mean()
+            log_main_loss = main_loss1.clone().detach_() + main_loss2.clone().detach_()
 
         train_main_loss.update(log_main_loss.item(), batch_pixel_size)
+        main_loss = main_loss1 + main_loss2
+ 
         if args.fp16:
             with amp.scale_loss(main_loss, optim) as scaled_loss:
                 scaled_loss.backward()
