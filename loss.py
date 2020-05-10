@@ -147,7 +147,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
             kld = self.kldiv_loss(softmax1,softmax2)
             loss2.append(kld)
 
-        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] + torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
+        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
         return loss
 
 class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
@@ -206,7 +206,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
             kld = self.kldiv_loss(softmax2,softmax1)
             loss2.append(kld)
 
-        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] + torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
+        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
         return loss
 
 class ImageBasedCrossEntropyLoss2d_old(nn.Module):
