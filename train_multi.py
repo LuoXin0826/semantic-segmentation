@@ -173,7 +173,10 @@ def main():
     criterion, criterion_val = loss.get_loss(args, data_type = 'semantic')
     criterion2, criterion_val2 = loss.get_loss(args, data_type = 'trav')
     net = network.get_net(args, criterion, criterion2)
-    optim, scheduler = optimizer.get_optimizer(args, net, criterion, criterion2)
+    log_sigma_A = torch.nn.Parameter(torch.Tensor([1]))     
+    log_sigma_B = torch.nn.Parameter(torch.Tensor([1]))
+    loss_weight_list = [log_sigma_A, log_sigma_B]
+    optim, scheduler = optimizer.get_optimizer(args, net, loss_weight_list)
 #    optim2, scheduler2 = optimizer.get_optimizer(args2, net, criterion2)
 
 
@@ -196,7 +199,7 @@ def main():
         cfg.immutable(True)
 
         scheduler.step()
-        train(train_loader, net, optim, epoch, writer)
+        train(train_loader, net, optim, epoch, writer, log_sigma_A, log_sigma_B)
         if args.apex:
             train_loader.sampler.set_epoch(epoch + 1)
 #            train_loader2.sampler.set_epoch(epoch + 1)
@@ -214,7 +217,7 @@ def main():
 #                train_obj2.build_epoch()
 
 
-def train(train_loader, net, optim, curr_epoch, writer):
+def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B):
     """
     Runs the training loop per epoch
     train_loader: Data loader for train
@@ -258,17 +261,14 @@ def train(train_loader, net, optim, curr_epoch, writer):
             log_main_loss = main_loss1.clone().detach_() + main_loss2.clone().detach_()
 
         train_main_loss.update(log_main_loss.item(), batch_pixel_size)
-        main_loss = main_loss1 + main_loss2
+        main_loss = (1/(2*sigma_A))*main_loss1+ (1/(2*sigma_B)) * main_loss2 + log_sigma_A + log_sigma_B
  
-#        if args.fp16:
-#            with amp.scale_loss(main_loss, optim) as scaled_loss:
-#                scaled_loss.backward()
-#        else:
-#            main_loss.backward()
+        if args.fp16:
+            with amp.scale_loss(main_loss, optim) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            main_loss.backward()
 
-
-        main_loss1.backward()
-        main_loss2.backward()
         optim.step()
 
         curr_iter += 1
