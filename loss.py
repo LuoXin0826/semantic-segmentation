@@ -102,6 +102,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
         logging.info("Using Per Image based weighted loss")
         self.num_classes = classes
         self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
+        self.kldiv_loss = nn.KLDivLoss(size_average)
         self.norm = norm
         self.upper_bound = upper_bound
         self.batch_weights = cfg.BATCH_WEIGHTING
@@ -160,6 +161,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
         logging.info("Using Per Image based weighted loss")
         self.num_classes = classes
         self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
+        self.kldiv_loss = nn.KLDivLoss(size_average)
         self.norm = norm
         self.upper_bound = upper_bound
         self.batch_weights = cfg.BATCH_WEIGHTING
