@@ -268,7 +268,6 @@ def train(train_loader, net, optim, curr_epoch, writer):
 
 
         main_loss1.backward()
-        optim.step()
         main_loss2.backward()
         optim.step()
 
