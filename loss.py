@@ -98,7 +98,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
 
     def __init__(self, classes, weight=None, size_average=True, ignore_index=255,
                  norm=False, upper_bound=1.0):
-        super(ImageBasedCrossEntropyLoss2d, self).__init__()
+        super(ImageBasedCrossEntropyLoss2d_semantic, self).__init__()
         logging.info("Using Per Image based weighted loss")
         self.num_classes = classes
         self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
@@ -156,7 +156,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
 
     def __init__(self, classes, weight=None, size_average=True, ignore_index=255,
                  norm=False, upper_bound=1.0):
-        super(ImageBasedCrossEntropyLoss2d, self).__init__()
+        super(ImageBasedCrossEntropyLoss2d_trav, self).__init__()
         logging.info("Using Per Image based weighted loss")
         self.num_classes = classes
         self.nll_loss = nn.NLLLoss2d(weight, size_average, ignore_index)
