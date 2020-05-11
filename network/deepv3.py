@@ -571,6 +571,8 @@ class DeepWV3Plus(nn.Module):
 #            nn.ReLU(inplace=True),
             nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
+        initialize_weights(self.final2)
+
     def forward(self, inp, gts=None, data_type='semantic'):
 
         x_size = inp.size()
