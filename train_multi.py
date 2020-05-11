@@ -194,7 +194,7 @@ def main():
         optimizer.load_weights(net, optim,
                                args.snapshot, args.snapshot2, args.restore_optimizer)
 #        optimizer.load_weights(net, optim2,
-                               args.snapshot, args.snapshot2, args.restore_optimizer)
+#                               args.snapshot, args.snapshot2, args.restore_optimizer)
 
     torch.cuda.empty_cache()
     # Main Loop
