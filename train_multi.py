@@ -178,8 +178,8 @@ def main():
     loss_weight_list = [log_sigma_A, log_sigma_B]
 
     #parameters list
-    param1_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.poo2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final.parameters()) + [log_sigma_A]
-    param2_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.poo2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final2.parameters()) + [log_sigma_B]
+    param1_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.pool2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final.parameters()) + [log_sigma_A]
+    param2_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.pool2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final2.parameters()) + [log_sigma_B]
 
     optim, scheduler = optimizer.get_optimizer(args, param1_lists)
     optim2, scheduler2 = optimizer.get_optimizer(args, param2_lists)
