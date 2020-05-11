@@ -559,8 +559,11 @@ class DeepWV3Plus(nn.Module):
             nn.Conv2d(256, 19, kernel_size=1, bias=False))
 
 
-        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+        self.aspp2 = _AtrousSpatialPyramidPoolingModule(4096, 256,
+                                                       output_stride=8)
+
+#        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+#        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
 
         self.final2 = nn.Sequential(
             nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
@@ -581,9 +584,10 @@ class DeepWV3Plus(nn.Module):
         x = self.mod5(x)
         x = self.mod6(x)
         x = self.mod7(x)
-        x = self.aspp(x)
 
-        dec0_up = self.bot_aspp(x)
+        xaspp = self.aspp(x)
+
+        dec0_up = self.bot_aspp(xaspp)
         dec0_fine = self.bot_fine(m2)
         dec0_up = Upsample(dec0_up, m2.size()[2:])
         dec0 = [dec0_fine, dec0_up]
@@ -591,8 +595,11 @@ class DeepWV3Plus(nn.Module):
         dec1 = self.final(dec0)
         out1 = Upsample(dec1, x_size[2:])
 
-        dec0_up = self.bot_aspp2(x)
-        dec0_fine = self.bot_fine2(m2)
+
+        xaspp2 = self.aspp2(x)
+
+        dec0_up = self.bot_aspp(xaspp2)
+        dec0_fine = self.bot_fine(m2)
         dec0_up = Upsample(dec0_up, m2.size()[2:])
         dec0 = [dec0_fine, dec0_up]
         dec0 = torch.cat(dec0, 1)
