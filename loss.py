@@ -148,7 +148,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
             softmax2 = F.softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
             kld2 = self.kldiv_loss(softmax1,softmax2)
             loss += nll #+ kld
-            loss2 += kld1
+            loss2 += kld2
 
 #        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
         return loss, loss2
@@ -210,7 +210,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
             softmax2 = F.softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
             kld2 = self.kldiv_loss(softmax1,softmax2)
             loss += nll #+ kld
-            loss2 += kld1
+            loss2 += kld2
 
 #        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
         return loss, loss2
