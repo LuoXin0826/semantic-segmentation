@@ -290,9 +290,9 @@ def train(train_loader, net, optim, optim2, curr_epoch, writer, log_sigma_A, log
         main_loss1.backward()
         optim.step()
 
-#        optim2.zero_grad()
-#        main_loss2.backward()
-#        optim2.step()
+        optim2.zero_grad()
+        main_loss2.backward()
+        optim2.step()
 
         curr_iter += 1
 
