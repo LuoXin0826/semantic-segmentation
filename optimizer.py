@@ -13,6 +13,8 @@ def get_optimizer(args, net, loss_weight_list):
     Decide Optimizer (Adam or SGD)
     """
     param_groups = list(net.parameters()) + loss_weight_list #+ list(criterion.parameters()) + list(criterion2.parameters())
+
+    print(net.mod1.parameters())
 #    print(param_groups)
     if args.sgd:
         optimizer = optim.SGD(param_groups,
