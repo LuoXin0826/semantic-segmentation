@@ -249,7 +249,7 @@ def train(train_loader, net, optim, optim2, curr_epoch, writer, log_sigma_A, log
         inputs, gts = inputs.cuda(), gts.cuda()
         inputs2, gts2 = inputs2.cuda(), gts2.cuda()
 
-        optim.zero_grad()
+#        optim.zero_grad()
 
         main_loss1 = net(inputs, gts=gts, data_type='semantic') 
         main_loss2 = net(inputs2, gts=gts2, data_type='trav')
@@ -278,23 +278,21 @@ def train(train_loader, net, optim, optim2, curr_epoch, writer, log_sigma_A, log
         main_loss = main_loss1 + main_loss2
 
 
-        if args.fp16:
-            with amp.scale_loss(main_loss, optim) as scaled_loss:
-                scaled_loss.backward()
-                print('test1')
-        else:
-            main_loss.backward()
-            print('test2')
+#        if args.fp16:
+#            with amp.scale_loss(main_loss, optim) as scaled_loss:
+#                scaled_loss.backward()
+#        else:
+#            main_loss.backward()
 #            main_loss2.backward()
 
 
-#        optim.zero_grad()
-        main_loss1.backward(retain_graph=True)
+        optim.zero_grad()
+        main_loss1.backward(retain_graph = True)
         optim.step()
 
-#        optim2.zero_grad()
-#        main_loss2.backward()
-#        optim2.step()
+        optim2.zero_grad()
+        main_loss2.backward(retain_graph = True)
+        optim2.step()
 
         curr_iter += 1
 
