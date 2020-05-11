@@ -254,10 +254,8 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         main_loss1, main_loss3 = net(inputs, gts=gts, data_type='semantic') 
         main_loss2, main_loss4 = net(inputs2, gts=gts2, data_type='trav')
 
-        log_sigma_A = log_sigma_A.cuda()
-        log_sigma_B = log_sigma_B.cuda()
-        sigma_A = torch.Tensor.exp(log_sigma_A)
-        sigma_B = torch.Tensor.exp(log_sigma_B)
+        sigma_A = torch.exp(log_sigma_A)
+        sigma_B = torch.exp(log_sigma_B)
         task_weight3 = sigma_A+sigma_B
 
         if args.apex:
