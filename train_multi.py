@@ -278,7 +278,8 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
             with amp.scale_loss(main_loss, optim) as scaled_loss:
                 scaled_loss.backward()
         else:
-            main_loss.backward()
+            main_loss1.backward(retrain_graph=True)
+            main_loss2.backward()
 
         optim.step()
 
