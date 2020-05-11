@@ -286,13 +286,14 @@ def train(train_loader, net, optim, optim2, curr_epoch, writer, log_sigma_A, log
 #            main_loss2.backward()
 
 
-        optim.zero_grad()
-        main_loss1.backward(retain_graph = True)
-        optim.step()
-
-        optim2.zero_grad()
-        main_loss2.backward(retain_graph = True)
-        optim2.step()
+        if i%2==0:
+            optim.zero_grad()
+            main_loss1.backward()
+            optim.step()
+        else:
+            optim2.zero_grad()
+            main_loss2.backward()
+            optim2.step()
 
         curr_iter += 1
 
