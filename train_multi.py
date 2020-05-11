@@ -268,10 +268,10 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         sigma_A = torch.Tensor.exp(log_sigma_A)
         sigma_B = torch.Tensor.exp(log_sigma_B)
 
-        main_loss = (1/(2*sigma_A))*main_loss1 + (1/(2*sigma_B))*main_loss2 + log_sigma_A + log_sigma_B
- 
-#        print(sigma_A)
-#        print(sigma_B)
+        main_loss1 = (1/(2*sigma_A))*main_loss1 + log_sigma_A
+        main_loss2 = (1/(2*sigma_B))*main_loss2  + log_sigma_B
+        main_loss = main_loss1 + main_loss2
+
 
         if args.fp16:
             with amp.scale_loss(main_loss, optim) as scaled_loss:
@@ -279,6 +279,10 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         else:
             main_loss.backward()
 
+        optim.step()
+
+        optim.zero_grad()
+        main_loss1.backward()
         optim.step()
 
         curr_iter += 1
