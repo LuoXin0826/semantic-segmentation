@@ -251,7 +251,8 @@ def train(train_loader, net, optim, curr_epoch, writer):
         main_loss1, main_loss3 = net(inputs, gts=gts, data_type='semantic') 
         main_loss2, main_loss4 = net(inputs2, gts=gts2, data_type='trav')
 
-        log_sigma = net.task_weights
+        log_sigma = list(net.parameters())[0]
+        print(log_sigma)
         task_weight3 = torch.exp(log_sigma[0])+torch.exp(log_sigma[1])
 
         if args.apex:
