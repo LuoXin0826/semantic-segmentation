@@ -8,11 +8,11 @@ from torch import optim
 from config import cfg
 
 
-def get_optimizer(args, net, loss_weight):
+def get_optimizer(args, net):
     """
     Decide Optimizer (Adam or SGD)
     """
-    param_groups = list(net.parameters()) + loss_weight #+ list(criterion.parameters()) + list(criterion2.parameters())
+    param_groups = list(net.parameters()) #+ loss_weight #+ list(criterion.parameters()) + list(criterion2.parameters())
 
 #    print(param_groups)
     if args.sgd:

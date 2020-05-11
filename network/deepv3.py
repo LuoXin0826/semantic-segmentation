@@ -570,6 +570,8 @@ class DeepWV3Plus(nn.Module):
 #            Norm2d(256),
 #            nn.ReLU(inplace=True),
             nn.Conv2d(256, 2, kernel_size=1, bias=False))
+        
+        self.task_weights = torch.nn.Parameter(torch.zeros(2, requires_grad=True))   
 
         initialize_weights(self.final2)
 
