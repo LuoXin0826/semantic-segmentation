@@ -136,7 +136,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
 
 
-            nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,0,19).unsqueeze(0)),targets[i].unsqueeze(0))
+            nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,0,19).unsqueeze(0), dim=1),targets[i].unsqueeze(0))
 #            loss1.append(nll)            
 
             trav = torch.sum(torch.cat([inputs[i].narrow(0,0,2),inputs[i][9,:,:].unsqueeze(0)], 0),0)
@@ -198,7 +198,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
 
 
-            nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0)),targets[i].unsqueeze(0))
+            nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1),targets[i].unsqueeze(0))
 #            loss1.append(nll)            
 
             trav = torch.sum(torch.cat([inputs[i].narrow(0,0,2),inputs[i][9,:,:].unsqueeze(0)], 0),0)
