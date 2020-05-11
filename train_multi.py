@@ -276,10 +276,10 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         train_main_loss.update(log_main_loss.item(), batch_pixel_size)
 
 
-        main_loss1 = (1/(2*sigma_A))*main_loss1 + log_sigma_A
-        main_loss2 = (1/(2*sigma_B))*main_loss2 + log_sigma_B
-        main_loss3 = (1/(2*task_weight3))*(main_loss3+main_loss4)
-        main_loss = main_loss1 + main_loss2
+        main_loss1 = main_loss1/sigma_A + 0.5*log_sigma_A
+        main_loss2 = main_loss2/sigma_B + 0.5*log_sigma_B
+        main_loss3 = (main_loss3+main_loss4)/task_weight3
+        main_loss = main_loss1 + main_loss2 + main_loss3
 
 
         if args.fp16:
