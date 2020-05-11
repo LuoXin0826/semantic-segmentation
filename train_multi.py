@@ -173,16 +173,14 @@ def main():
     criterion, criterion_val = loss.get_loss(args, data_type = 'semantic')
     criterion2, criterion_val2 = loss.get_loss(args, data_type = 'trav')
     net = network.get_net(args, criterion, criterion2)
-    log_sigma_A = torch.nn.Parameter(torch.zeros(1, requires_grad=True))     
-    log_sigma_B = torch.nn.Parameter(torch.zeros(1, requires_grad=True))
-    loss_weight_list = [log_sigma_A, log_sigma_B]
+    log_sigma = torch.nn.Parameter(torch.zeros(2, requires_grad=True))   
 
     #parameters list
 #    param1_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.pool2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final.parameters()) + [log_sigma_A]
 #    param2_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.pool2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final2.parameters()) + [log_sigma_B]
 
     #optimizers
-    optim, scheduler = optimizer.get_optimizer(args, net, loss_weight_list)
+    optim, scheduler = optimizer.get_optimizer(args, net, log_sigma)
 #    optim2, scheduler2 = optimizer.get_optimizer(args, param2_lists)
 
 
@@ -205,7 +203,7 @@ def main():
         cfg.immutable(True)
 
         scheduler.step()
-        train(train_loader, net, optim, epoch, writer, log_sigma_A, log_sigma_B)
+        train(train_loader, net, optim, epoch, writer, log_sigma)
         if args.apex:
             train_loader.sampler.set_epoch(epoch + 1)
 #            train_loader2.sampler.set_epoch(epoch + 1)
@@ -223,7 +221,7 @@ def main():
 #                train_obj2.build_epoch()
 
 
-def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B):
+def train(train_loader, net, optim, curr_epoch, writer, log_sigma):
     """
     Runs the training loop per epoch
     train_loader: Data loader for train
@@ -254,9 +252,7 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         main_loss1, main_loss3 = net(inputs, gts=gts, data_type='semantic') 
         main_loss2, main_loss4 = net(inputs2, gts=gts2, data_type='trav')
 
-        sigma_A = torch.exp(log_sigma_A)
-        sigma_B = torch.exp(log_sigma_B)
-        task_weight3 = sigma_A+sigma_B
+        task_weight3 = torch.exp(log_sigma[0])+torch.exp(log_sigma[1])
 
         if args.apex:
             log_main_loss1 = main_loss1.clone().detach_()
@@ -274,8 +270,8 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         train_main_loss.update(log_main_loss.item(), batch_pixel_size)
 
 
-        main_loss1 = main_loss1/sigma_A + 0.5*log_sigma_A
-        main_loss2 = main_loss2/sigma_B + 0.5*log_sigma_B
+        main_loss1 = main_loss1/torch.exp(log_sigma[0]) + 0.5*log_sigma[0]
+        main_loss2 = main_loss2/torch.exp(log_sigma[1]) + 0.5*log_sigma[1]
         main_loss3 = (main_loss3+main_loss4)/task_weight3
         main_loss = main_loss1 + main_loss2 + main_loss3
 
