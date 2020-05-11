@@ -566,13 +566,16 @@ class DeepWV3Plus(nn.Module):
             nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
             Norm2d(256),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
-            Norm2d(256),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1, bias=False),
+            Norm2d(128),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
-            Norm2d(256),
+            nn.Conv2d(64, 64, kernel_size=3, padding=1, bias=False),
+            Norm2d(64),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, 2, kernel_size=1, bias=False))
+            nn.Conv2d(32, 32, kernel_size=3, padding=1, bias=False),
+            Norm2d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(32, 2, kernel_size=1, bias=False))
 
     def forward(self, inp, gts=None, data_type='semantic'):
 
