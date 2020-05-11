@@ -287,7 +287,7 @@ def train(train_loader, net, optim, optim2, curr_epoch, writer, log_sigma_A, log
 
 
         optim.zero_grad()
-        main_loss1.backward()
+        main_loss1.backward(retain_graph=True)
         optim.step()
 
         optim2.zero_grad()
