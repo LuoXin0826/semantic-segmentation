@@ -129,8 +129,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
             self.nll_loss.weight = torch.Tensor(weights).cuda()
 
         loss = 0.0
-        loss1 = []
-        loss2 = []
+        loss2 = 0.0
         for i in range(0, inputs.shape[0]):
             if not self.batch_weights:
                 weights = self.calculate_weights(target_cpu[i])
@@ -144,9 +143,12 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
             untrav = torch.sum(torch.cat([inputs[i].narrow(0,2,7),inputs[i].narrow(0,10,9)], 0),0)
             softmax1 = F.softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
             softmax2 = F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
-            kld = self.kldiv_loss(softmax2,softmax1)
-#            loss2.append(kld)
+            kld1 = self.kldiv_loss(softmax2,softmax1)
+            softmax1 = F.log_softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+            softmax2 = F.softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+            kld2 = self.kldiv_loss(softmax1,softmax2)
             loss += nll #+ kld
+            loss2 += kld1 + kld2
 
 #        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
         return loss
@@ -189,8 +191,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
             self.nll_loss.weight = torch.Tensor(weights).cuda()
 
         loss = 0.0
-        loss1 = []
-        loss2 = []
+        loss2 = 0.0
         for i in range(0, inputs.shape[0]):
             if not self.batch_weights:
                 weights = self.calculate_weights(target_cpu[i])
@@ -204,12 +205,15 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
             untrav = torch.sum(torch.cat([inputs[i].narrow(0,2,7),inputs[i].narrow(0,10,9)], 0),0)
             softmax1 = F.softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
             softmax2 = F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
-            kld = self.kldiv_loss(softmax2,softmax1)
-#            loss2.append(kld)
+            kld1 = self.kldiv_loss(softmax2,softmax1)
+            softmax1 = F.log_softmax(torch.cat([untrav.unsqueeze(0),trav.unsqueeze(0)], 0).unsqueeze(0), dim=1)
+            softmax2 = F.softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1)
+            kld2 = self.kldiv_loss(softmax1,softmax2)
             loss += nll #+ kld
+            loss2 += kld1 + kld2
 
 #        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
-        return loss
+        return loss, loss2
 
 class ImageBasedCrossEntropyLoss2d_old(nn.Module):
     """
