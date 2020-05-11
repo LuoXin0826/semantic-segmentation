@@ -563,13 +563,16 @@ class DeepWV3Plus(nn.Module):
 #        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
 
         self.final2 = nn.Sequential(
-#            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
-#            Norm2d(256),
-#            nn.ReLU(inplace=True),
-#            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
-#            Norm2d(256),
-#            nn.ReLU(inplace=True),
-            nn.Conv2d(256+ 48, 2, kernel_size=1, bias=False))
+            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
+            Norm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
     def forward(self, inp, gts=None, data_type='semantic'):
 
