@@ -277,14 +277,14 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         if args.fp16:
             with amp.scale_loss(main_loss, optim) as scaled_loss:
                 scaled_loss.backward()
-#        else:
-#            main_loss1.backward(retain_graph=True)
+        else:
+            main_loss1.backward(retain_graph=True)
 #            main_loss2.backward()
 
-        main_loss1.backward(retain_graph=True)
-        optim.step()
-        optim.zero_grad()
-        main_loss2.backward()
+#        main_loss1.backward(retain_graph=True)
+#        optim.step()
+#        optim.zero_grad()
+#        main_loss2.backward()
         optim.step()
 
         curr_iter += 1
