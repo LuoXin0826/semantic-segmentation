@@ -284,7 +284,7 @@ def train(train_loader, net, optim, optim2, curr_epoch, writer, log_sigma_A, log
                 print('test1')
         else:
             main_loss.backward()
-                print('test2')
+            print('test2')
 #            main_loss2.backward()
 
 
