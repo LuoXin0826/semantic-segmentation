@@ -8,7 +8,7 @@ from torch import optim
 from config import cfg
 
 
-def get_optimizer(args, net, loss_weight_list):
+def get_optimizer(args, net, loss_weight):
     """
     Decide Optimizer (Adam or SGD)
     """
