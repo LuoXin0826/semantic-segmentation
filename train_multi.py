@@ -181,6 +181,7 @@ def main():
     param1_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.pool2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final.parameters()) + [log_sigma_A]
     param2_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.pool2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final2.parameters()) + [log_sigma_B]
 
+    #optimizers
     optim, scheduler = optimizer.get_optimizer(args, param1_lists)
     optim2, scheduler2 = optimizer.get_optimizer(args, param2_lists)
 
@@ -286,12 +287,12 @@ def train(train_loader, net, optim, optim2, curr_epoch, writer, log_sigma_A, log
 
 
         optim.zero_grad()
-        main_loss1.backward(retain_graph=True)
+        main_loss1.backward()
         optim.step()
 
-        optim2.zero_grad()
-        main_loss2.backward()
-        optim2.step()
+#        optim2.zero_grad()
+#        main_loss2.backward()
+#        optim2.step()
 
         curr_iter += 1
 
