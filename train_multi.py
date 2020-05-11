@@ -250,12 +250,17 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         main_loss1 = net(inputs, gts=gts, data_type='semantic') 
         main_loss2 = net(inputs2, gts=gts2, data_type='trav')
 
+        log_sigma_A = log_sigma_A.cuda()
+        log_sigma_B = log_sigma_B.cuda()
+        sigma_A = torch.Tensor.exp(log_sigma_A)
+        sigma_B = torch.Tensor.exp(log_sigma_B)
+
         if args.apex:
             log_main_loss1 = main_loss1.clone().detach_()
             log_main_loss2 = main_loss2.clone().detach_()
             torch.distributed.all_reduce(log_main_loss1, torch.distributed.ReduceOp.SUM)
             torch.distributed.all_reduce(log_main_loss2, torch.distributed.ReduceOp.SUM)
-            log_main_loss = log_main_loss1 / args.world_size + log_main_loss2 / args.world_size
+            log_main_loss = (1/(2*sigma_A))*log_main_loss1 + log_sigma_A + (1/(2*sigma_B))*log_main_loss2 + log_sigma_B
         else:
             main_loss1 = main_loss1.mean()
             main_loss2 = main_loss2.mean()
@@ -263,13 +268,9 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
 
         train_main_loss.update(log_main_loss.item(), batch_pixel_size)
 
-        log_sigma_A = log_sigma_A.cuda()
-        log_sigma_B = log_sigma_B.cuda()
-        sigma_A = torch.Tensor.exp(log_sigma_A)
-        sigma_B = torch.Tensor.exp(log_sigma_B)
 
         main_loss1 = (1/(2*sigma_A))*main_loss1 + log_sigma_A
-        main_loss2 = (1/(2*sigma_B))*main_loss2  + log_sigma_B
+        main_loss2 = (1/(2*sigma_B))*main_loss2 + log_sigma_B
         main_loss = main_loss1 + main_loss2
 
 
@@ -279,8 +280,6 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         else:
             main_loss.backward()
 
-
-        main_loss1.backward()
         optim.step()
 
         curr_iter += 1
