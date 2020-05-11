@@ -151,7 +151,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
             loss2 += kld1 + kld2
 
 #        loss = torch.mean(torch.stack(loss1))/torch.exp(self.task_weights[0]) + 0.5*self.task_weights[0] #+ torch.mean(torch.stack(loss2))/torch.exp(self.task_weights[1]) + 0.5*self.task_weights[1]
-        return loss
+        return loss, loss2
 
 class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
     """
