@@ -265,7 +265,7 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
             log_main_loss2 = main_loss2.clone().detach_()
             torch.distributed.all_reduce(log_main_loss1, torch.distributed.ReduceOp.SUM)
             torch.distributed.all_reduce(log_main_loss2, torch.distributed.ReduceOp.SUM)
-            log_main_loss = (1/(2*sigma_A))*log_main_loss1 + log_sigma_A + (1/(2*sigma_B))*log_main_loss2 + log_sigma_B
+            log_main_loss = log_main_loss1 + log_main_loss2
         else:
             main_loss1 = main_loss1.mean()
             main_loss2 = main_loss2.mean()
