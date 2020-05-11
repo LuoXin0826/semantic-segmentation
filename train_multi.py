@@ -176,8 +176,13 @@ def main():
     log_sigma_A = torch.nn.Parameter(torch.Tensor([1]))     
     log_sigma_B = torch.nn.Parameter(torch.Tensor([1]))
     loss_weight_list = [log_sigma_A, log_sigma_B]
-    optim, scheduler = optimizer.get_optimizer(args, net, loss_weight_list)
-#    optim2, scheduler2 = optimizer.get_optimizer(args2, net, criterion2)
+
+    #parameters list
+    param1_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.poo2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final.parameters()) + [log_sigma_A]
+    param2_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.poo2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final2.parameters()) + [log_sigma_B]
+
+    optim, scheduler = optimizer.get_optimizer(args, param1_lists)
+    optim2, scheduler2 = optimizer.get_optimizer(args, param2_lists)
 
 
     if args.fp16:
@@ -187,8 +192,8 @@ def main():
     if args.snapshot:
         optimizer.load_weights(net, optim,
                                args.snapshot, args.snapshot2, args.restore_optimizer)
-#        optimizer.load_weights(net, optim2,
-#                               args.snapshot2, args.restore_optimizer)
+        optimizer.load_weights(net, optim2,
+                               args.snapshot, args.snapshot2, args.restore_optimizer)
 
     torch.cuda.empty_cache()
     # Main Loop
@@ -199,7 +204,7 @@ def main():
         cfg.immutable(True)
 
         scheduler.step()
-        train(train_loader, net, optim, epoch, writer, log_sigma_A, log_sigma_B)
+        train(train_loader, net, optim, optim2, epoch, writer, log_sigma_A, log_sigma_B)
         if args.apex:
             train_loader.sampler.set_epoch(epoch + 1)
 #            train_loader2.sampler.set_epoch(epoch + 1)
@@ -217,7 +222,7 @@ def main():
 #                train_obj2.build_epoch()
 
 
-def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B):
+def train(train_loader, net, optim, optim2, curr_epoch, writer, log_sigma_A, log_sigma_B):
     """
     Runs the training loop per epoch
     train_loader: Data loader for train
@@ -242,8 +247,6 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
 
         inputs, gts = inputs.cuda(), gts.cuda()
         inputs2, gts2 = inputs2.cuda(), gts2.cuda()
-
-        optim.zero_grad()
 
 #        print(gts)
 #        print(gts2)
@@ -274,18 +277,21 @@ def train(train_loader, net, optim, curr_epoch, writer, log_sigma_A, log_sigma_B
         main_loss = main_loss1 + main_loss2
 
 
-        if args.fp16:
-            with amp.scale_loss(main_loss, optim) as scaled_loss:
-                scaled_loss.backward()
-        else:
-            main_loss.backward(retain_graph=True)
+#        if args.fp16:
+#            with amp.scale_loss(main_loss, optim) as scaled_loss:
+#                scaled_loss.backward()
+#        else:
+#            main_loss.backward()
 #            main_loss2.backward()
 
-#        main_loss1.backward(retain_graph=True)
-#        optim.step()
-#        optim.zero_grad()
-#        main_loss2.backward()
+
+        optim.zero_grad()
+        main_loss1.backward(retain_graph=True)
         optim.step()
+
+        optim2.zero_grad()
+        main_loss2.backward()
+        optim2.step()
 
         curr_iter += 1
 
