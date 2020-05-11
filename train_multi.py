@@ -173,8 +173,8 @@ def main():
     criterion, criterion_val = loss.get_loss(args, data_type = 'semantic')
     criterion2, criterion_val2 = loss.get_loss(args, data_type = 'trav')
     net = network.get_net(args, criterion, criterion2)
-    log_sigma_A = torch.nn.Parameter(torch.Tensor([1]))     
-    log_sigma_B = torch.nn.Parameter(torch.Tensor([1]))
+    log_sigma_A = nn.Parameter(torch.zeros(1, requires_grad=True))     
+    log_sigma_B = nn.Parameter(torch.zeros(1, requires_grad=True))
     loss_weight_list = [log_sigma_A, log_sigma_B]
 
     #parameters list
