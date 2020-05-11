@@ -182,7 +182,7 @@ def main():
 #    param2_lists = list(net.mod1.parameters()) + list(net.mod2.parameters()) + list(net.mod3.parameters()) + list(net.mod4.parameters()) + list(net.mod5.parameters()) + list(net.mod6.parameters()) + list(net.mod7.parameters()) + list(net.pool2.parameters()) + list(net.pool3.parameters()) + list(net.aspp.parameters()) + list(net.bot_fine.parameters()) + list(net.bot_aspp.parameters()) + list(net.final2.parameters()) + [log_sigma_B]
 
     #optimizers
-    optim, scheduler = optimizer.get_optimizer(args, network, loss_weight_list )
+    optim, scheduler = optimizer.get_optimizer(args, net, loss_weight_list)
 #    optim2, scheduler2 = optimizer.get_optimizer(args, param2_lists)
 
 
