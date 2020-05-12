@@ -185,7 +185,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
 #            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
 #        else:
 #            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
-#        return hist
+        return hist
 
     def forward(self, inputs, targets):
 
