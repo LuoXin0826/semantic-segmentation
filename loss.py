@@ -97,7 +97,7 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
     """
 
     def __init__(self, classes, weight=None, size_average=True, ignore_index=255,
-                 norm=False, upper_bound=1.0):
+                 norm=True, upper_bound=1.0):
         super(ImageBasedCrossEntropyLoss2d_semantic, self).__init__()
         logging.info("Using Per Image based weighted loss")
         self.num_classes = classes
@@ -116,11 +116,11 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
         hist = np.histogram(target.flatten(), range(
             self.num_classes + 1), normed=True)[0]
 
-        hist = ((hist != 0) * self.upper_bound * (1 - hist))
-#        if self.norm:
-#            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
-#        else:
-#            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
+#        hist = ((hist != 0) * self.upper_bound * (1 - hist))
+        if self.norm:
+            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
+        else:
+            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
         return hist
 
     def forward(self, inputs, targets):
@@ -161,7 +161,7 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
     """
 
     def __init__(self, classes, weight=None, size_average=True, ignore_index=255,
-                 norm=False, upper_bound=1.0):
+                 norm=True, upper_bound=1.0):
         super(ImageBasedCrossEntropyLoss2d_trav, self).__init__()
         logging.info("Using Per Image based weighted loss")
         self.num_classes = classes
@@ -180,11 +180,11 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
         hist = np.histogram(target.flatten(), range(
             self.num_classes + 1), normed=True)[0]
 
-        hist = ((hist != 0) * self.upper_bound * (1 - hist))
-#        if self.norm:
-#            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
-#        else:
-#            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
+#        hist = ((hist != 0) * self.upper_bound * (1 - hist))
+        if self.norm:
+            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
+        else:
+            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
         return hist
 
     def forward(self, inputs, targets):
