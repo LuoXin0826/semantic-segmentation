@@ -115,10 +115,12 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
         """
         hist = np.histogram(target.flatten(), range(
             self.num_classes + 1), normed=True)[0]
-        if self.norm:
-            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
-        else:
-            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
+
+        hist = ((hist != 0) * self.upper_bound * (1 - hist))
+#        if self.norm:
+#            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
+#        else:
+#            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
         return hist
 
     def forward(self, inputs, targets):
@@ -131,9 +133,9 @@ class ImageBasedCrossEntropyLoss2d_semantic(nn.Module):
         loss = 0.0
         loss2 = 0.0
         for i in range(0, inputs.shape[0]):
-#            if not self.batch_weights:
-#                weights = self.calculate_weights(target_cpu[i])
-#                self.nll_loss.weight = torch.Tensor(weights).cuda()
+            if not self.batch_weights:
+                weights = self.calculate_weights(target_cpu[i])
+                self.nll_loss.weight = torch.Tensor(weights).cuda()
 
 
             nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,0,19).unsqueeze(0), dim=1),targets[i].unsqueeze(0))
@@ -177,11 +179,13 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
         """
         hist = np.histogram(target.flatten(), range(
             self.num_classes + 1), normed=True)[0]
-        if self.norm:
-            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
-        else:
-            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
-        return hist
+
+        hist = ((hist != 0) * self.upper_bound * (1 - hist))
+#        if self.norm:
+#            hist = ((hist != 0) * self.upper_bound * (1 / hist)) + 1
+#        else:
+#            hist = ((hist != 0) * self.upper_bound * (1 - hist)) + 1
+#        return hist
 
     def forward(self, inputs, targets):
 
@@ -193,9 +197,9 @@ class ImageBasedCrossEntropyLoss2d_trav(nn.Module):
         loss = 0.0
         loss2 = 0.0
         for i in range(0, inputs.shape[0]):
-#            if not self.batch_weights:
-#                weights = self.calculate_weights(target_cpu[i])
-#                self.nll_loss.weight = torch.Tensor(weights).cuda()
+            if not self.batch_weights:
+                weights = self.calculate_weights(target_cpu[i])
+                self.nll_loss.weight = torch.Tensor(weights).cuda()
 
 
             nll = self.nll_loss(F.log_softmax(inputs[i].narrow(0,19,2).unsqueeze(0), dim=1),targets[i].unsqueeze(0))
