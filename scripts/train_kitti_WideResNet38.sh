@@ -9,7 +9,7 @@
         --snapshot2 ./pretrained_models/trav_single2.pth \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 300 \
-        --lr 0.001 \
+        --lr 0.01 \
         --lr_schedule poly \
         --poly_exp 1.0 \
         --syncbn \
