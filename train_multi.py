@@ -248,8 +248,8 @@ def train(train_loader, net, optim, curr_epoch, writer):
 
         optim.zero_grad()
 
-        main_loss1, main_loss3 = net(inputs, gts=gts, data_type='semantic') 
-        main_loss2, main_loss4 = net(inputs2, gts=gts2, data_type='trav')
+        main_loss1, main_loss3 = net(inputs, gts=gts, task='semantic') 
+        main_loss2, main_loss4 = net(inputs2, gts=gts2, task='traversability')
 
         log_sigma = list(net.parameters())[0]
         task_weight3 = torch.exp(log_sigma[0])+torch.exp(log_sigma[1])
@@ -344,8 +344,8 @@ def validate(val_loader, net, criterion1, criterion2, optim, curr_epoch, writer)
         inputs2, gt_cuda2 = inputs2.cuda(), gt_image2.cuda()
 
         with torch.no_grad():
-            output1 = net(inputs1, data_type='semantic')  # output = (1, 19, 713, 713)
-            output2 = net(inputs2, data_type='trav')  # output = (1, 19, 713, 713)
+            output1 = net(inputs1, task='semantic')  # output = (1, 19, 713, 713)
+            output2 = net(inputs2, task='traversability')  # output = (1, 19, 713, 713)
 
         assert output1.size()[2:] == gt_image1.size()[1:]
         assert output1.size()[1] == args.dataset_cls.num_classes1

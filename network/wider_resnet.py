@@ -39,6 +39,8 @@ from functools import partial
 import torch.nn as nn
 import torch
 import network.mynn as mynn
+from network.layers.squeeze import SELayerMultiTaskDict
+from network.layers.custom_container import SequentialMultiTask
 
 def bnrelu(channels):
     """
@@ -73,7 +75,8 @@ class IdentityResidualBlock(nn.Module):
                  groups=1,
                  norm_act=bnrelu,
                  dropout=None,
-                 dist_bn=False
+                 dist_bn=False,
+                 tasks=None
                  ):
         """Configurable identity-mapping residual block
 
@@ -115,11 +118,11 @@ class IdentityResidualBlock(nn.Module):
         if len(channels) == 2 and groups != 1:
             raise ValueError("groups > 1 are only valid if len(channels) == 3")
 
-        is_bottleneck = len(channels) == 3
+        self.is_bottleneck = len(channels) == 3
         need_proj_conv = stride != 1 or in_channels != channels[-1]
 
         self.bn1 = norm_act(in_channels)
-        if not is_bottleneck:
+        if not self.is_bottleneck:
             layers = [
                 ("conv1", nn.Conv2d(in_channels,
                                     channels[0],
@@ -139,6 +142,7 @@ class IdentityResidualBlock(nn.Module):
             if dropout is not None:
                 layers = layers[0:2] + [("dropout", dropout())] + layers[2:]
         else:
+            self.se = SELayerMultiTaskDict(channel=channels[2], tasks=tasks)
             layers = [
                 ("conv1",
                  nn.Conv2d(in_channels,
@@ -157,6 +161,7 @@ class IdentityResidualBlock(nn.Module):
                 ("bn3", norm_act(channels[1])),
                 ("conv3", nn.Conv2d(channels[1], channels[2],
                                     1, stride=1, padding=0, bias=False))
+#                ("se", SELayerMultiTaskDict(channel=channels[2], tasks=tasks))
             ]
             if dropout is not None:
                 layers = layers[0:4] + [("dropout", dropout())] + layers[4:]
@@ -166,7 +171,7 @@ class IdentityResidualBlock(nn.Module):
             self.proj_conv = nn.Conv2d(
                 in_channels, channels[-1], 1, stride=stride, padding=0, bias=False)
 
-    def forward(self, x):
+    def forward(self, x, task=None):
         """
         This is the standard forward function for non-distributed batch norm
         """
@@ -178,6 +183,8 @@ class IdentityResidualBlock(nn.Module):
             bn1 = self.bn1(x)
 
         out = self.convs(bn1)
+        if self.is_bottleneck: 
+            out = self.se(out, task)
         out.add_(shortcut)
         return out
 
@@ -290,7 +297,8 @@ class WiderResNetA2(nn.Module):
                  norm_act=bnrelu,
                  classes=0,
                  dilation=False,
-                 dist_bn=False
+                 dist_bn=False,
+                 tasks=None
                  ):
         super(WiderResNetA2, self).__init__()
         self.dist_bn = dist_bn
@@ -338,13 +346,19 @@ class WiderResNetA2(nn.Module):
                 else:
                     drop = None
 
-                blocks.append((
-                    "block%d" % (block_id + 1),
+#                blocks.append((
+#                    "block%d" % (block_id + 1),
+#                    IdentityResidualBlock(in_channels,
+#                                          channels[mod_id], norm_act=norm_act,
+#                                          stride=stride, dilation=dil,
+#                                          dropout=drop, dist_bn=self.dist_bn, tasks=tasks)
+#                ))
+                blocks.append(
                     IdentityResidualBlock(in_channels,
                                           channels[mod_id], norm_act=norm_act,
                                           stride=stride, dilation=dil,
-                                          dropout=drop, dist_bn=self.dist_bn)
-                ))
+                                          dropout=drop, dist_bn=self.dist_bn, tasks=tasks)
+                )
 
                 # Update channels and p_keep
                 in_channels = channels[mod_id][-1]
@@ -353,8 +367,9 @@ class WiderResNetA2(nn.Module):
             if mod_id < 2:
                 self.add_module("pool%d" %
                                 (mod_id + 2), nn.MaxPool2d(3, stride=2, padding=1))
-            self.add_module("mod%d" % (mod_id + 2), nn.Sequential(OrderedDict(blocks)))
-
+#            self.add_module("mod%d" % (mod_id + 2), nn.Sequential(OrderedDict(blocks)))
+            self.add_module("mod%d" % (mod_id + 2), SequentialMultiTask(*blocks))
+        
         # Pooling and predictor
         self.bn_out = norm_act(in_channels)
         if classes != 0:
@@ -363,14 +378,14 @@ class WiderResNetA2(nn.Module):
                 ("fc", nn.Linear(in_channels, classes))
             ]))
 
-    def forward(self, img):
-        out = self.mod1(img)
-        out = self.mod2(self.pool2(out))
-        out = self.mod3(self.pool3(out))
-        out = self.mod4(out)
-        out = self.mod5(out)
-        out = self.mod6(out)
-        out = self.mod7(out)
+    def forward(self, img, task=None):
+        out = self.mod1(img,task=task)
+        out = self.mod2(self.pool2(out),task=task)
+        out = self.mod3(self.pool3(out),task=task)
+        out = self.mod4(out,task=task)
+        out = self.mod5(out,task=task)
+        out = self.mod6(out,task=task)
+        out = self.mod7(out,task=task)
         out = self.bn_out(out)
 
         if hasattr(self, "classifier"):
