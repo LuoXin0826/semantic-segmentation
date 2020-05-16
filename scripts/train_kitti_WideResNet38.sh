@@ -6,10 +6,10 @@
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus \
         --snapshot ./pretrained_models/kitti_best.pth \
-        --snapshot2 ./pretrained_models/trav_single2.pth \
+        --snapshot2 ./pretrained_models/kitti_best.pth \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 300 \
-        --lr 0.01 \
+        --lr 0.001 \
         --lr_schedule poly \
         --poly_exp 1.0 \
         --syncbn \

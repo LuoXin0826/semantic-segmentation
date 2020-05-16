@@ -379,7 +379,7 @@ class WiderResNetA2(nn.Module):
             ]))
 
     def forward(self, img, task=None):
-        out = self.mod1(img,task=task)
+        out = self.mod1(img)
         out = self.mod2(self.pool2(out),task=task)
         out = self.mod3(self.pool3(out),task=task)
         out = self.mod4(out,task=task)
