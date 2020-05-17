@@ -346,19 +346,19 @@ class WiderResNetA2(nn.Module):
                 else:
                     drop = None
 
-#                blocks.append((
-#                    "block%d" % (block_id + 1),
-#                    IdentityResidualBlock(in_channels,
-#                                          channels[mod_id], norm_act=norm_act,
-#                                          stride=stride, dilation=dil,
-#                                          dropout=drop, dist_bn=self.dist_bn, tasks=tasks)
-#                ))
-                blocks.append(
+                blocks.append((
+                    "block%d" % (block_id + 1),
                     IdentityResidualBlock(in_channels,
                                           channels[mod_id], norm_act=norm_act,
                                           stride=stride, dilation=dil,
                                           dropout=drop, dist_bn=self.dist_bn, tasks=tasks)
-                )
+                ))
+#                blocks.append(
+#                    IdentityResidualBlock(in_channels,
+#                                          channels[mod_id], norm_act=norm_act,
+#                                          stride=stride, dilation=dil,
+#                                          dropout=drop, dist_bn=self.dist_bn, tasks=tasks)
+#                )
 
                 # Update channels and p_keep
                 in_channels = channels[mod_id][-1]
@@ -367,8 +367,9 @@ class WiderResNetA2(nn.Module):
             if mod_id < 2:
                 self.add_module("pool%d" %
                                 (mod_id + 2), nn.MaxPool2d(3, stride=2, padding=1))
+
 #            self.add_module("mod%d" % (mod_id + 2), nn.Sequential(OrderedDict(blocks)))
-            self.add_module("mod%d" % (mod_id + 2), SequentialMultiTask(*blocks))
+            self.add_module("mod%d" % (mod_id + 2), SequentialMultiTask(OrderedDict(blocks)))
         
         # Pooling and predictor
         self.bn_out = norm_act(in_channels)
