@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
     # Example on KITTI, fine tune
-     python -m torch.distributed.launch --nproc_per_node=4 train_multi.py \
+     python -m torch.distributed.launch --nproc_per_node=1 train_multi.py \
         --dataset kitti_multi \
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus \
