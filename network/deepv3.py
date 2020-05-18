@@ -666,8 +666,8 @@ class DeepWV3Plus(nn.Module):
             param.requires_grad = False
         for param in self.mod7.block1.convs.parameters():
             param.requires_grad = False
-        for param in self.aspp.parameters():
-            param.requires_grad = False
+#        for param in self.aspp.parameters():
+#            param.requires_grad = False
 
 
         self.aspp2 = _AtrousSpatialPyramidPoolingModule(4096, 256,
