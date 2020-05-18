@@ -626,7 +626,7 @@ class DeepWV3Plus(nn.Module):
     def forward(self, inp, gts=None, task=None):
 
         x_size = inp.size()
-        x = self.mod1(inp,task=task)
+        x = self.mod1(inp)
         m2 = self.mod2(self.pool2(x), task=task)
         x = self.mod3(self.pool3(m2), task=task)
         x = self.mod4(xtask=task)
