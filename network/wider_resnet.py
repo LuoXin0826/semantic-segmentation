@@ -123,6 +123,8 @@ class IdentityResidualBlock(nn.Module):
 
         self.bn1 = norm_act(in_channels)
         if not self.is_bottleneck:
+            self.adapt = nn.ModuleDict({task: nn.Conv2d(channels[0], channels[1], kernel_size=1, bias=False) for task in tasks})
+            self.se = SELayerMultiTaskDict(channel=channels[1], tasks=tasks)
             layers = [
                 ("conv1", nn.Conv2d(in_channels,
                                     channels[0],
@@ -195,10 +197,14 @@ class IdentityResidualBlock(nn.Module):
             out = self.convs.bn3(out)
             out = self.convs.conv3(out)
         else:
-            out = self.convs(bn1)
+            out = self.convs.conv1(bn1)
+            out = self.convs.bn2(out) 
+            out = self.adapt[task](out) + self.convs.conv2(out)#
 
-        if self.is_bottleneck: 
-            out = self.se(out, task)
+#        if self.is_bottleneck: 
+#            out = self.se(out, task)
+
+        out = self.se(out, task)
         out.add_(shortcut)
         return out
 
