@@ -576,20 +576,20 @@ class DeepWV3Plus(nn.Module):
             nn.Conv2d(256, 19, kernel_size=1, bias=False))
 
 
-        for param in self.mod1.parameters():
-            param.requires_grad = False
-        for param in self.mod2.parameters():
-            param.requires_grad = False
-        for param in self.mod3.parameters():
-            param.requires_grad = False
-        for param in self.mod4.parameters():
-            param.requires_grad = False
-        for param in self.mod5.parameters():
-            param.requires_grad = False
-        for param in self.pool2.parameters():
-            param.requires_grad = False
-        for param in self.pool3.parameters():
-            param.requires_grad = False
+#        for param in self.mod1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod2.parameters():
+#            param.requires_grad = False
+#        for param in self.mod3.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.parameters():
+#            param.requires_grad = False
+#        for param in self.mod5.parameters():
+#            param.requires_grad = False
+#        for param in self.pool2.parameters():
+#            param.requires_grad = False
+#        for param in self.pool3.parameters():
+#            param.requires_grad = False
 #        for param in self.mod6.block1.bn1.parameters():
 #            param.requires_grad = False
 #        for param in self.mod6.block1.convs.parameters():
