@@ -143,6 +143,9 @@ class IdentityResidualBlock(nn.Module):
                 layers = layers[0:2] + [("dropout", dropout())] + layers[2:]
         else:
             self.adapt = nn.ModuleDict({task: nn.Conv2d(channels[0], channels[1], kernel_size=1, bias=False) for task in tasks})
+#            self.adapt = nn.ModuleDict()
+#            for task in tasks:
+#                self.adapt[task] = nn.Conv2d(channels[0], channels[1], kernel_size=1, bias=False)
             self.se = SELayerMultiTaskDict(channel=channels[2], tasks=tasks)
             layers = [
                 ("conv1",
@@ -183,18 +186,16 @@ class IdentityResidualBlock(nn.Module):
             shortcut = x.clone()
             bn1 = self.bn1(x)
 
+#        out = self.convs(bn1)
 
         if self.is_bottleneck:
-            out = self.convs[0](bn1)
-            out = self.convs[1](out) 
-            out = self.adapt[task](out) + self.convs[2](out)
-            print(out.shape)
-            out = self.convs[3](out)
-            out = self.convs[4](out)
-            print(out.shape)
+            out = self.convs.conv1(bn1)
+            out = self.convs.bn2(out) 
+            out = self.convs.conv2(out)#self.adapt[task](out) + 
+            out = self.convs.bn3(out)
+            out = self.convs.conv3(out)
         else:
             out = self.convs(bn1)
-            print(out.shape)
 
         if self.is_bottleneck: 
             out = self.se(out, task)
@@ -394,10 +395,10 @@ class WiderResNetA2(nn.Module):
 
     def forward(self, img, task=None):
         out = self.mod1(img)
-        out = self.mod2(self.pool2(out),task=task)
-        out = self.mod3(self.pool3(out),task=task)
-        out = self.mod4(out,task=task)
-        out = self.mod5(out,task=task)
+        out = self.mod2(self.pool2(out))
+        out = self.mod3(self.pool3(out))
+        out = self.mod4(out)
+        out = self.mod5(out)
         out = self.mod6(out,task=task)
         out = self.mod7(out,task=task)
         out = self.bn_out(out)
