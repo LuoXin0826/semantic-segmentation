@@ -578,75 +578,86 @@ class DeepWV3Plus(nn.Module):
 
         for param in self.mod1.parameters():
             param.requires_grad = False
-
-        for param in self.mod2.block1.bn1.parameters():
+        for param in self.mod2.parameters():
             param.requires_grad = False
-        for param in self.mod2.block1.convs.parameters():
+        for param in self.mod3.parameters():
             param.requires_grad = False
-        for param in self.mod2.block2.bn1.parameters():
+        for param in self.mod4.parameters():
             param.requires_grad = False
-        for param in self.mod2.block2.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod2.block3.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod2.block3.convs.parameters():
+        for param in self.mod5.parameters():
             param.requires_grad = False
 
-        for param in self.mod3.block1.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod3.block1.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod3.block2.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod3.block2.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod3.block3.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod3.block3.convs.parameters():
-            param.requires_grad = False
+#        for param in self.mod2.block1.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod2.block1.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod2.block2.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod2.block2.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod2.block3.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod2.block3.convs.parameters():
+#            param.requires_grad = False
 
-        for param in self.mod4.block1.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block1.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block2.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block2.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block3.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block3.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block4.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block4.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block5.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block5.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block6.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod4.block6.convs.parameters():
-            param.requires_grad = False
+#        for param in self.mod3.block1.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod3.block1.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod3.block2.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod3.block2.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod3.block3.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod3.block3.convs.parameters():
+#            param.requires_grad = False
 
-        for param in self.mod5.block1.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod5.block1.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod5.block2.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod5.block2.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod5.block3.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod5.block3.convs.parameters():
-            param.requires_grad = False
+#        for param in self.mod4.block1.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block1.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block2.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block2.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block3.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block3.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block4.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block4.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block5.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block5.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block6.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod4.block6.convs.parameters():
+#            param.requires_grad = False
+
+#        for param in self.mod5.block1.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod5.block1.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod5.block2.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod5.block2.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod5.block3.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod5.block3.convs.parameters():
+#            param.requires_grad = False
+
+
 
         for param in self.pool2.parameters():
             param.requires_grad = False
         for param in self.pool3.parameters():
             param.requires_grad = False
+
         for param in self.mod6.block1.bn1.parameters():
             param.requires_grad = False
         for param in self.mod6.block1.convs.parameters():
@@ -658,8 +669,12 @@ class DeepWV3Plus(nn.Module):
         for param in self.aspp.parameters():
             param.requires_grad = False
 
-#        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-#        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+
+        self.aspp2 = _AtrousSpatialPyramidPoolingModule(4096, 256,
+                                                       output_stride=8)
+
+        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
+        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
 
         self.final2 = nn.Sequential(
             nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
@@ -676,25 +691,34 @@ class DeepWV3Plus(nn.Module):
 
         x_size = inp.size()
         x = self.mod1(inp)
-        m2 = self.mod2(self.pool2(x), task=task)
-        x = self.mod3(self.pool3(m2), task=task)
-        x = self.mod4(x,task=task)
-        x = self.mod5(x,task=task)
+        m2 = self.mod2(self.pool2(x))
+        x = self.mod3(self.pool3(m2))
+        x = self.mod4(x)
+        x = self.mod5(x)
         x = self.mod6(x,task=task)
         x = self.mod7(x,task=task)
-        x = self.aspp(x)
 
-        dec0_up = self.bot_aspp(x)
+
+        xaspp = self.aspp(x)
+        dec0_up = self.bot_aspp(xaspp)
         dec0_fine = self.bot_fine(m2)
         dec0_up = Upsample(dec0_up, m2.size()[2:])
         dec0 = [dec0_fine, dec0_up]
         dec0 = torch.cat(dec0, 1)
-
         dec1 = self.final(dec0)
         out1 = Upsample(dec1, x_size[2:])
 
-        dec1 = self.final2(dec0)
+        xaspp = self.aspp2(x)
+        dec0_up = self.bot_aspp2(xaspp)
+        dec0_fine = self.bot_fine2(m2)
+        dec0_up = Upsample(dec0_up, m2.size()[2:])
+        dec0 = [dec0_fine, dec0_up]
+        dec0 = torch.cat(dec0, 1)
+        dec1 = self.final(dec0)
         out2 = Upsample(dec1, x_size[2:])
+
+#        dec1 = self.final2(dec0)
+#        out2 = Upsample(dec1, x_size[2:])
 
 
 
