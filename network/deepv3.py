@@ -586,18 +586,18 @@ class DeepWV3Plus(nn.Module):
             param.requires_grad = False
         for param in self.mod5.parameters():
             param.requires_grad = False
-        for param in self.mod6.block1.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod6.block1.convs.parameters():
-            param.requires_grad = False
-        for param in self.mod7.block1.bn1.parameters():
-            param.requires_grad = False
-        for param in self.mod7.block1.convs.parameters():
-            param.requires_grad = False
         for param in self.pool2.parameters():
             param.requires_grad = False
         for param in self.pool3.parameters():
             param.requires_grad = False
+#        for param in self.mod6.block1.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod6.block1.convs.parameters():
+#            param.requires_grad = False
+#        for param in self.mod7.block1.bn1.parameters():
+#            param.requires_grad = False
+#        for param in self.mod7.block1.convs.parameters():
+#            param.requires_grad = False
 #        for param in self.aspp.parameters():
 #            param.requires_grad = False
 
