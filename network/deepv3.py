@@ -598,8 +598,8 @@ class DeepWV3Plus(nn.Module):
             param.requires_grad = False
         for param in self.pool3.parameters():
             param.requires_grad = False
-        for param in self.aspp.parameters():
-            param.requires_grad = False
+#        for param in self.aspp.parameters():
+#            param.requires_grad = False
 
 #        self.bot_fine2 = nn.Conv2d(128, 48, kernel_size=1, bias=False)
 #        self.bot_aspp2 = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
