@@ -578,22 +578,71 @@ class DeepWV3Plus(nn.Module):
 
         for param in self.mod1.parameters():
             param.requires_grad = False
+
         for param in self.mod2.block1.bn1.parameters():
             param.requires_grad = False
         for param in self.mod2.block1.convs.parameters():
             param.requires_grad = False
+        for param in self.mod2.block2.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod2.block2.convs.parameters():
+            param.requires_grad = False
+        for param in self.mod2.block3.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod2.block3.convs.parameters():
+            param.requires_grad = False
+
         for param in self.mod3.block1.bn1.parameters():
             param.requires_grad = False
         for param in self.mod3.block1.convs.parameters():
             param.requires_grad = False
+        for param in self.mod3.block2.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod3.block2.convs.parameters():
+            param.requires_grad = False
+        for param in self.mod3.block3.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod3.block3.convs.parameters():
+            param.requires_grad = False
+
         for param in self.mod4.block1.bn1.parameters():
             param.requires_grad = False
         for param in self.mod4.block1.convs.parameters():
             param.requires_grad = False
+        for param in self.mod4.block2.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block2.convs.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block3.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block3.convs.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block4.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block4.convs.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block5.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block5.convs.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block6.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod4.block6.convs.parameters():
+            param.requires_grad = False
+
         for param in self.mod5.block1.bn1.parameters():
             param.requires_grad = False
         for param in self.mod5.block1.convs.parameters():
             param.requires_grad = False
+        for param in self.mod5.block2.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod5.block2.convs.parameters():
+            param.requires_grad = False
+        for param in self.mod5.block3.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod5.block3.convs.parameters():
+            param.requires_grad = False
+
         for param in self.pool2.parameters():
             param.requires_grad = False
         for param in self.pool3.parameters():
