@@ -576,7 +576,9 @@ class DeepWV3Plus(nn.Module):
             nn.Conv2d(256, 19, kernel_size=1, bias=False))
 
 
-        for param in self.mod1.parameters():
+        for param in self.mod1.block1.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod1.block1.convs.parameters():
             param.requires_grad = False
         for param in self.mod2.block1.bn1.parameters():
             param.requires_grad = False
@@ -626,11 +628,11 @@ class DeepWV3Plus(nn.Module):
     def forward(self, inp, gts=None, task=None):
 
         x_size = inp.size()
-        x = self.mod1(inp)
-        m2 = self.mod2(self.pool2(x))
-        x = self.mod3(self.pool3(m2))
-        x = self.mod4(x)
-        x = self.mod5(x)
+        x = self.mod1(inp,task=task)
+        m2 = self.mod2(self.pool2(x)task=task)
+        x = self.mod3(self.pool3(m2)task=task)
+        x = self.mod4(xtask=task)
+        x = self.mod5(xtask=task)
         x = self.mod6(x,task=task)
         x = self.mod7(x,task=task)
         x = self.aspp(x)
