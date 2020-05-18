@@ -191,7 +191,7 @@ class IdentityResidualBlock(nn.Module):
         if self.is_bottleneck:
             out = self.convs.conv1(bn1)
             out = self.convs.bn2(out) 
-            out = self.convs.conv2(out)#self.adapt[task](out) + 
+            out = self.adapt[task](out) + self.convs.conv2(out)#
             out = self.convs.bn3(out)
             out = self.convs.conv3(out)
         else:
