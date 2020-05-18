@@ -607,29 +607,22 @@ class DeepWV3Plus(nn.Module):
         dec0_up = Upsample(dec0_up, m2.size()[2:])
         dec0 = [dec0_fine, dec0_up]
         dec0 = torch.cat(dec0, 1)
-#        dec0 = self.final2[0](dec0)
-#        dec0 = self.final2[1](dec0)
-#        dec0 = self.final2[2](dec0)
-#        dec1 = self.final2[3](dec0)
+
+        dec1 = self.final(dec0)
+        out1 = Upsample(dec1, x_size[2:])
+
         dec1 = self.final2(dec0)
         out2 = Upsample(dec1, x_size[2:])
 
-#        dec0_up = self.bot_aspp(x)
-#        dec0_fine = self.bot_fine(m2)
-#        dec0_up = Upsample(dec0_up, m2.size()[2:])
-        dec0 = [dec0_fine, dec0_up]
-        dec0 = torch.cat(dec0, 1)
-        dec1 = self.final(dec0)
-        out1 = Upsample(dec1, x_size[2:])
 
 
         
         if self.training:
-            out = torch.cat([out1,out2], 1)
+#            out = torch.cat([out1,out2], 1)
             if task=='semantic':
-                return self.criterion(out, gts)
+                return self.criterion(out1, gts)
             elif task=='traversability':
-                return self.criterion2(out, gts)
+                return self.criterion2(out2, gts)
 
         if task=='semantic':
             return out1
