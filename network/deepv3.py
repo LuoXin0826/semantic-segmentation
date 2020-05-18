@@ -629,8 +629,8 @@ class DeepWV3Plus(nn.Module):
 
         x_size = inp.size()
         x = self.mod1(inp,task=task)
-        m2 = self.mod2(self.pool2(x)task=task)
-        x = self.mod3(self.pool3(m2)task=task)
+        m2 = self.mod2(self.pool2(x), task=task)
+        x = self.mod3(self.pool3(m2), task=task)
         x = self.mod4(xtask=task)
         x = self.mod5(xtask=task)
         x = self.mod6(x,task=task)
