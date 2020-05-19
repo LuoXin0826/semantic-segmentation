@@ -590,11 +590,14 @@ class DeepWV3Plus(nn.Module):
         x = self.mod3(self.pool3(m2))
         x = self.mod4(x)
         x = self.mod5(x)
-        x = self.mod6(x,task=task)
-        x = self.mod7(x,task=task)
+        x1 = self.mod6(x1,task='semantic')
+        x1 = self.mod7(x1,task='semantic')
+
+        x2 = self.mod6(x2,task='traversability')
+        x2 = self.mod7(x2,task='traversability')
 
 
-        xaspp = self.aspp(x)
+        xaspp = self.aspp(x1)
         dec0_up = self.bot_aspp(xaspp)
         dec0_fine = self.bot_fine(m2)
         dec0_up = Upsample(dec0_up, m2.size()[2:])
@@ -603,7 +606,7 @@ class DeepWV3Plus(nn.Module):
         dec1 = self.final(dec0)
         out1 = Upsample(dec1, x_size[2:])
 
-        xaspp = self.aspp2(x)
+        xaspp = self.aspp2(x2)
         dec0_up = self.bot_aspp2(xaspp)
         dec0_fine = self.bot_fine2(m2)
         dec0_up = Upsample(dec0_up, m2.size()[2:])
