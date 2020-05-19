@@ -143,7 +143,7 @@ def evaluate_eval_for_inference(hist, dataset=None):
     acc_cls = np.nanmean(acc_cls)
     iu = np.diag(hist) / (hist.sum(axis=1) + hist.sum(axis=0) - np.diag(hist))
 
-    print_evaluate_results(hist, iu, dataset=dataset)
+    print_evaluate_results(hist, iu, dataset.num_classes, dataset=dataset)
     freq = hist.sum(axis=1) / hist.sum()
     mean_iu = np.nanmean(iu)
     logging.info('mean {}'.format(mean_iu))

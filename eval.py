@@ -308,12 +308,12 @@ def inference_sliding(model, img, scales):
                 output_scattered_list = []
                 for b_idx in range(bi):
                     cur_input = input_crops[b_idx,:,:,:].unsqueeze(0).cuda()
-                    cur_output = model(cur_input)
+                    cur_output = model(cur_input,task='traversability')
                     output_scattered_list.append(cur_output)
                 output_scattered = torch.cat(output_scattered_list, dim=0)
             else:
                 input_crops = input_crops.cuda()
-                output_scattered = model(input_crops)
+                output_scattered = model(input_crops,task='traversability')
 
         output_scattered = output_scattered.data.cpu().numpy()
 
@@ -387,13 +387,13 @@ def get_net():
     Get Network for evaluation
     """
     logging.info('Load model file: %s', args.snapshot)
-    net = network.get_net(args, criterion=None)
+    net = network.get_net_ori(args, criterion=None)
     if args.inference_mode == 'pooling':
         net = MyDataParallel(net, gather=False).cuda()
     else:
         net = torch.nn.DataParallel(net).cuda()
     net, _ = restore_snapshot(net, optimizer=None,
-                              snapshot=args.snapshot, restore_optimizer_bool=False)
+                              snapshot=args.snapshot, snapshot2=args.snapshot, restore_optimizer_bool=False)
     net.eval()
     return net
 

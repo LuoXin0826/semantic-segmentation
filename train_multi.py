@@ -273,7 +273,7 @@ def train(train_loader, net, optim, curr_epoch, writer):
         main_loss1 = main_loss1/torch.exp(log_sigma[0]) + 0.5*log_sigma[0]
         main_loss2 = main_loss2/torch.exp(log_sigma[1]) + 0.5*log_sigma[1]
         main_loss_balance = (main_loss3 + main_loss4)/(2*task_weight3)
-        main_loss = main_loss1 + main_loss2 #+ main_loss_balance
+        main_loss = main_loss1 + main_loss2 + main_loss_balance
 
 
         if args.fp16:
