@@ -211,18 +211,31 @@ class DeepWV3Plus_semantic(nn.Module):
               (1024, 2048, 4096)]
     """
 
-    def __init__(self, num_classes, trunk='WideResnet38', criterion=None):
+    def __init__(self, trunk='WideResnet38', criterion=None):
 
         super(DeepWV3Plus_semantic, self).__init__()
         self.criterion = criterion
         logging.info("Trunk: %s", trunk)
 
-        wide_resnet = wider_resnet38_a2(classes=1000, dilation=True)
+        tasks = ['semantic']
+        wide_resnet = wider_resnet38_a2(classes=1000, dilation=True, tasks=tasks)
         wide_resnet = torch.nn.DataParallel(wide_resnet)
         if criterion is not None:
             try:
                 checkpoint = torch.load('./pretrained_models/wider_resnet38.pth.tar', map_location='cpu')
-                wide_resnet.load_state_dict(checkpoint['state_dict'])
+#                wide_resnet.load_state_dict(checkpoint['state_dict'])
+
+                net_state_dict = wide_resnet.state_dict()
+                loaded_dict = checkpoint['state_dict']
+                new_loaded_dict = {}
+                for k in net_state_dict:
+                    if k in loaded_dict and net_state_dict[k].size() == loaded_dict[k].size():
+                        new_loaded_dict[k] = loaded_dict[k]
+                    else:
+                        logging.info("Skipped loading parameter %s", k)
+                net_state_dict.update(new_loaded_dict)
+                wide_resnet.load_state_dict(net_state_dict)
+
                 del checkpoint
             except:
                 print("Please download the ImageNet weights of WideResNet38 in our repo to ./pretrained_models/wider_resnet38.pth.tar.")

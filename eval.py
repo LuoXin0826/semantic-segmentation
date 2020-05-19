@@ -26,7 +26,7 @@ import numpy as np
 import transforms.transforms as extended_transforms
 
 from config import assert_and_infer_cfg
-from datasets import cityscapes, kitti_trav, kitti
+from datasets import cityscapes, kitti_trav, kitti_semantic
 from optimizer import restore_snapshot
 
 from utils.my_data_parallel import MyDataParallel
@@ -308,12 +308,18 @@ def inference_sliding(model, img, scales):
                 output_scattered_list = []
                 for b_idx in range(bi):
                     cur_input = input_crops[b_idx,:,:,:].unsqueeze(0).cuda()
-                    cur_output = model(cur_input,task='traversability')
+                    if args.dataset == 'kitti_semantic':
+                        cur_output = model(cur_input,task='semantic')
+                    else:
+                        cur_output = model(cur_input,task='traversability')
                     output_scattered_list.append(cur_output)
                 output_scattered = torch.cat(output_scattered_list, dim=0)
             else:
                 input_crops = input_crops.cuda()
-                output_scattered = model(input_crops,task='traversability')
+                if args.dataset == 'kitti_semantic':
+                    output_scattered = model(input_crops,task='semantic')
+                else:
+                    output_scattered = model(input_crops,task='traversability')
 
         output_scattered = output_scattered.data.cpu().numpy()
 
@@ -363,6 +369,13 @@ def setup_loader():
     elif args.dataset == 'kitti_trav':
         args.dataset_cls = kitti_trav
         test_set = args.dataset_cls.KITTI_trav(args.mode, args.split,
+                                         transform=val_input_transform,
+                                         target_transform=target_transform,
+                                         cv_split=args.cv_split)
+
+    elif args.dataset == 'kitti_semantic':
+        args.dataset_cls = kitti_semantic
+        test_set = args.dataset_cls.KITTI_Semantic(args.mode, args.split,
                                          transform=val_input_transform,
                                          target_transform=target_transform,
                                          cv_split=args.cv_split)

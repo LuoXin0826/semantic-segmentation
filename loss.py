@@ -35,6 +35,7 @@ def get_loss(args, data_type):
                 classes=args.dataset_cls.num_classes, size_average=True,
                 ignore_index=args.dataset_cls.ignore_label,
                 upper_bound=args.wt_bound).cuda()
+
     elif args.jointwtborder:
         criterion = ImgWtLossSoftNLL(classes=args.dataset_cls.num_classes,
                                      ignore_index=args.dataset_cls.ignore_label,
