@@ -590,10 +590,10 @@ class DeepWV3Plus(nn.Module):
         x = self.mod3(self.pool3(m2))
         x = self.mod4(x)
         x = self.mod5(x)
-        x1 = self.mod6(x1,task='semantic')
+        x1 = self.mod6(x,task='semantic')
         x1 = self.mod7(x1,task='semantic')
 
-        x2 = self.mod6(x2,task='traversability')
+        x2 = self.mod6(x,task='traversability')
         x2 = self.mod7(x2,task='traversability')
 
 
