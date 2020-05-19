@@ -158,9 +158,9 @@ def main():
     assert_and_infer_cfg(args)
     writer = prep_experiment(args, parser)
     train_loader, val_loader, train_obj = datasets.setup_loaders(args)
-    criterion, criterion_val = loss.get_loss(args)
-    net = network.get_net(args, criterion)
-    optim, scheduler = optimizer.get_optimizer(args, net, criterion)
+    criterion, criterion_val = loss.get_loss(args, data_type = 'trav_alone')
+    net = network.get_net_ori(args, criterion)
+    optim, scheduler = optimizer.get_optimizer(args, net)
 
     if args.fp16:
         net, optim = amp.initialize(net, optim, opt_level="O1")
@@ -217,7 +217,7 @@ def train(train_loader, net, optim, curr_epoch, writer):
 
         optim.zero_grad()
 
-        main_loss = net(inputs, gts=gts)
+        main_loss = net(inputs, gts=gts, task='traversability')
 #        make_dot(main_loss).render("attached", format="png")
 
         if args.apex:
@@ -282,7 +282,7 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
         inputs, gt_cuda = inputs.cuda(), gt_image.cuda()
 
         with torch.no_grad():
-            output = net(inputs)  # output = (1, 19, 713, 713)
+            output = net(inputs, task='traversability')  # output = (1, 19, 713, 713)
 
         assert output.size()[2:] == gt_image.size()[1:]
         assert output.size()[1] == args.dataset_cls.num_classes

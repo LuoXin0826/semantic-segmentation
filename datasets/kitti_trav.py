@@ -18,6 +18,7 @@ from config import cfg
 trainid_to_name = multitask_labels.trainId2name
 id_to_trainid = {0:0,1:1} #{34:0,35:1} #
 num_classes = 2 #19
+num_classes2 = 2
 ignore_label = 255
 root = cfg.DATASET.KITTI_DIR_TRAV
 aug_root = cfg.DATASET.KITTI_AUG_DIR
