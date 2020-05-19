@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
     # Example on KITTI, fine tune
-     python -m torch.distributed.launch --nproc_per_node=1 train.py \
+     python -m torch.distributed.launch --nproc_per_node=3 train.py \
         --dataset kitti_trav \
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus_trav \
@@ -12,6 +12,7 @@
         --lr 0.001 \
         --lr_schedule poly \
         --poly_exp 1.0 \
+        --syncbn \
         --sgd \
         --crop_size 360 \
         --scale_min 1.0 \
