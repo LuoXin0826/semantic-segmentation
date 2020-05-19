@@ -10,7 +10,7 @@ import torch
 from apex import amp
 
 from config import cfg, assert_and_infer_cfg
-from utils.misc import AverageMeter, prep_experiment, evaluate_eval_ori fast_hist
+from utils.misc import AverageMeter, prep_experiment, evaluate_eval_ori, fast_hist
 import datasets
 import loss
 import network
