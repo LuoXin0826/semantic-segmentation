@@ -10,7 +10,7 @@ import torch
 from apex import amp
 
 from config import cfg, assert_and_infer_cfg
-from utils.misc import AverageMeter, prep_experiment, evaluate_eval_ori, fast_hist
+from utils.misc import AverageMeter, prep_experiment_ori, evaluate_eval_ori, fast_hist
 import datasets
 import loss
 import network
@@ -156,7 +156,7 @@ def main():
 
     # Set up the Arguments, Tensorboard Writer, Dataloader, Loss Fn, Optimizer
     assert_and_infer_cfg(args)
-    writer = prep_experiment(args, parser)
+    writer = prep_experiment_ori(args, parser)
     train_loader, val_loader, train_obj = datasets.setup_loaders(args)
     criterion, criterion_val = loss.get_loss(args, data_type = 'trav_alone')
     net = network.get_net_ori(args, criterion)

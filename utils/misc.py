@@ -84,7 +84,29 @@ def save_log(prefix, output_dir, date_str, rank=0):
         fh = logging.FileHandler(filename)
         logging.getLogger('').addHandler(fh)
 
-
+def prep_experiment_ori(args, parser):
+    """
+    Make output directories, setup logging, Tensorboard, snapshot code.
+    """
+    ckpt_path = args.ckpt
+    tb_path = args.tb_path
+    exp_name = make_exp_name(args, parser)
+    args.exp_path = os.path.join(ckpt_path, args.exp, exp_name)
+    args.tb_exp_path = os.path.join(tb_path, args.exp, exp_name)
+    args.ngpu = torch.cuda.device_count()
+    args.date_str = str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
+    args.best_record = {'epoch': -1, 'iter': 0, 'val_loss': 1e10, 'acc': 0,
+                        'acc_cls': 0, 'mean_iu': 0, 'fwavacc': 0}
+    args.last_record = {}
+    if args.local_rank == 0:
+        os.makedirs(args.exp_path, exist_ok=True)
+        os.makedirs(args.tb_exp_path, exist_ok=True)
+        save_log('log', args.exp_path, args.date_str, rank=args.local_rank)
+        open(os.path.join(args.exp_path, args.date_str + '.txt'), 'w').write(
+            str(args) + '\n\n')
+        writer = SummaryWriter(logdir=args.tb_exp_path, comment=args.tb_tag)
+        return writer
+    return None
 
 def prep_experiment(args, parser):
     """
