@@ -356,6 +356,16 @@ class DeepWV3Plus_trav(nn.Module):
             nn.Conv2d(256, 2, kernel_size=1, bias=False))
 
 #        initialize_weights(self.final)
+        for param in self.mod1.parameters():
+            param.requires_grad = False
+        for param in self.mod2.parameters():
+            param.requires_grad = False
+        for param in self.mod3.parameters():
+            param.requires_grad = False
+        for param in self.mod4.parameters():
+            param.requires_grad = False
+        for param in self.mod5.parameters():
+            param.requires_grad = False
 
     def forward(self, inp, gts=None, task=None):
 
