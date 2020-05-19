@@ -217,7 +217,7 @@ def train(train_loader, net, optim, curr_epoch, writer):
 
         optim.zero_grad()
 
-        main_loss = net(inputs, gts=gts, task='traversability')
+        main_loss = net(inputs, gts=gts, task='semantic')
 #        make_dot(main_loss).render("attached", format="png")
 
         if args.apex:
@@ -282,7 +282,7 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
         inputs, gt_cuda = inputs.cuda(), gt_image.cuda()
 
         with torch.no_grad():
-            output = net(inputs, task='traversability')  # output = (1, 19, 713, 713)
+            output = net(inputs, task='semantic')  # output = (1, 19, 713, 713)
 
         assert output.size()[2:] == gt_image.size()[1:]
         assert output.size()[1] == args.dataset_cls.num_classes
