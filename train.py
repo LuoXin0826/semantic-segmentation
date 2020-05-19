@@ -10,7 +10,7 @@ import torch
 from apex import amp
 
 from config import cfg, assert_and_infer_cfg
-from utils.misc import AverageMeter, prep_experiment, evaluate_eval, fast_hist
+from utils.misc import AverageMeter, prep_experiment, evaluate_eval_ori fast_hist
 import datasets
 import loss
 import network
@@ -313,7 +313,7 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
         iou_acc = iou_acc_tensor.cpu().numpy()
 
     if args.local_rank == 0:
-        evaluate_eval(args, net, optim, val_loss, iou_acc, dump_images,
+        evaluate_eval_ori(args, net, optim, val_loss, iou_acc, dump_images,
                       writer, curr_epoch, args.dataset_cls)
 
     return val_loss.avg
