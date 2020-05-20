@@ -5,8 +5,8 @@
         --dataset kitti_trav \
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus_trav \
-        --snapshot ./pretrained_models/kitti_trav.pth \
-        --snapshot2 ./pretrained_models/kitti_trav.pth \
+        --snapshot ./pretrained_models/kitti_semantic.pth \
+        --snapshot2 ./pretrained_models/kitti_semantic.pth \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 300 \
         --lr 0.001 \
