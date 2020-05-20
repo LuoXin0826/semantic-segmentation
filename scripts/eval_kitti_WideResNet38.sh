@@ -2,8 +2,8 @@
 echo "Running inference on" ${1}
 echo "Saving Results :" ${2}
 PYTHONPATH=$PWD:$PYTHONPATH python3 eval.py \
-	--dataset kitti_semantic \
-    --arch network.deepv3.DeepWV3Plus_semantic \
+	--dataset kitti_trav \
+    --arch network.deepv3.DeepWV3Plus_trav \
     --inference_mode sliding \
     --scales 1.0 \
     --split train \
