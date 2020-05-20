@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
     # Example on KITTI, fine tune
-     python -m torch.distributed.launch --nproc_per_node=3 train.py \
+     python -m torch.distributed.launch --nproc_per_node=3 train_trav.py \
         --dataset kitti_trav \
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus_trav \
-        --snapshot ./pretrained_models/kitti_best.pth \
-        --snapshot2 ./pretrained_models/kitti_best.pth \
+        --snapshot ./pretrained_models/kitti_trav.pth \
+        --snapshot2 ./pretrained_models/kitti_trav.pth \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 300 \
         --lr 0.001 \
