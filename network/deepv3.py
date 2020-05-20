@@ -385,6 +385,15 @@ class DeepWV3Plus_trav(nn.Module):
         for param in self.pool3.parameters():
             param.requires_grad = False
 
+        for param in self.mod6.block1.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod6.block1.convs.parameters():
+            param.requires_grad = False
+        for param in self.mod7.block1.bn1.parameters():
+            param.requires_grad = False
+        for param in self.mod7.block1.convs.parameters():
+            param.requires_grad = False
+
     def forward(self, inp, gts=None, task=None):
 
         x_size = inp.size()
