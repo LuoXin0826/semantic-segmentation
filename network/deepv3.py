@@ -373,8 +373,8 @@ class DeepWV3Plus_trav(nn.Module):
         self.mod5 = wide_resnet.mod5
         self.mod6 = wide_resnet.mod6
         self.mod7 = wide_resnet.mod7
-        self.pool2_trav = wide_resnet.pool2
-        self.pool3_trav = wide_resnet.pool3
+        self.pool2 = wide_resnet.pool2
+        self.pool3 = wide_resnet.pool3
         del wide_resnet
 
         self.aspp2 = _AtrousSpatialPyramidPoolingModule(4096, 256,
@@ -404,10 +404,10 @@ class DeepWV3Plus_trav(nn.Module):
         for param in self.mod5.parameters():
             param.requires_grad = False
 
-#        for param in self.pool2_trav.parameters():
-#            param.requires_grad = False
-#        for param in self.pool3_trav.parameters():
-#            param.requires_grad = False
+        for param in self.pool2.parameters():
+            param.requires_grad = False
+        for param in self.pool3.parameters():
+            param.requires_grad = False
 
         for param in self.mod6.block1.bn1.parameters():
             param.requires_grad = False
@@ -422,8 +422,8 @@ class DeepWV3Plus_trav(nn.Module):
 
         x_size = inp.size()
         x = self.mod1(inp)
-        m2 = self.mod2(self.pool2_trav(x))
-        x = self.mod3(self.pool3_trav(m2))
+        m2 = self.mod2(self.pool2(x))
+        x = self.mod3(self.pool3(m2))
         x = self.mod4(x)
         x = self.mod5(x)
         x = self.mod6(x, task=task)
