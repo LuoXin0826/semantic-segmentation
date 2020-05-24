@@ -6,7 +6,7 @@
         --cv 2 \
         --arch network.deepv3.DeepWV3Plus_semantic \
         --snapshot ./pretrained_models/kitti_semantic.pth \
-        --snapshot2 ./pretrained_models/kitti_trav_final.pth \
+        --snapshot2 ./pretrained_models/kitti_best.pth \
         --class_uniform_pct 0.5 \
         --class_uniform_tile 300 \
         --lr 0.001 \
