@@ -1,28 +1,29 @@
-sudo docker run -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace nvidia-segmentation:latest bash
+0. Docker run
 
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_semantics_small:/home/dataset  nvidia-segmentation:latest bash
+$ sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic_segmentation_train:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav:/home/dataset/trav -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_semantics:/home/dataset/semantic nvidia-segmentation:latest bash
 
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=2,3 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace -v /media/youngji/StorageDevice/nvidia-segmentation/data_semantics:/home/dataset  nvidia-segmentation:latest bash
+$ sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic_segmentation_train:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav:/home/dataset nvidia-segmentation:latest bash
 
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace -v /media/youngji/StorageDevice/data/kitti_odometry/dataset/sequences/15/image_2:/home/dataset  nvidia-segmentation:latest bash
+1. Train
 
-python demo_folder_trav.py --demo-folder /home/dataset/ --snapshot ./ckpts/last_epoch_89_mean-iu_0.42465.pth --save-dir ./out4/
+[Train all] 
+$ ./scripts/train_kitti_WideResNet38.sh
 
-python demo_folder_trav.py --demo-folder /home/dataset/ --snapshot ./ckpts/last_epoch_89_mean-iu_0.08543.pth --save-dir ./out/
+[Train semantic] 
+$ ./scripts/train_kitti_WideResNet38_semantic.sh
 
-python demo_folder.py --demo-folder /home/dataset/ --snapshot ./pretrained_models/kitti_best.pth --save-dir ./out3/
+[Train traversability] 
+$ ./scripts/train_kitti_WideResNet38_trav.sh
 
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0,1,2,3 --ipc=host -it --rm -p 8888:8888 -v ~/youngji/semantic-segmentation:/home/workspace -v ~/youngji/data_semantics_small:/home/dataset  nvidia-segmentation:latest bash
+2. Evaluation
 
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav_test:/home/dataset  nvidia-segmentation:latest bash
+[Evalutate semantic]
+$ ./script/eval_kitti_WideResNet38.sh ./ckpts/kitti_semantic_final.pth ./eval/
 
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic-segmentation:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav_test:/home/dataset  nvidia-segmentation:latest bash
+[Evalutate traversability]
+$ ./script/eval_kitti_WideResNet38.sh ./ckpts/kitti_trav_final.pth ./eval/
 
-./scripts/eval_kitti_WideResNet38.sh ./ckpts/last_epoch_89_mean-iu_0.40649.pth ./eval/
+3. Test
 
-pip install torchviz
-
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0 --ipc=host -it --rm -p 8888:8888 -v ~/workspace/semantic_segmentation_train:/home/workspace -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_trav:/home/dataset/trav -v /media/youngji/StorageDevice/data/nvidia-segmentation/data_semantics:/home/dataset/semantic nvidia-segmentation:latest bash
-
-sudo docker run --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES=0,1,2,3 --ipc=host -it --rm -p 8888:8888 -v ~/youngji/semantic-segmentation:/home/workspace  -v ~/youngji/data_trav:/home/dataset/trav -v ~/youngji/data_semantics:/home/dataset/semantic  nvidia-segmentation:latest bash
+$ ./script/test_kitti_WideResNet38.sh ./ckpts/kitti_trav_final.pth ./ckpts/kitti_semantic_final.pth
 
