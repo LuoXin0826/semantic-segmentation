@@ -81,6 +81,9 @@ __C.DATASET.KITTI_AUG_DIR = ''
 __C.DATASET.CAMVID_DIR = ''
 #Number of splits to support
 __C.DATASET.CV_SPLITS = 3
+#TartanAir Dataset Dir Location
+__C.DATASET.TARTANAIR_DIR_SEMANTIC = "/home/ganlu/media/Samsung_T5/000_tro2020/tartanair-release1/abandonedfactory/Easy/P000/"
+#TartanAir Dataset Dir Location
 
 
 __C.MODEL = AttrDict()
