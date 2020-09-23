@@ -339,7 +339,9 @@ def setup_loaders(args):
         # eval_size_w = 1280
         # val_joint_transform_list = [
         #         joint_transforms.ResizeHW(eval_size_h, eval_size_w)]
-            
+        
+        print("##########################")
+        print(args.class_uniform_tile)    
         train_set = args.dataset_cls.TARTANAIR_Semantic(
             'semantic', 'train', args.maxSkip,
             joint_transform_list=train_joint_transform_list,
@@ -428,9 +430,10 @@ def setup_loaders(args):
         train_sampler = None
         val_sampler = None
 
+    print(args.val_batch_size)
     train_loader = DataLoader(train_set, batch_size=2,
-                            num_workers=1, shuffle=(train_sampler is None), drop_last=True, sampler = train_sampler)
-    val_loader = DataLoader(val_set, batch_size=args.val_batch_size,
+                            num_workers=args.num_workers // 2, shuffle=(train_sampler is None), drop_last=True, sampler = train_sampler)
+    val_loader = DataLoader(val_set, batch_size=2,
                             num_workers=args.num_workers // 2 , shuffle=False, drop_last=False, sampler = val_sampler)
 
     return train_loader, val_loader,  train_set

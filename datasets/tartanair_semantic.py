@@ -17,7 +17,7 @@ from config import cfg
 
 trainid_to_name = tartanair_labels.trainId2name
 id_to_trainid = tartanair_labels.label2trainid
-num_classes = 55
+num_classes = 28
 ignore_label = 255
 root = cfg.DATASET.TARTANAIR_DIR_SEMANTIC
 aug_root = cfg.DATASET.KITTI_AUG_DIR
@@ -167,10 +167,8 @@ class TARTANAIR_Semantic(data.Dataset):
             else:
                 json_fn = 'kitti_tile{}_cv{}_{}_hardnm{}.json'.format(self.class_uniform_tile, self.cv_split, self.mode, self.hardnm)
             if os.path.isfile(json_fn):
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 with open(json_fn, 'r') as json_data:
                     centroids = json.load(json_data)
-                    print(centroids)
                 self.centroids = {int(idx): centroids[idx] for idx in centroids}
             else:
                 if self.scf:
@@ -180,6 +178,7 @@ class TARTANAIR_Semantic(data.Dataset):
                         id2trainid=id_to_trainid,
                         tile_size=class_uniform_tile)
                 else:
+                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     self.centroids = uniform.class_centroids_all(
                         self.imgs,
                         num_classes,

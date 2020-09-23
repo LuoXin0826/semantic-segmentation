@@ -266,7 +266,7 @@ class DeepWV3Plus_semantic(nn.Module):
             nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
             Norm2d(256),
             nn.ReLU(inplace=True),
-            nn.Conv2d(256, 19, kernel_size=1, bias=False))
+            nn.Conv2d(256, 28, kernel_size=1, bias=False))
 
         for param in self.mod1.parameters():
             param.requires_grad = False
@@ -439,6 +439,8 @@ class DeepWV3Plus_trav(nn.Module):
         out = Upsample(dec1, x_size[2:])
 
         if self.training:
+            print(out.size())
+            print(gts.size())
             return self.criterion(out, gts)
 
         return out#[:,:19,:,:]
