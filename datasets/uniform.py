@@ -70,7 +70,9 @@ def class_centroids_image(item, tile_size, num_classes, id2trainid):
         for class_id in range(num_classes):
             if class_id in patch:
                 patch_class = (patch == class_id).astype(int)
-                centroid_y, centroid_x = ndimage.measurements.center_of_mass(patch_class)
+                print(ndimage.measurements.center_of_mass(patch_class))
+                centroid_y = ndimage.measurements.center_of_mass(patch_class)[0]
+                centroid_x = ndimage.measurements.center_of_mass(patch_class)[1]
                 centroid_y = int(centroid_y) + y_offs
                 centroid_x = int(centroid_x) + x_offs
                 centroid = (centroid_x, centroid_y)
