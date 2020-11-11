@@ -18,7 +18,7 @@ from config import cfg
 trainid_to_name = multitask_labels.trainId2name
 id_to_trainid1 = multitask_labels.label2trainid
 id_to_trainid2 = {0:0,1:1}
-num_classes1 = 19
+num_classes1 = 20
 num_classes2 = 2
 ignore_label = 255
 root1 = cfg.DATASET.KITTI_DIR_SEMANTIC
