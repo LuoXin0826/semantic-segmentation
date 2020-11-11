@@ -12,7 +12,7 @@
         --lr 0.001 \
         --lr_schedule poly \
         --poly_exp 1.0 \
-#        --syncbn \
+        --syncbn \
         --sgd \
         --crop_size 360 \
         --scale_min 1.0 \
