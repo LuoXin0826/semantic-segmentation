@@ -47,7 +47,7 @@ __C = AttrDict()
 cfg = __C
 __C.EPOCH = 0
 # Use Class Uniform Sampling to give each class proper sampling
-__C.CLASS_UNIFORM_PCT = 0.0
+__C.CLASS_UNIFORM_PCT = 0.5
 
 # Use class weighted loss per batch to increase loss for low pixel count classes per batch
 __C.BATCH_WEIGHTING = False
