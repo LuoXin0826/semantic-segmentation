@@ -25,5 +25,3 @@
         --exp kitti_ft \
         --ckpt ./logs/ \
         --tb_path ./logs/
-
-
