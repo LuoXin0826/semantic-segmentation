@@ -177,9 +177,8 @@ def build_epoch(imgs, centroids, num_classes, class_uniform_pct):
     imgs_uniform = random_sampling(imgs, num_rand)
 
     # now add uniform sampling
-    print(centroids)
     for class_id in range(num_classes):
-        string_format = "cls %d len %d"% (class_id, len(centroids[class_id]))
+        string_format = "cls %d len %d"% (class_id, len(centroids[class_id+1]))
         logging.info(string_format)
     for class_id in range(num_classes):
         centroid_len = len(centroids[class_id])
