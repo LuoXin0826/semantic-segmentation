@@ -34,8 +34,7 @@ def calc_tile_locations(tile_size, image_size):
     image_size: original image size
     return: locations of the tiles
     """
-    image_size_y = image_size[0]
-    image_size_x = image_size[1]
+    image_size_y, image_size_x = image_size
     locations = []
     for y in range(image_size_y // tile_size):
         for x in range(image_size_x // tile_size):
@@ -70,8 +69,7 @@ def class_centroids_image(item, tile_size, num_classes, id2trainid):
         for class_id in range(num_classes):
             if class_id in patch:
                 patch_class = (patch == class_id).astype(int)
-                centroid_y = ndimage.measurements.center_of_mass(patch_class)[0]
-                centroid_x = ndimage.measurements.center_of_mass(patch_class)[1]
+                centroid_y, centroid_x = ndimage.measurements.center_of_mass(patch_class)
                 centroid_y = int(centroid_y) + y_offs
                 centroid_x = int(centroid_x) + x_offs
                 centroid = (centroid_x, centroid_y)
@@ -178,7 +176,7 @@ def build_epoch(imgs, centroids, num_classes, class_uniform_pct):
 
     # now add uniform sampling
     for class_id in range(num_classes):
-        string_format = "cls %d len %d"% (class_id, len(centroids[class_id+1]))
+        string_format = "cls %d len %d"% (class_id, len(centroids[class_id]))
         logging.info(string_format)
     for class_id in range(num_classes):
         centroid_len = len(centroids[class_id])

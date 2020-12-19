@@ -47,7 +47,7 @@ __C = AttrDict()
 cfg = __C
 __C.EPOCH = 0
 # Use Class Uniform Sampling to give each class proper sampling
-__C.CLASS_UNIFORM_PCT = 0.5
+__C.CLASS_UNIFORM_PCT = 0.0
 
 # Use class weighted loss per batch to increase loss for low pixel count classes per batch
 __C.BATCH_WEIGHTING = False
@@ -70,11 +70,11 @@ __C.DATASET.CITYSCAPES_AUG_DIR = ''
 #Mapillary Dataset Dir Location
 __C.DATASET.MAPILLARY_DIR = ''
 #Kitti Dataset Dir Location
-__C.DATASET.KITTI_DIR = '/home/luoxin/dataset/'
+__C.DATASET.KITTI_DIR = '/home/dataset/'
 #Kitti Dataset Dir Location
-__C.DATASET.KITTI_DIR_TRAV = '/home/luoxin/dataset/trav/'
+__C.DATASET.KITTI_DIR_TRAV = '/home/dataset/trav/'
 #Kitti Dataset Dir Location
-__C.DATASET.KITTI_DIR_SEMANTIC = '/home/luoxin/dataset/semantic/'
+__C.DATASET.KITTI_DIR_SEMANTIC = '/home/dataset/semantic/'
 #SDC Augmented Kitti Dataset Dir Location
 __C.DATASET.KITTI_AUG_DIR = ''
 #Camvid Dataset Dir Location

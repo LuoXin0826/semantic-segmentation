@@ -12,6 +12,7 @@
         --lr 0.001 \
         --lr_schedule poly \
         --poly_exp 1.0 \
+#        --syncbn \
         --sgd \
         --crop_size 360 \
         --scale_min 1.0 \
@@ -25,3 +26,5 @@
         --exp kitti_ft \
         --ckpt ./logs/ \
         --tb_path ./logs/
+
+

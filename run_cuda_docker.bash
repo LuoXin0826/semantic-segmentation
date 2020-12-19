@@ -1,10 +1,9 @@
 container_name=$1
 
 xhost +local:
-docker run -it --net=host --runtime=nvidia \
+docker run -it --ipc=host --runtime=nvidia \
   --user=$(id -u) \
   -e DISPLAY=$DISPLAY \
-  -e QT_GRAPHICSSYSTEM=native \
   -e CONTAINER_NAME=cuda \
   -e USER=$USER \
   --workdir=/home/$USER \
@@ -16,5 +15,4 @@ docker run -it --net=host --runtime=nvidia \
   -v "/home/$USER/:/home/$USER/" \
   --device=/dev/dri:/dev/dri \
   --name=${container_name} \
-  nvidia-segmentation:latest
-
+  luoxin0826/semantic_segmentation:latest

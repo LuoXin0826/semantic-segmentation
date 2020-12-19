@@ -1,0 +1,101 @@
+12-16 17:16:29.772 KITTI has a total of 200 images
+12-16 17:16:29.773 KITTI-train: 179 images
+12-16 17:16:32.264 Class Uniform Percentage: 0.5
+12-16 17:16:32.265 Class Uniform items per Epoch:179
+12-16 17:16:32.266 cls 0 len 609
+12-16 17:16:32.266 cls 1 len 390
+12-16 17:16:32.266 cls 2 len 374
+12-16 17:16:32.266 cls 3 len 102
+12-16 17:16:32.266 cls 4 len 148
+12-16 17:16:32.266 cls 5 len 514
+12-16 17:16:32.266 cls 6 len 206
+12-16 17:16:32.266 cls 7 len 325
+12-16 17:16:32.266 cls 8 len 682
+12-16 17:16:32.266 cls 9 len 551
+12-16 17:16:32.266 cls 10 len 547
+12-16 17:16:32.266 cls 11 len 57
+12-16 17:16:32.266 cls 12 len 22
+12-16 17:16:32.267 cls 13 len 504
+12-16 17:16:32.267 cls 14 len 84
+12-16 17:16:32.267 cls 15 len 23
+12-16 17:16:32.267 cls 16 len 26
+12-16 17:16:32.267 cls 17 len 8
+12-16 17:16:32.267 cls 18 len 33
+12-16 17:16:32.269 KITTI has a total of 200 images
+12-16 17:16:32.269 KITTI-trainval: 200 images
+12-16 17:16:32.269 Using Per Image based weighted loss
+12-16 17:16:32.280 Using Cross Entropy Loss
+12-16 17:16:32.327 Trunk: WideResnet38
+12-16 17:16:33.316 Global Average Pooling Initialized
+12-16 17:16:54.300 Skipped loading parameter module.mod2.block1.bn1.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod2.block1.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod2.block2.bn1.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod2.block2.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod2.block3.bn1.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod2.block3.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod3.block1.bn1.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod3.block1.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod3.block2.bn1.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod3.block2.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod3.block3.bn1.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod3.block3.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod4.block1.bn1.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod4.block1.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod4.block2.bn1.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod4.block2.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.301 Skipped loading parameter module.mod4.block3.bn1.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod4.block3.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod4.block4.bn1.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod4.block4.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod4.block5.bn1.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod4.block5.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod4.block6.bn1.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod4.block6.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod5.block1.bn1.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod5.block1.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod5.block2.bn1.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod5.block2.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod5.block3.bn1.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod5.block3.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod6.block1.bn1.0.num_batches_tracked
+12-16 17:16:54.302 Skipped loading parameter module.mod6.block1.adapt.semantic.weight
+12-16 17:16:54.302 Skipped loading parameter module.mod6.block1.se.fc.semantic.0.weight
+12-16 17:16:54.302 Skipped loading parameter module.mod6.block1.se.fc.semantic.0.bias
+12-16 17:16:54.303 Skipped loading parameter module.mod6.block1.se.fc.semantic.2.weight
+12-16 17:16:54.303 Skipped loading parameter module.mod6.block1.se.fc.semantic.2.bias
+12-16 17:16:54.303 Skipped loading parameter module.mod6.block1.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.303 Skipped loading parameter module.mod6.block1.convs.bn3.0.num_batches_tracked
+12-16 17:16:54.303 Skipped loading parameter module.mod7.block1.bn1.0.num_batches_tracked
+12-16 17:16:54.303 Skipped loading parameter module.mod7.block1.adapt.semantic.weight
+12-16 17:16:54.303 Skipped loading parameter module.mod7.block1.se.fc.semantic.0.weight
+12-16 17:16:54.303 Skipped loading parameter module.mod7.block1.se.fc.semantic.0.bias
+12-16 17:16:54.303 Skipped loading parameter module.mod7.block1.se.fc.semantic.2.weight
+12-16 17:16:54.303 Skipped loading parameter module.mod7.block1.se.fc.semantic.2.bias
+12-16 17:16:54.303 Skipped loading parameter module.mod7.block1.convs.bn2.0.num_batches_tracked
+12-16 17:16:54.303 Skipped loading parameter module.mod7.block1.convs.bn3.0.num_batches_tracked
+12-16 17:16:54.303 Skipped loading parameter module.bn_out.0.num_batches_tracked
+12-16 17:16:54.730 Model params = 142.4M
+12-16 17:16:54.765 Loading weights from model ./pretrained_models/kitti_best.pth
+12-16 17:17:05.642 Checkpoint Load Compelete
+12-16 17:17:05.643 Skipped loading parameter module.mod6.block1.adapt.semantic.weight
+12-16 17:17:05.644 Skipped loading parameter module.mod6.block1.se.fc.semantic.0.weight
+12-16 17:17:05.644 Skipped loading parameter module.mod6.block1.se.fc.semantic.0.bias
+12-16 17:17:05.644 Skipped loading parameter module.mod6.block1.se.fc.semantic.2.weight
+12-16 17:17:05.644 Skipped loading parameter module.mod6.block1.se.fc.semantic.2.bias
+12-16 17:17:05.644 Skipped loading parameter module.mod7.block1.adapt.semantic.weight
+12-16 17:17:05.644 Skipped loading parameter module.mod7.block1.se.fc.semantic.0.weight
+12-16 17:17:05.644 Skipped loading parameter module.mod7.block1.se.fc.semantic.0.bias
+12-16 17:17:05.644 Skipped loading parameter module.mod7.block1.se.fc.semantic.2.weight
+12-16 17:17:05.644 Skipped loading parameter module.mod7.block1.se.fc.semantic.2.bias
+12-16 17:17:05.644 Skipped loading parameter module.final.6.weight
+12-16 17:17:05.742 Skipped loading parameter module.mod6.block1.adapt.semantic.weight
+12-16 17:17:05.742 Skipped loading parameter module.mod6.block1.se.fc.semantic.0.weight
+12-16 17:17:05.742 Skipped loading parameter module.mod6.block1.se.fc.semantic.0.bias
+12-16 17:17:05.742 Skipped loading parameter module.mod6.block1.se.fc.semantic.2.weight
+12-16 17:17:05.742 Skipped loading parameter module.mod6.block1.se.fc.semantic.2.bias
+12-16 17:17:05.742 Skipped loading parameter module.mod7.block1.adapt.semantic.weight
+12-16 17:17:05.742 Skipped loading parameter module.mod7.block1.se.fc.semantic.0.weight
+12-16 17:17:05.742 Skipped loading parameter module.mod7.block1.se.fc.semantic.0.bias
+12-16 17:17:05.742 Skipped loading parameter module.mod7.block1.se.fc.semantic.2.weight
+12-16 17:17:05.742 Skipped loading parameter module.mod7.block1.se.fc.semantic.2.bias
+12-16 17:17:05.742 Skipped loading parameter module.final.6.weight
