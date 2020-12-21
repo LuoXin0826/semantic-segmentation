@@ -9,6 +9,7 @@ from datasets import kitti_semantic
 from datasets import kitti_trav
 from datasets import camvid
 from datasets import tartanair_semantic
+from datasets import forest_semantic
 import torchvision.transforms as standard_transforms
 
 import transforms.joint_transforms as joint_transforms
@@ -75,6 +76,13 @@ def setup_loaders(args):
             args.val_batch_size = args.bs_mult * args.ngpu
     elif args.dataset == 'tartanair_trav':
         args.dataset_cls = tartanair_trav
+        args.train_batch_size = args.bs_mult * args.ngpu
+        if args.bs_mult_val > 0:
+            args.val_batch_size = args.bs_mult_val * args.ngpu
+        else:
+            args.val_batch_size = args.bs_mult * args.ngpu
+    elif args.dataset == 'forest_semantic':
+        args.dataset_cls = forest_semantic
         args.train_batch_size = args.bs_mult * args.ngpu
         if args.bs_mult_val > 0:
             args.val_batch_size = args.bs_mult_val * args.ngpu
@@ -388,6 +396,27 @@ def setup_loaders(args):
             test=False,
             cv_split=args.cv,
             scf=None)
+    elif args.dataset == 'forest_semantic':
+        train_set = args.dataset_cls.FOREST_Semantic(
+            'semantic', 'train', args.maxSkip,
+            joint_transform_list=train_joint_transform_list,
+            transform=train_input_transform,
+            target_transform=target_train_transform,
+            dump_images=args.dump_augmentation_images,
+            class_uniform_pct=args.class_uniform_pct,
+            class_uniform_tile=args.class_uniform_tile,
+            test=args.test_mode,
+            cv_split=args.cv,
+            scf=args.scf,
+            hardnm=args.hardnm)
+        val_set = args.dataset_cls.FOREST_Semantic(
+            'semantic', 'trainval', 0, 
+            joint_transform_list=None,
+            transform=val_input_transform,
+            target_transform=target_transform,
+            test=False,
+            cv_split=args.cv,
+            scf=None)
     elif args.dataset == 'camvid':
         # eval_size_h = 384
         # eval_size_w = 1280
@@ -434,7 +463,7 @@ def setup_loaders(args):
     train_loader = DataLoader(train_set, batch_size=2,
                             num_workers=args.num_workers // 2, shuffle=(train_sampler is None), drop_last=True, sampler = train_sampler)
     val_loader = DataLoader(val_set, batch_size=2,
-                            num_workers=args.num_workers // 2 , shuffle=False, drop_last=False, sampler = val_sampler)
+                            num_workers=args.num_workers // 2 , shuffle=False, drop_last=True, sampler = val_sampler)
 
     return train_loader, val_loader,  train_set
 

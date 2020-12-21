@@ -216,7 +216,6 @@ def train(train_loader, net, optim, curr_epoch, writer):
         inputs, gts = inputs.cuda(), gts.cuda()
 
         optim.zero_grad()
-
         main_loss = net(inputs, gts=gts, task='semantic')
 #        make_dot(main_loss).render("attached", format="png")
 

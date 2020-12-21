@@ -74,16 +74,17 @@ __C.DATASET.KITTI_DIR = '/home/dataset/'
 #Kitti Dataset Dir Location
 __C.DATASET.KITTI_DIR_TRAV = '/home/dataset/trav/'
 #Kitti Dataset Dir Location
-__C.DATASET.KITTI_DIR_SEMANTIC = '/home/dataset/semantic/'
+__C.DATASET.KITTI_DIR_SEMANTIC = '/home/luoxin/dataset/semantic/'
 #SDC Augmented Kitti Dataset Dir Location
 __C.DATASET.KITTI_AUG_DIR = ''
 #Camvid Dataset Dir Location
 __C.DATASET.CAMVID_DIR = ''
 #Number of splits to support
-__C.DATASET.CV_SPLITS = 3
+__C.DATASET.CV_SPLITS = 0
 #TartanAir Dataset Dir Location
 __C.DATASET.TARTANAIR_DIR_SEMANTIC = "/home/ganlu/media/Samsung_T5/000_tro2020/tartanair-release1/abandonedfactory/Easy/P000/"
-#TartanAir Dataset Dir Location
+#forest Dataset Dir Location
+__C.DATASET.FOREST_DIR_SEMANTIC = "/home/luoxin/dataset_forest/"
 
 
 __C.MODEL = AttrDict()

@@ -278,7 +278,6 @@ class ImageBasedCrossEntropyLoss2d_trav_alone(nn.Module):
                 weights = self.calculate_weights(target_cpu[i])
                 self.nll_loss.weight = torch.Tensor(weights).cuda()
 
-
             loss += self.nll_loss(F.log_softmax(inputs[i].unsqueeze(0)),targets[i].unsqueeze(0))
         return loss
 
@@ -508,9 +507,13 @@ class ImgWtLossSoftNLL(nn.Module):
         for i in range(0, inputs.shape[0]):
             if not self.batch_weights:
                 class_weights = self.calculate_weights(target_cpu[i])
+            # loss = loss + self.custom_nll(inputs[i].unsqueeze(0),
+            #                              target[i].unsqueeze(0),
+            #                              class_weights=torch.Tensor(class_weights).cuda(),
+            #                              border_weights=weights, mask=ignore_mask[i])
             loss = loss + self.custom_nll(inputs[i].unsqueeze(0),
                                           target[i].unsqueeze(0),
-                                          class_weights=torch.Tensor(class_weights).cuda(),
+                                          class_weights=None,
                                           border_weights=weights, mask=ignore_mask[i])
 
         return loss
