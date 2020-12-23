@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-    # Example on Forest
+    # Example on KITTI, fine tune
      python -m torch.distributed.launch --nproc_per_node=1 train.py \
         --dataset forest_semantic \
         --cv 0 \
@@ -12,7 +12,6 @@
         --lr 0.001 \
         --lr_schedule poly \
         --poly_exp 1.0 \
-        --sgd \
         --crop_size 360 \
         --scale_min 1.0 \
         --scale_max 2.0 \
@@ -21,7 +20,6 @@
         --img_wt_loss \
         --wt_bound 1.0 \
         --bs_mult 2 \
-        --apex \
         --exp kitti_ft \
         --ckpt ./logs/ \
         --tb_path ./logs/

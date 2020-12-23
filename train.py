@@ -274,6 +274,8 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
 
     for val_idx, data in enumerate(val_loader):
         inputs, gt_image, img_names = data
+        gt_image = gt_image[:,:,:,0]
+        gt_image = gt_image.squeeze(1)
         assert len(inputs.size()) == 4 and len(gt_image.size()) == 3
         assert inputs.size()[2:] == gt_image.size()[1:]
 
