@@ -26,7 +26,7 @@ import numpy as np
 import transforms.transforms as extended_transforms
 
 from config import assert_and_infer_cfg
-from datasets import cityscapes, kitti_trav, kitti_semantic
+from datasets import cityscapes, kitti_trav, kitti_semantic, forest_semantic
 from optimizer import restore_snapshot
 
 from utils.my_data_parallel import MyDataParallel
@@ -308,7 +308,7 @@ def inference_sliding(model, img, scales):
                 output_scattered_list = []
                 for b_idx in range(bi):
                     cur_input = input_crops[b_idx,:,:,:].unsqueeze(0).cuda()
-                    if args.dataset == 'kitti_semantic':
+                    if args.dataset == 'kitti_semantic' or args.dataset == 'forest_semantic':
                         cur_output = model(cur_input,task='semantic')
                     else:
                         cur_output = model(cur_input,task='traversability')
@@ -316,7 +316,7 @@ def inference_sliding(model, img, scales):
                 output_scattered = torch.cat(output_scattered_list, dim=0)
             else:
                 input_crops = input_crops.cuda()
-                if args.dataset == 'kitti_semantic':
+                if args.dataset == 'kitti_semantic' or args.dataset == 'forest_semantic':
                     output_scattered = model(input_crops,task='semantic')
                 else:
                     output_scattered = model(input_crops,task='traversability')
@@ -379,6 +379,13 @@ def setup_loader():
                                          transform=val_input_transform,
                                          target_transform=target_transform,
                                          cv_split=args.cv_split)
+
+    elif args.dataset == 'forest_semantic':
+        args.dataset_cls = forest_semantic
+        test_set = args.dataset_cls.FOREST_Semantic(args.mode, args.split,
+                                     transform=val_input_transform,
+                                     target_transform=target_transform,
+                                     cv_split=args.cv_split)
     else:
         raise NameError('-------------Not Supported Currently-------------')
 
@@ -480,7 +487,7 @@ class RunEval():
 
         if self.metrics:
             self.hist += fast_hist(prediction.flatten(), gt.cpu().numpy().flatten(),
-                                   self.dataset_cls.num_classes)
+                                   'test', self.dataset_cls.num_classes)
             iou = round(np.nanmean(per_class_iu(self.hist)) * 100, 2)
             pbar.set_description("Mean IOU: %s" % (str(iou)))
 

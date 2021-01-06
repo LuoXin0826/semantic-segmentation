@@ -90,6 +90,7 @@ __C.DATASET.FOREST_DIR_SEMANTIC = "/home/luoxin/dataset_forest/"
 __C.MODEL = AttrDict()
 __C.MODEL.BN = 'regularnorm'
 __C.MODEL.BNFUNC = None
+__C.DATASET.NUM_CLASSES = 21
 
 def assert_and_infer_cfg(args, make_immutable=True, train_mode=True):
     """Call this function in your script after you have finished setting all cfg

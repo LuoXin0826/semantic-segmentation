@@ -287,7 +287,6 @@ def evaluate_eval_ori(args, net, optimizer, val_loss, hist, dump_images, writer,
     writer.add_scalar('training/val_loss', val_loss.avg, epoch)
 
 
-
 def fast_hist(label_pred, label_true, num_classes):
     mask = (label_true >= 0) & (label_true < num_classes)
     hist = np.bincount(
@@ -387,13 +386,33 @@ def evaluate_eval(args, net, optimizer, val_loss1, val_loss2, hist1, hist2, dump
     writer.add_scalar('training/val_loss1', val_loss1.avg, epoch)
     writer.add_scalar('training/val_loss2', val_loss2.avg, epoch)
 
-
-
-def fast_hist(label_pred, label_true, num_classes):
-    mask = (label_true >= 0) & (label_true < num_classes)
-    hist = np.bincount(
-        num_classes * label_true[mask].astype(int) +
-        label_pred[mask], minlength=num_classes ** 2).reshape(num_classes, num_classes)
+def fast_hist(label_pred, label_true, mode, num_classes):
+    if mode != 'test':
+        mask = (label_true >= 0) & (label_true < num_classes)
+        hist = np.bincount(
+            num_classes * label_true[mask].astype(int) +
+            label_pred[mask], minlength=num_classes ** 2).reshape(num_classes, num_classes)
+    else:
+        mask_3 = (label_true >= 0) & (label_true < num_classes)
+        mask = []
+        label_true_left = []
+        label_true_right = []
+        for i in range(0, len(label_true), 3):
+            mask.append(mask_3[i])
+            if(i<len(label_true)/2):
+                label_true_left.append(label_true[i])
+            else:
+                label_true_right.append(label_true[i])
+        mask = np.array(mask)
+        label_true_left = np.array(label_true_left)
+        label_true_right = np.array(label_true_right)
+        label_true_1 = np.concatenate((label_true_left, label_true_right))
+        # print('######################################################################')
+        # print(label_true_1)
+        # print(label_pred)
+        hist = np.bincount(
+            num_classes * label_true_1[mask].astype(int) +
+            label_pred[mask], minlength=num_classes ** 2).reshape(num_classes, num_classes)
     return hist
 
 def print_evaluate_results(hist, iu, num_classes, dataset=None):
@@ -407,7 +426,7 @@ def print_evaluate_results(hist, iu, num_classes, dataset=None):
     iu_true_positive = np.diag(hist)
 
     logging.info('IoU:')
-    logging.info('label_id      label    iU    Precision Recall TP     FP    FN')
+    logging.info('label_id      label    iU    Precision Recall   TP     FP    FN')
     for idx, i in enumerate(iu):
         # Format all of the strings:
         idx_string = "{:2d}".format(idx)

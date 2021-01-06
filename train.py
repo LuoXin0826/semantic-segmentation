@@ -305,7 +305,7 @@ def validate(val_loader, net, criterion, optim, curr_epoch, writer):
 #            dump_images.append([gt_image, predictions1, predictions2, img_names])
 
         iou_acc += fast_hist(predictions.numpy().flatten(), gt_image.numpy().flatten(),
-                             args.dataset_cls.num_classes)
+                             'train', args.dataset_cls.num_classes)
         del output, val_idx, data
 
     if args.apex:

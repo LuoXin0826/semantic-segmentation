@@ -20,11 +20,10 @@ ignore_label = 255
 root = cfg.DATASET.FOREST_DIR_SEMANTIC
 aug_root = cfg.DATASET.KITTI_AUG_DIR
 
-palette = [128, 64, 128, 244, 35, 232, 70, 70, 70, 102, 102, 156, 190, 153, 153,
-           153, 153, 153, 250, 170, 30,
-           220, 220, 0, 107, 142, 35, 152, 251, 152, 70, 130, 180, 220, 20, 60,
-           255, 0, 0, 0, 0, 142, 0, 0, 70,
-           0, 60, 100, 0, 80, 100, 0, 0, 230, 119, 11, 32]
+palette = [29, 28, 33, 208, 235, 160, 43, 237, 21, 217, 240, 17, 186, 24, 65, 237, 9, 28,
+           235, 45, 98, 20, 99, 143, 157, 199, 194, 237, 61, 55, 32, 39, 232, 37, 193, 245,
+           132, 143, 127, 25, 151, 209, 83, 90, 169, 158, 163, 62, 182, 55, 127, 101, 28, 173,
+           162, 168, 104, 162, 135, 176, 45, 149, 238]
 zero_pad = 256 * 3 - len(palette)
 for i in range(zero_pad):
     palette.append(0)
@@ -118,11 +117,12 @@ def make_test_dataset(quality, mode, maxSkip=0, cv_split=0):
 
     img_dir_name = "testing"
     img_path = os.path.join(root, img_dir_name, 'images')
+    mask_path = os.path.join(root, img_dir_name, 'labels_id')
 
     c_items = os.listdir(img_path)
     c_items.sort()
     for it in c_items:
-        item = (os.path.join(img_path, it), None)
+        item = (os.path.join(img_path, it), os.path.join(mask_path, it))
         items.append(item)
     logging.info('forest has a total of {} test images'.format(len(items)))
 
@@ -207,7 +207,7 @@ class FOREST_Semantic(data.Dataset):
             img_path, mask_path = elem
 
         if self.mode == 'test':
-            img, mask = Image.open(img_path).convert('RGB'), None
+            img, mask = Image.open(img_path).convert('RGB'), Image.open(mask_path)
         else:
             img, mask = Image.open(img_path).convert('RGB'), Image.open(mask_path)
         img_name = os.path.splitext(os.path.basename(img_path))[0]
@@ -226,17 +226,24 @@ class FOREST_Semantic(data.Dataset):
             img_keepsize = img.copy()
             width, height = 640, 480
             img = img.resize((width, height), Image.BICUBIC)
+            mask = mask.resize((width, height), Image.NEAREST)
         else:
             logging.info('Unknown mode {}'.format(mode))
             sys.exit()
 
-        if self.mode != 'test':
-            mask = np.array(mask)
-            mask_copy = mask.copy()
+        # if self.mode != 'test':
+        #     mask = np.array(mask)
+        #     mask_copy = mask.copy()
 
-            for k, v in id_to_trainid.items():
-                mask_copy[mask == k] = v
-            mask = Image.fromarray(mask_copy.astype(np.uint8))
+        #     for k, v in id_to_trainid.items():
+        #         mask_copy[mask == k] = v
+        #     mask = Image.fromarray(mask_copy.astype(np.uint8))
+        mask = np.array(mask)
+        mask_copy = mask.copy()
+
+        for k, v in id_to_trainid.items():
+            mask_copy[mask == k] = v
+        mask = Image.fromarray(mask_copy.astype(np.uint8))
 
         # Image Transformations
         if self.joint_transform_list is not None:
@@ -262,12 +269,8 @@ class FOREST_Semantic(data.Dataset):
 
         if self.transform is not None:
             img = self.transform(img)
-            if self.mode == 'test':
-                img_keepsize = self.transform(img_keepsize)
-                mask = img_keepsize
         if self.target_transform is not None:
-            if self.mode != 'test':
-                mask = self.target_transform(mask)
+            mask = self.target_transform(mask)
 
         return img, mask, img_name
 
