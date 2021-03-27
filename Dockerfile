@@ -1,5 +1,4 @@
-ARG BASE_IMAGE=nvcr.io/nvidia/l4t-pytorch:r32.4.3-pth1.6-py3
-FROM ${BASE_IMAGE}
+FROM arm64v8/ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
