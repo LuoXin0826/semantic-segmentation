@@ -23,21 +23,6 @@ RUN pip3 install --verbose --upgrade Cython && \
 RUN rm /usr/bin/python && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     ln -s /usr/bin/pip3 /usr/bin/pip
-    
-#
-# copy source
-#
-COPY c c
-COPY calibration calibration
-COPY examples examples
-COPY plugins plugins
-COPY python python
-COPY tools tools
-COPY utils utils
-
-COPY CMakeLists.txt CMakeLists.txt
-COPY CMakePreBuild.sh CMakePreBuild.sh
-
 
 #
 # build source
