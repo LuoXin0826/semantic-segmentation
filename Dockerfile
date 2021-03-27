@@ -1,4 +1,5 @@
-FROM arm64v8/ubuntu:18.04
+ARG BASE_IMAGE=nvcr.io/nvidia/l4t-pytorch:r32.4.3-pth1.6-py3
+FROM ${BASE_IMAGE}
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SHELL /bin/bash
@@ -22,6 +23,21 @@ RUN pip3 install --verbose --upgrade Cython && \
 RUN rm /usr/bin/python && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     ln -s /usr/bin/pip3 /usr/bin/pip
+    
+#
+# copy source
+#
+COPY c c
+COPY calibration calibration
+COPY examples examples
+COPY plugins plugins
+COPY python python
+COPY tools tools
+COPY utils utils
+
+COPY CMakeLists.txt CMakeLists.txt
+COPY CMakePreBuild.sh CMakePreBuild.sh
+
 
 #
 # build source
@@ -74,27 +90,26 @@ RUN cd /mnt/jetson-sdcard \
   && cd apex \
   && pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 
-RUN pip install -U testresources setuptools
+RUN pip3 install -U testresources setuptools
 
-RUN pip install -U Cython
-RUN pip install -U pillow==6.1
-RUN pip install -U numpy
-RUN pip install -U sklearn
-RUN pip install -U scipy
-RUN pip install -U matplotlib
-RUN pip install -U PyWavelets
-RUN pip install -U kiwisolver
-RUN pip install -U imagecodecs
-RUN pip install -U scikit-image
-RUN pip install -U h5py
-Run pip install -U jupyter
-Run pip install -U piexif
-Run pip install -U cffi
-Run pip install -U tqdm
-Run pip install -U dominate
-Run pip install -U tensorboardX
-Run pip install -U nose
-Run pip install -U ninja
+RUN pip3 install -U pillow==6.1
+RUN pip3 install -U numpy
+RUN pip3 install -U sklearn
+RUN pip3 install -U scipy
+RUN pip3 install -U matplotlib
+RUN pip3 install -U PyWavelets
+RUN pip3 install -U kiwisolver
+RUN pip3 install -U imagecodecs
+RUN pip3 install -U scikit-image
+RUN pip3 install -U h5py
+Run pip3 install -U jupyter
+Run pip3 install -U piexif
+Run pip3 install -U cffi
+Run pip3 install -U tqdm
+Run pip3 install -U dominate
+Run pip3 install -U tensorboardX
+Run pip3 install -U nose
+Run pip3 install -U ninja
 
 RUN apt-get update
 RUN apt-get install libgtk2.0-dev -y && rm -rf /var/lib/apt/lists/*
