@@ -24,20 +24,6 @@ RUN rm /usr/bin/python && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     ln -s /usr/bin/pip3 /usr/bin/pip
 
-#
-# build source
-#
-RUN mkdir docs && \
-    touch docs/CMakeLists.txt && \
-    sed -i 's/nvcaffe_parser/nvparsers/g' CMakeLists.txt && \
-    mkdir build && \
-    cd build && \
-    cmake ../ && \
-    make -j$(nproc) && \
-    make install && \
-    /bin/bash -O extglob -c "cd /jetson-inference/build; rm -rf -v !(aarch64|download-models.*)" && \
-    rm -rf /var/lib/apt/lists/*
-
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends apt-utils \
   && apt-get install -y \

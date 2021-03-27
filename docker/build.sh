@@ -16,17 +16,7 @@ L4T_VERSION = "32.5.1"
 echo "BASE_IMAGE=$BASE_IMAGE"
 echo "TAG=jetson-inference:r$L4T_VERSION"
 
-
-# sanitize workspace (so extra files aren't added to the container)
-rm -rf python/training/classification/data/*
-rm -rf python/training/classification/models/*
-
-rm -rf python/training/detection/ssd/data/*
-rm -rf python/training/detection/ssd/models/*
-
-
 # build the container
 sudo docker build -t jetson-inference:r$L4T_VERSION -f Dockerfile \
           --build-arg BASE_IMAGE=$BASE_IMAGE \
 		.
-
