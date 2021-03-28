@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 echo "Running inference on" ${1}
 echo "Saving Results :" ${2}
-PYTHONPATH=$PWD:$PYTHONPATH python3 eval.py \
+OPENBLAS_CORETYPE=ARMV8 python3 eval.py \
     --dataset forest_semantic \
     --arch network.deepv3.DeepWV3Plus_semantic \
     --mode semantic \
