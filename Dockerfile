@@ -70,6 +70,7 @@ RUN pip3 install -U numpy
 RUN pip3 install -U sklearn
 RUN pip3 install -U scipy
 Run pip3 install -U jupyter
+Run pip3 install -U python-skimage
 Run pip3 install -U piexif
 Run pip3 install -U cffi
 Run pip3 install -U tqdm
