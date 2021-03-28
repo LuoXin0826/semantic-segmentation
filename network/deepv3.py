@@ -315,8 +315,6 @@ class DeepWV3Plus_semantic(nn.Module):
         out = Upsample(dec1, x_size[2:])
 
         if self.training:
-            gts = gts[:,:,:,0]
-            gts = gts.squeeze(1)
             return self.criterion(out, gts)
 
         return out#[:,:19,:,:]
