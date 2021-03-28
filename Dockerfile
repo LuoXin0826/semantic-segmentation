@@ -70,7 +70,6 @@ RUN pip3 install -U numpy
 RUN pip3 install -U sklearn
 RUN pip3 install -U scipy
 Run pip3 install -U jupyter
-Run pip3 install -U python-skimage
 Run pip3 install -U piexif
 Run pip3 install -U cffi
 Run pip3 install -U tqdm
@@ -78,6 +77,9 @@ Run pip3 install -U dominate
 Run pip3 install -U tensorboardX
 Run pip3 install -U nose
 Run pip3 install -U ninja
+
+RUN apt-get update && \
+    apt-get install python-skimage
 
 RUN apt-get update
 RUN apt-get install libgtk2.0-dev -y && rm -rf /var/lib/apt/lists/*
