@@ -67,6 +67,9 @@ RUN pip3 install -U pillow==6.1
 RUN pip3 install -U numpy
 RUN pip3 install -U sklearn
 RUN pip3 install -U scipy
+RUN pip3 install -U PyWavelets
+RUN pip3 install -U kiwisolver
+RUN pip3 install -U imagecodecs
 RUN pip3 install -U scikit-image
 RUN pip3 install -U h5py
 Run pip3 install -U jupyter
