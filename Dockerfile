@@ -61,14 +61,14 @@ RUN cd /mnt/jetson-sdcard \
   && cd apex \
   && pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 
+RUN pip3 install git+https://github.com/scikit-learn/scikit-learn.git
+
 RUN pip3 install -U testresources setuptools
 
 RUN pip3 install -U pillow==6.1
 RUN pip3 install -U numpy
 RUN pip3 install -U sklearn
 RUN pip3 install -U scipy
-RUN pip3 install -U matplotlib
-RUN pip3 install -U scikit-image
 RUN pip3 install -U h5py
 Run pip3 install -U jupyter
 Run pip3 install -U piexif
