@@ -61,7 +61,11 @@ RUN cd /mnt/jetson-sdcard \
   && cd apex \
   && pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 
-RUN pip3 install git+https://github.com/scikit-learn/scikit-learn.git
+# Building: scikit-image
+RUN cd /mnt/jetson-sdcard \
+  && git clone https://github.com/scikit-image/scikit-image.git \
+  && cd scikit-image \
+  && pip install -e .
 
 RUN pip3 install -U testresources setuptools
 
