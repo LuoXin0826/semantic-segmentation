@@ -79,7 +79,7 @@ Run pip3 install -U nose
 Run pip3 install -U ninja
 
 RUN apt-get update && \
-    apt-get install python-skimage
+    apt-get -y install python-skimage
 
 RUN apt-get update
 RUN apt-get install libgtk2.0-dev -y && rm -rf /var/lib/apt/lists/*
