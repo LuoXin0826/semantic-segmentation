@@ -61,26 +61,29 @@ RUN cd /mnt/jetson-sdcard \
   && cd apex \
   && pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 
-# Building: scikit-image
-RUN cd /mnt/jetson-sdcard \
-  && git clone https://github.com/scikit-image/scikit-image.git \
-  && cd scikit-image \
-  && pip install -e .
+# Building: Tiff
+RUN wget https://download.osgeo.org/libtiff/tiff-4.1.0.tar.gz
+  && tar -xzvf tiff-4.1.0.tar.gz
+  && cd tiff-4.1.0/
+  && ./configure
+  && make
+  && sudo make install
 
+RUN pip3 install -U scikit-image
 RUN pip3 install -U testresources setuptools
 
 RUN pip3 install -U pillow==6.1
 RUN pip3 install -U numpy
 RUN pip3 install -U sklearn
 RUN pip3 install -U scipy
-Run pip3 install -U jupyter
-Run pip3 install -U piexif
-Run pip3 install -U cffi
-Run pip3 install -U tqdm
-Run pip3 install -U dominate
-Run pip3 install -U tensorboardX
-Run pip3 install -U nose
-Run pip3 install -U ninja
+RUN pip3 install -U jupyter
+RUN pip3 install -U piexif
+RUN pip3 install -U cffi
+RUN pip3 install -U tqdm
+RUN pip3 install -U dominate
+RUN pip3 install -U tensorboardX
+RUN pip3 install -U nose
+RUN pip3 install -U ninja
 
 RUN apt-get update
 RUN apt-get -y install python-skimage
