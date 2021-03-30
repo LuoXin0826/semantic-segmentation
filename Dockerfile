@@ -62,16 +62,14 @@ RUN cd /mnt/jetson-sdcard \
   && pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 
 # Building: Tiff
-RUN wget https://download.osgeo.org/libtiff/tiff-4.1.0.tar.gz
-  && tar -xzvf tiff-4.1.0.tar.gz
-  && cd tiff-4.1.0/
-  && ./configure
-  && make
-  && sudo make install
+RUN wget https://download.osgeo.org/libtiff/tiff-4.1.0.tar.gz \
+  && tar -xzvf tiff-4.1.0.tar.gz \
+  && cd tiff-4.1.0 \
+  && ./configure \
+  && make \
+  && sudo make install \
 
-RUN pip3 install -U scikit-image
 RUN pip3 install -U testresources setuptools
-
 RUN pip3 install -U pillow==6.1
 RUN pip3 install -U numpy
 RUN pip3 install -U sklearn
@@ -84,9 +82,10 @@ RUN pip3 install -U dominate
 RUN pip3 install -U tensorboardX
 RUN pip3 install -U nose
 RUN pip3 install -U ninja
+RUN pip3 install -U scikit-image
 
-RUN apt-get update
-RUN apt-get -y install python-skimage
+# RUN apt-get update
+# RUN apt-get install -y python-skimage
 
 RUN apt-get update
 RUN apt-get install libgtk2.0-dev -y && rm -rf /var/lib/apt/lists/*
