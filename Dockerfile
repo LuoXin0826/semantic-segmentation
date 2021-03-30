@@ -67,7 +67,7 @@ RUN wget https://download.osgeo.org/libtiff/tiff-4.1.0.tar.gz \
   && cd tiff-4.1.0 \
   && ./configure \
   && make \
-  && make install \
+  && make install
 
 RUN pip3 install -U testresources setuptools
 RUN pip3 install -U pillow==6.1
