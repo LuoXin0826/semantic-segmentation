@@ -11,12 +11,11 @@
 #
 
 BASE_IMAGE="nvcr.io/nvidia/l4t-pytorch:r32.5.0-pth1.6-py3"
-L4T_VERSION = "32.5.1"
 
 echo "BASE_IMAGE=$BASE_IMAGE"
-echo "TAG=jetson-inference:r$L4T_VERSION"
+echo "TAG=jetson-inference:sem-seg"
 
 # build the container
-sudo docker build -t jetson-inference:r$L4T_VERSION -f Dockerfile \
+sudo docker build -t jetson-inference:sem-seg -f Dockerfile \
           --build-arg BASE_IMAGE=$BASE_IMAGE \
 		.
