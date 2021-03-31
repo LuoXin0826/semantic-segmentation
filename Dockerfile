@@ -82,9 +82,10 @@ RUN pip3 install -U dominate
 RUN pip3 install -U tensorboardX
 RUN pip3 install -U nose
 RUN pip3 install -U ninja
+RUN pip3 install -U scikit-image==0.13.1
 
-RUN apt-get update
-RUN apt-get install -y python-skimage
+# RUN apt-get update
+# RUN apt-get install -y python-skimage
 
 RUN apt-get update
 RUN apt-get install libgtk2.0-dev -y && rm -rf /var/lib/apt/lists/*
