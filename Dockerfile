@@ -71,7 +71,7 @@ RUN wget https://download.osgeo.org/libtiff/tiff-4.1.0.tar.gz \
 
 RUN pip3 install -U testresources setuptools
 RUN pip3 install -U pillow==6.1
-RUN pip3 install -U numpy==1.16.1
+RUN pip3 install -U numpy==1.15
 RUN pip3 install -U sklearn
 RUN pip3 install -U scipy
 RUN pip3 install -U jupyter
@@ -81,9 +81,10 @@ RUN pip3 install -U dominate
 RUN pip3 install -U tensorboardX
 RUN pip3 install -U nose
 RUN pip3 install -U ninja
+RUN pip3 install -U scikit-image==0.13.1
 
-RUN apt-get update
-RUN apt-get install -y python3-skimage
+# RUN apt-get update
+# RUN apt-get install -y python3-skimage
 
 RUN apt-get update
 RUN apt-get install -y python3-tqdm
