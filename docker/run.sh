@@ -6,4 +6,4 @@ sudo docker run --runtime nvidia -it --rm --network host -e DISPLAY=$DISPLAY \
     -v /tmp/argus_socket:/tmp/argus_socket \
     -v /etc/enctune.conf:/etc/enctune.conf \
     -v /mnt/:/mnt/ \
-    jetson-inference:r
+    jetson-inference:sem-seg
