@@ -25,7 +25,7 @@ import numpy as np
 import transforms.transforms as extended_transforms
 
 from config import assert_and_infer_cfg
-from datasets import cityscapes, kitti, kitti_semantic, kitti_trav
+from datasets import cityscapes, kitti, kitti_semantic, kitti_trav, forest_semantic
 from optimizer import restore_snapshot
 
 from utils.my_data_parallel import MyDataParallel
@@ -110,6 +110,12 @@ def setup_loader():
     elif args.dataset == 'kitti_semantic':
         args.dataset_cls = kitti_semantic
         test_set = args.dataset_cls.KITTI_Semantic(args.mode, args.split,
+                                         transform=val_input_transform,
+                                         target_transform=target_transform,
+                                         cv_split=args.cv_split)
+    elif args.dataset == 'forest_semantic':
+        args.dataset_cls = forest_semantic
+        test_set = args.dataset_cls.FOREST_Semantic(args.mode, args.split,
                                          transform=val_input_transform,
                                          target_transform=target_transform,
                                          cv_split=args.cv_split)
