@@ -16,6 +16,8 @@ from tqdm import tqdm
 import cv2
 from PIL import Image
 import PIL
+import time
+
 
 from torch.backends import cudnn
 from torch.autograd import Variable
