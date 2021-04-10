@@ -311,11 +311,7 @@ def inference_sliding(model, img, scales):
                 for b_idx in range(bi):
                     cur_input = input_crops[b_idx,:,:,:].unsqueeze(0).cuda()
                     if args.dataset == 'kitti_semantic' or args.dataset == 'forest_semantic':
-                        tic = time.perf_counter()
                         cur_output = model(cur_input,task='semantic')
-                        toc = time.perf_counter()
-                        print('#1###############################################')
-                        print(f"Eval the image in {toc - tic:0.4f} seconds")
                     else:
                         cur_output = model(cur_input,task='traversability')
                     output_scattered_list.append(cur_output)
@@ -323,11 +319,7 @@ def inference_sliding(model, img, scales):
             else:
                 input_crops = input_crops.cuda()
                 if args.dataset == 'kitti_semantic' or args.dataset == 'forest_semantic':
-                    tic = time.perf_counter()
                     output_scattered = model(input_crops,task='semantic')
-                    toc = time.perf_counter()
-                    print('#2###############################################')
-                    print(f"Eval the image in {toc - tic:0.4f} seconds")
                 else:
                     output_scattered = model(input_crops,task='traversability')
 
@@ -475,7 +467,12 @@ class RunEval():
         else:
 
             img = to_pil(imgs[0])
+
+        tic = time.perf_counter()
         prediction_pre_argmax_collection = inference(net, img, scales)
+        toc = time.perf_counter()
+        print('################################################')
+        print(f"Eval the image in {toc - tic:0.4f} seconds")
 
         if self.inference_mode == 'pooling':
             prediction = prediction_pre_argmax_collection
