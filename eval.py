@@ -325,7 +325,7 @@ def inference_sliding(model, img, scales):
                     output_scattered = model(input_crops,task='semantic')
                     toc = time.perf_counter()
                     print('#2###############################################')
-                        print(f"Eval the image in {toc - tic:0.4f} seconds")
+                    print(f"Eval the image in {toc - tic:0.4f} seconds")
                 else:
                     output_scattered = model(input_crops,task='traversability')
 
