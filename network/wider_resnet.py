@@ -367,9 +367,6 @@ class WiderResNetA2(nn.Module):
                 else:
                     drop = None
 
-                print('######################################')
-                print(in_channels)
-
                 blocks.append((
                     "block%d" % (block_id + 1),
                     IdentityResidualBlock(in_channels,
