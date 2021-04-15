@@ -112,7 +112,7 @@ class DeepWV3Plus_semantic(nn.Module):
         # self.criterion = criterion
         # logging.info("Trunk: %s", trunk)
 
-        # tasks = ['semantic']
+        tasks = ['semantic']
         wide_resnet = wider_resnet38_a2(classes=21, dilation=True, tasks=tasks)
         wide_resnet = torch.nn.DataParallel(wide_resnet)
         wide_resnet = wide_resnet.module
