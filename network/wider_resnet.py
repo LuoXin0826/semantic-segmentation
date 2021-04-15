@@ -370,7 +370,7 @@ class WiderResNetA2(nn.Module):
                 blocks.append((
                     "block%d" % (block_id + 1),
                     print('######################################')
-                    print(in_chnnels)
+                    print(in_channels)
                     IdentityResidualBlock(in_channels,
                                           channels[mod_id], norm_act=norm_act,
                                           stride=stride, dilation=dil,
