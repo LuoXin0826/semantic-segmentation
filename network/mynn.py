@@ -12,7 +12,7 @@ def Norm2d(in_channels):
     """
     layer = getattr(cfg.MODEL, 'BNFUNC')
     print('#############################')
-    print(layer)
+    print(cfg.MODEL)
     normalization_layer = layer(in_channels)
     return normalization_layer
 
