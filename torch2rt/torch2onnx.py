@@ -26,6 +26,8 @@
 import logging
 import torch
 from torch import nn
+import sys
+sys.path.append('../network')
 from network import SEresnext
 from network import Resnet
 from network.wider_resnet import wider_resnet38_a2
@@ -34,6 +36,7 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 from PIL import Image
 import torchvision.transforms as transforms
+
 
 
 class _AtrousSpatialPyramidPoolingModule(nn.Module):
@@ -225,8 +228,8 @@ def read_image(img_path):
     return input_img
 
 trained_model = DeepWV3Plus_semantic()
-trained_model.load_state_dict(torch.load('pretrained_models/best_epoch77.pt'))
-img_path = '/mnt/jetson_sdcard/dataset_forest/testing/images/image5001.png'
+trained_model.load_state_dict(torch.load('pretrained_models/best_epoch_77_mean-iu_0.72510.pth'))
+img_path = '/mnt/jetson_sdcard/dataset_forest_tiny/testing/images/image5001.png'
 input_data = read_image(img_path).cuda()
 torch.onnx.export(trained_model, input_data, "output/semantic_model.onnx")
 # img_root = '/mnt/jetson_sdcard/dataset_forest/testing/images/'
