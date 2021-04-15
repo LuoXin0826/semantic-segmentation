@@ -27,7 +27,7 @@ import logging
 import torch
 from torch import nn
 import sys
-sys.path.insert(1, '../network')
+sys.path.append('../')
 from network import SEresnext
 from network import Resnet
 from network.wider_resnet import wider_resnet38_a2
