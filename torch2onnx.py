@@ -113,9 +113,9 @@ class DeepWV3Plus_semantic(nn.Module):
         # logging.info("Trunk: %s", trunk)
 
         # tasks = ['semantic']
-        # wide_resnet = wider_resnet38_a2(classes=21, dilation=True, tasks=tasks)
-        # wide_resnet = torch.nn.DataParallel(wide_resnet)
-        # wide_resnet = wide_resnet.module
+        wide_resnet = wider_resnet38_a2(classes=21, dilation=True, tasks=tasks)
+        wide_resnet = torch.nn.DataParallel(wide_resnet)
+        wide_resnet = wide_resnet.module
 
         self.mod1 = wide_resnet.mod1
         self.mod2 = wide_resnet.mod2
