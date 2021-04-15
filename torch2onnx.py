@@ -108,34 +108,14 @@ class DeepWV3Plus_semantic(nn.Module):
 
     def __init__(self, trunk='WideResnet38', criterion=None):
 
-        super(DeepWV3Plus_semantic, self).__init__()
-        self.criterion = criterion
-        logging.info("Trunk: %s", trunk)
+        # super(DeepWV3Plus_semantic, self).__init__()
+        # self.criterion = criterion
+        # logging.info("Trunk: %s", trunk)
 
-        tasks = ['semantic']
-        wide_resnet = wider_resnet38_a2(classes=1000, dilation=True, tasks=tasks)
-        wide_resnet = torch.nn.DataParallel(wide_resnet)
-        if criterion is not None:
-            try:
-                checkpoint = torch.load('./pretrained_models/wider_resnet38.pth.tar', map_location='cpu')
-#                wide_resnet.load_state_dict(checkpoint['state_dict'])
-
-                net_state_dict = wide_resnet.state_dict()
-                loaded_dict = checkpoint['state_dict']
-                new_loaded_dict = {}
-                for k in net_state_dict:
-                    if k in loaded_dict and net_state_dict[k].size() == loaded_dict[k].size():
-                        new_loaded_dict[k] = loaded_dict[k]
-                    else:
-                        logging.info("Skipped loading parameter %s", k)
-                net_state_dict.update(new_loaded_dict)
-                wide_resnet.load_state_dict(net_state_dict)
-
-                del checkpoint
-            except:
-                print("Please download the ImageNet weights of WideResNet38 in our repo to ./pretrained_models/wider_resnet38.pth.tar.")
-                raise RuntimeError("=====================Could not load ImageNet weights of WideResNet38 network.=======================")
-        wide_resnet = wide_resnet.module
+        # tasks = ['semantic']
+        # wide_resnet = wider_resnet38_a2(classes=21, dilation=True, tasks=tasks)
+        # wide_resnet = torch.nn.DataParallel(wide_resnet)
+        # wide_resnet = wide_resnet.module
 
         self.mod1 = wide_resnet.mod1
         self.mod2 = wide_resnet.mod2
@@ -162,31 +142,6 @@ class DeepWV3Plus_semantic(nn.Module):
             Norm2d(256),
             nn.ReLU(inplace=True),
             nn.Conv2d(256, 21, kernel_size=1, bias=False))
-
-        # for param in self.mod1.parameters():
-        #     param.requires_grad = False
-        # for param in self.mod2.parameters():
-        #     param.requires_grad = False
-        # for param in self.mod3.parameters():
-        #     param.requires_grad = False
-        # for param in self.mod4.parameters():
-        #     param.requires_grad = False
-        # for param in self.mod5.parameters():
-        #     param.requires_grad = False
-
-        # for param in self.pool2.parameters():
-        #     param.requires_grad = False
-        # for param in self.pool3.parameters():
-        #     param.requires_grad = False
-
-        # for param in self.mod6.block1.bn1.parameters():
-        #     param.requires_grad = False
-        # for param in self.mod6.block1.convs.parameters():
-        #     param.requires_grad = False
-        # for param in self.mod7.block1.bn1.parameters():
-        #     param.requires_grad = False
-        # for param in self.mod7.block1.convs.parameters():
-        #     param.requires_grad = False
 
     def forward(self, inp, gts=None, task=None):
 
