@@ -111,8 +111,8 @@ class DeepWV3Plus_semantic(nn.Module):
     def __init__(self, trunk='WideResnet38', criterion=None):
 
         super(DeepWV3Plus_semantic, self).__init__()
-        # self.criterion = criterion
-        # logging.info("Trunk: %s", trunk)
+        self.criterion = criterion
+        logging.info("Trunk: %s", trunk)
 
         tasks = ['semantic']
         wide_resnet = wider_resnet38_a2(classes=1000, dilation=True, tasks=tasks)
