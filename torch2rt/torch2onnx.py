@@ -110,7 +110,7 @@ class DeepWV3Plus_semantic(nn.Module):
 
     def __init__(self, trunk='WideResnet38', criterion=None):
 
-        # super(DeepWV3Plus_semantic, self).__init__()
+        super(DeepWV3Plus_semantic, self).__init__()
         # self.criterion = criterion
         # logging.info("Trunk: %s", trunk)
 
