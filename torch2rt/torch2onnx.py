@@ -30,6 +30,8 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 from PIL import Image
 import torchvision.transforms as transforms
+import sys
+sys.path.append('../')
 from network import SEresnext
 from network import Resnet
 from network.wider_resnet import wider_resnet38_a2
