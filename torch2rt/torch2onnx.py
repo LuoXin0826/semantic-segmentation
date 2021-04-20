@@ -20,7 +20,7 @@ import argparse
 
 # parse command line
 parser = argparse.ArgumentParser()
-parser.add_argument('--input', type=str, default='./pretrained_models/best_epoches_77.pth',
+parser.add_argument('--input', type=str, default='./pretrained_models/best_epoch_77_mean-iu_0.72510.pth',
                     help="path to input PyTorch model")
 parser.add_argument('--output', type=str, default='',
                     help="desired path of converted ONNX model (default: <ARCH>.onnx)")
