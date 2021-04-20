@@ -43,20 +43,15 @@ print('running on device ' + str(device))
 print('loading checkpoint:  ' + opt.input)
 checkpoint = torch.load(opt.input)
 
-arch = checkpoint['arch']
 num_classes = checkpoint['num_classes']
 
 print('checkpoint accuracy: {:.3f}% mean IoU, {:.3f}% accuracy'.format(
     checkpoint['mean_IoU'], checkpoint['accuracy']))
 
 # create the model architecture
-print('using model:  ' + arch)
 print('num classes:  ' + str(num_classes))
 
-model = segmentation.__dict__[arch](num_classes=num_classes,
-                                    aux_loss=None,
-                                    pretrained=False,
-                                    export_onnx=True)
+model = DeepWV3Plus_semantic()
 
 # load the model weights
 model.load_state_dict(checkpoint['model'])
@@ -74,7 +69,7 @@ print('input size:  {:d}x{:d}'.format(resolution[1], resolution[0]))
 
 # format output model path
 if not opt.output:
-    opt.output = arch + '.onnx'
+    opt.output = wise_resnet + '.onnx'
 
 if opt.model_dir and opt.output.find('/') == -1 and opt.output.find('\\') == -1:
     opt.output = os.path.join(opt.model_dir, opt.output)
