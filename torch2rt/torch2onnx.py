@@ -1,28 +1,7 @@
-"""
-# Code Adapted from:
-# https://github.com/sthalles/deeplab_v3
 #
-# MIT License
+# converts a saved PyTorch model to ONNX format
 #
-# Copyright (c) 2018 Thalles Santos Silva
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-"""
+import os
 import logging
 import torch
 from torch import nn
@@ -36,158 +15,75 @@ from network import SEresnext
 from network import Resnet
 from network.wider_resnet import wider_resnet38_a2
 from network.mynn import initialize_weights, Norm2d, Upsample
+import argparse
 
-class _AtrousSpatialPyramidPoolingModule(nn.Module):
-    """
-    operations performed:
-      1x1 x depth
-      3x3 x depth dilation 6
-      3x3 x depth dilation 12
-      3x3 x depth dilation 18
-      image pooling
-      concatenate all together
-      Final 1x1 conv
-    """
 
-    def __init__(self, in_dim, reduction_dim=256, output_stride=16, rates=(6, 12, 18)):
-        super(_AtrousSpatialPyramidPoolingModule, self).__init__()
+# parse command line
+parser = argparse.ArgumentParser()
+parser.add_argument('--input', type=str, default='./pretrained_models/best_epoches_77.pth',
+                    help="path to input PyTorch model")
+parser.add_argument('--output', type=str, default='',
+                    help="desired path of converted ONNX model (default: <ARCH>.onnx)")
+parser.add_argument('--model-dir', type=str, default='',
+                    help="directory to look for the input PyTorch model in, and export the converted ONNX model to (if --output doesn't specify a directory)")
 
-        if output_stride == 8:
-            rates = [2 * r for r in rates]
-        elif output_stride == 16:
-            pass
-        else:
-            raise 'output stride of {} not supported'.format(output_stride)
+opt = parser.parse_args()
+print(opt)
 
-        self.features = []
-        # 1x1
-        self.features.append(
-            nn.Sequential(nn.Conv2d(in_dim, reduction_dim, kernel_size=1, bias=False),
-                          Norm2d(reduction_dim), nn.ReLU(inplace=True)))
-        # other rates
-        for r in rates:
-            self.features.append(nn.Sequential(
-                nn.Conv2d(in_dim, reduction_dim, kernel_size=3,
-                          dilation=r, padding=r, bias=False),
-                Norm2d(reduction_dim),
-                nn.ReLU(inplace=True)
-            ))
-        self.features = torch.nn.ModuleList(self.features)
+# format input model path
+if opt.model_dir:
+    opt.model_dir = os.path.expanduser(opt.model_dir)
+    opt.input = os.path.join(opt.model_dir, opt.input)
 
-        # img level features
-        self.img_pooling = nn.AdaptiveAvgPool2d(1)
-        self.img_conv = nn.Sequential(
-            nn.Conv2d(in_dim, reduction_dim, kernel_size=1, bias=False),
-            Norm2d(reduction_dim), nn.ReLU(inplace=True))
+# set the device
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print('running on device ' + str(device))
 
-    def forward(self, x):
-        x_size = x.size()
+# load the model checkpoint
+print('loading checkpoint:  ' + opt.input)
+checkpoint = torch.load(opt.input)
 
-        img_features = self.img_pooling(x)
-        img_features = self.img_conv(img_features)
-        img_features = Upsample(img_features, x_size[2:])
-        out = img_features
+arch = checkpoint['arch']
+num_classes = checkpoint['num_classes']
 
-        for f in self.features:
-            y = f(x)
-            out = torch.cat((out, y), 1)
-        return out
+print('checkpoint accuracy: {:.3f}% mean IoU, {:.3f}% accuracy'.format(
+    checkpoint['mean_IoU'], checkpoint['accuracy']))
 
-class DeepWV3Plus_semantic(nn.Module):
-    """
-    WideResNet38 version of DeepLabV3
-    mod1
-    pool2
-    mod2 bot_fine
-    pool3
-    mod3-7
-    bot_aspp
+# create the model architecture
+print('using model:  ' + arch)
+print('num classes:  ' + str(num_classes))
 
-    structure: [3, 3, 6, 3, 1, 1]
-    channels = [(128, 128), (256, 256), (512, 512), (512, 1024), (512, 1024, 2048),
-              (1024, 2048, 4096)]
-    """
+model = segmentation.__dict__[arch](num_classes=num_classes,
+                                    aux_loss=None,
+                                    pretrained=False,
+                                    export_onnx=True)
 
-    def __init__(self, trunk='WideResnet38', criterion=None):
+# load the model weights
+model.load_state_dict(checkpoint['model'])
 
-        super(DeepWV3Plus_semantic, self).__init__()
-        self.criterion = criterion
-        logging.info("Trunk: %s", trunk)
+model.to(device)
+model.eval()
 
-        tasks = ['semantic']
-        wide_resnet = wider_resnet38_a2(classes=1000, dilation=True, tasks=tasks)
-        wide_resnet = torch.nn.DataParallel(wide_resnet)
-        wide_resnet = wide_resnet.module
+print(model)
+print('')
 
-        self.mod1 = wide_resnet.mod1
-        self.mod2 = wide_resnet.mod2
-        self.mod3 = wide_resnet.mod3
-        self.mod4 = wide_resnet.mod4
-        self.mod5 = wide_resnet.mod5
-        self.mod6 = wide_resnet.mod6
-        self.mod7 = wide_resnet.mod7
-        self.pool2 = wide_resnet.pool2
-        self.pool3 = wide_resnet.pool3
-        del wide_resnet
+# create example image data
+resolution = checkpoint['resolution']
+input = torch.ones((1, 3, resolution[0], resolution[1])).cuda()
+print('input size:  {:d}x{:d}'.format(resolution[1], resolution[0]))
 
-        self.aspp = _AtrousSpatialPyramidPoolingModule(4096, 256,
-                                                       output_stride=8)
+# format output model path
+if not opt.output:
+    opt.output = arch + '.onnx'
 
-        self.bot_fine = nn.Conv2d(128, 48, kernel_size=1, bias=False)
-        self.bot_aspp = nn.Conv2d(1280, 256, kernel_size=1, bias=False)
+if opt.model_dir and opt.output.find('/') == -1 and opt.output.find('\\') == -1:
+    opt.output = os.path.join(opt.model_dir, opt.output)
 
-        self.final = nn.Sequential(
-            nn.Conv2d(256 + 48, 256, kernel_size=3, padding=1, bias=False),
-            Norm2d(256),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(256, 256, kernel_size=3, padding=1, bias=False),
-            Norm2d(256),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(256, 21, kernel_size=1, bias=False))
+# export the model
+input_names = ["input_0"]
+output_names = ["output_0"]
 
-    def forward(self, inp, gts=None, task=None):
-
-        x_size = inp.size()
-        x = self.mod1(inp)
-        m2 = self.mod2(self.pool2(x))
-        x = self.mod3(self.pool3(m2))
-        x = self.mod4(x)
-        x = self.mod5(x)
-        x = self.mod6(x, task=task)
-        x = self.mod7(x, task=task)
-        x = self.aspp(x)
-
-        dec0_up = self.bot_aspp(x)
-        dec0_fine = self.bot_fine(m2)
-        dec0_up = Upsample(dec0_up, m2.size()[2:])
-        dec0 = [dec0_fine, dec0_up]
-        dec0 = torch.cat(dec0, 1)
-
-        dec1 = self.final(dec0)
-        out = Upsample(dec1, x_size[2:])
-
-        if self.training:
-            return self.criterion(out, gts)
-
-        return out#[:,:num_class,:,:]
-
-def read_image(img_path):
-    input_img = Image.open(img_path)
-    resize = transforms.Resize([640,480])
-    input_img = resize(input_img)
-    to_tensor = transforms.ToTensor()
-    input_img = to_tensor(input_img)
-    input_img = torch.unsqueeze(input_img, 0)
-    return input_img
-
-trained_model = DeepWV3Plus_semantic()
-trained_model.load_state_dict(torch.load('pretrained_models/best_epoch_77_mean-iu_0.72510.pth'))
-img_path = '/mnt/jetson_sdcard/dataset_forest_tiny/testing/images/image5001.png'
-input_data = read_image(img_path).cuda()
-torch.onnx.export(trained_model, input_data, "output/semantic_model.onnx")
-# img_root = '/mnt/jetson_sdcard/dataset_forest/testing/images/'
-# filename_list = os.listdir(img_root)
-# filename_list.sort()
-# for i in filename_list:
-#     input_data = read_image(img_root+i).cuda()
-#     torch.onnx.export(trained_model, input_data, "output/semantic_model.onnx")
+print('exporting model to ONNX...')
+torch.onnx.export(model, input, opt.output, verbose=True,
+                  input_names=input_names, output_names=output_names)
+print('model exported to:  {:s}'.format(opt.output))
