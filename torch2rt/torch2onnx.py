@@ -55,7 +55,7 @@ num_classes = opt.num_classes
 # create the model architecture
 print('num classes:  ' + str(num_classes))
 
-model = DeepWV3Plus_semantic()
+model = wider_resnet38_a2()
 
 # load the model weights
 model.load_state_dict(checkpoint['model'])
