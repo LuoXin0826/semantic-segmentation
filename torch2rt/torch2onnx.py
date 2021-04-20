@@ -11,11 +11,11 @@ from PIL import Image
 import torchvision.transforms as transforms
 import sys
 sys.path.extend('../')
-# from network import SEresnext
-# from network import Resnet
+from network import SEresnext
+from network import Resnet
 from network.deepv3 import DeepWV3Plus_semantic
-# from network.wider_resnet import wider_resnet38_a2
-# from network.mynn import initialize_weights, Norm2d, Upsample
+from network.wider_resnet import wider_resnet38_a2
+from network.mynn import initialize_weights, Norm2d, Upsample
 import argparse
 
 
