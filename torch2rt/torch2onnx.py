@@ -13,6 +13,7 @@ import sys
 sys.path.extend('../')
 from network import SEresnext
 from network import Resnet
+from network import deepv3
 from network.wider_resnet import wider_resnet38_a2
 from network.mynn import initialize_weights, Norm2d, Upsample
 import argparse
