@@ -23,9 +23,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--input', type=str, default='./pretrained_models/best_epoch_77_mean-iu_0.72510.pth',
                     help="path to input PyTorch model")
 parser.add_argument('--output', type=str, default='',
-                    help="desired path of converted ONNX model (default: <ARCH>.onnx)")
+                    help="desired path of converted ONNX model")
 parser.add_argument('--model-dir', type=str, default='',
                     help="directory to look for the input PyTorch model in, and export the converted ONNX model to (if --output doesn't specify a directory)")
+parser.add_argument('--num_classes', type=int, default=21,
+                    help="Number of classes (default:21)")
 
 opt = parser.parse_args()
 print(opt)
@@ -43,7 +45,7 @@ print('running on device ' + str(device))
 print('loading checkpoint:  ' + opt.input)
 checkpoint = torch.load(opt.input)
 
-num_classes = checkpoint['num_classes']
+num_classes = opt.num_classes
 
 print('checkpoint accuracy: {:.3f}% mean IoU, {:.3f}% accuracy'.format(
     checkpoint['mean_IoU'], checkpoint['accuracy']))
