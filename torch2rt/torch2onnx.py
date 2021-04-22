@@ -11,6 +11,7 @@ from PIL import Image
 import torchvision.transforms as transforms
 import sys
 sys.path.extend('../')
+import network
 from network import SEresnext
 from network import Resnet
 from network.deepv3 import DeepWV3Plus_semantic
