@@ -54,8 +54,6 @@ print('running on device ' + str(device))
 # load the model checkpoint
 print('loading checkpoint:  ' + opt.input)
 checkpoint = torch.load(opt.input)
-print('*******************')
-print(type(checkpoint))
 
 num_classes = opt.num_classes
 
@@ -64,6 +62,7 @@ print('num classes:  ' + str(num_classes))
 
 criterion = CrossEntropyLoss2d(size_average=True, ignore_index=None).cuda()
 model = network.get_net_ori(opt, criterion)
+model = nn.DataParallel(model)
 
 # load the model weights
 model.load_state_dict(checkpoint)
