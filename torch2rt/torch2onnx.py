@@ -17,6 +17,7 @@ from network import Resnet
 from network.deepv3 import DeepWV3Plus_semantic
 from network.wider_resnet import wider_resnet38_a2
 from network.mynn import initialize_weights, Norm2d, Upsample
+import loss
 import argparse
 
 
@@ -59,6 +60,7 @@ num_classes = opt.num_classes
 # create the model architecture
 print('num classes:  ' + str(num_classes))
 
+criterion = CrossEntropyLoss2d(size_average=True, ignore_index=None).cuda()
 model = network.get_net_ori(opt, criterion)
 
 # load the model weights
