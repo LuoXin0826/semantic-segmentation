@@ -10,10 +10,9 @@ def Norm2d(in_channels):
     """
     Custom Norm Function to allow flexible switching
     """
+    print('**************************')
+    print(cfg.MODEL)
     layer = getattr(cfg.MODEL, 'BNFUNC')
-    print('#################################')
-    print(layer)
-    print(in_channels)
     normalization_layer = layer(in_channels)
     return normalization_layer
 
