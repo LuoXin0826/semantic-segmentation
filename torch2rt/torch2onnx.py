@@ -54,6 +54,8 @@ print('running on device ' + str(device))
 # load the model checkpoint
 print('loading checkpoint:  ' + opt.input)
 checkpoint = torch.load(opt.input)
+print('*******************')
+print(type(checkpoint))
 
 num_classes = opt.num_classes
 
