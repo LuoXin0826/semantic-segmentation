@@ -61,8 +61,6 @@ num_classes = opt.num_classes
 print('num classes:  ' + str(num_classes))
 
 criterion = CrossEntropyLoss2d(size_average=True, ignore_index=None).cuda()
-print('*******************************')
-print(criterion)
 model = network.get_net_ori(opt, criterion)
 
 # load the model weights
