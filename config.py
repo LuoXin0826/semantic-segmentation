@@ -89,7 +89,7 @@ __C.DATASET.FOREST_DIR_SEMANTIC = "/home/luoxin/dataset_forest/"
 
 __C.MODEL = AttrDict()
 __C.MODEL.BN = 'regularnorm'
-__C.MODEL.BNFUNC = None
+__C.MODEL.BNFUNC = torch.nn.BatchNorm2d
 __C.DATASET.NUM_CLASSES = 21
 
 def assert_and_infer_cfg(args, make_immutable=True, train_mode=True):
