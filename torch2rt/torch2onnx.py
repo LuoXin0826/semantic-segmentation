@@ -17,7 +17,6 @@ from network.deepv3 import DeepWV3Plus_semantic
 from network.wider_resnet import wider_resnet38_a2
 from network.mynn import initialize_weights, Norm2d, Upsample
 import argparse
-sys.path.remove('../')
 
 
 # parse command line
@@ -34,6 +33,9 @@ parser.add_argument('--width', type=int, default=640,
                     help="Width (default: 640)")
 parser.add_argument('--height', type=int, default=480,
                     help="Height (default: 480)")
+parser.add_argument('--arch', type=str, default='network.deepv3.DeepWV3Plus_semantic',
+                    help='Network architecture. We have DeepSRNX50V3PlusD (backbone: ResNeXt50) \
+                    and deepWV3Plus (backbone: WideResNet38) default:DeepWV3Plus_semantic.')
 
 opt = parser.parse_args()
 print(opt)
@@ -56,7 +58,7 @@ num_classes = opt.num_classes
 # create the model architecture
 print('num classes:  ' + str(num_classes))
 
-model = wider_resnet38_a2()
+model = network.get_net_ori(opt, criterion)
 
 # load the model weights
 model.load_state_dict(checkpoint['model'])
