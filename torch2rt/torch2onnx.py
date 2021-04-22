@@ -64,7 +64,7 @@ criterion = CrossEntropyLoss2d(size_average=True, ignore_index=None).cuda()
 model = network.get_net_ori(opt, criterion)
 
 # load the model weights
-model.load_state_dict(checkpoint['model'])
+model.load_state_dict(checkpoint)
 
 model.to(device)
 model.eval()
